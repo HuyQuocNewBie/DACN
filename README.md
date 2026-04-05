@@ -1,3 +1,4 @@
+
 ```
 DACN
 ├─ backend
@@ -72,7 +73,6 @@ DACN
 │  │  │  └─ Review
 │  │  │     └─ ReviewPage.jsx
 │  │  ├─ routes
-│  │  │  ├─ AdminRoute.jsx
 │  │  │  ├─ index.jsx
 │  │  │  └─ PrivateRoute.jsx
 │  │  └─ utils
