@@ -20,6 +20,7 @@ DACN
 │  │  │  ├─ axiosClient.js
 │  │  │  ├─ card.api.js
 │  │  │  ├─ deck.api.js
+│  │  │  ├─ explore.api.js
 │  │  │  ├─ review.api.js
 │  │  │  └─ user.api.js
 │  │  ├─ App.jsx
@@ -67,6 +68,8 @@ DACN
 │  │  │  ├─ Deck
 │  │  │  │  ├─ DeckDetail.jsx
 │  │  │  │  └─ DeckList.jsx
+│  │  │  ├─ Explore
+│  │  │  │  └─ ExplorePage.jsx
 │  │  │  ├─ NotFound.jsx
 │  │  │  ├─ Profile
 │  │  │  │  └─ Profile.jsx
