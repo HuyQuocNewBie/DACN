@@ -1,231 +1,232 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import cardApi from '../../api/card.api';
 import deckApi from '../../api/deck.api';
 import toast from 'react-hot-toast';
 
 const DeckDetail = () => {
   const { id } = useParams();
+
   const [deck, setDeck] = useState(null);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // State cho Modal thêm thẻ
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newCard, setNewCard] = useState({ front_text: '', back_text: '' });
+  const [newCard, setNewCard] = useState({
+    front_text: '',
+    back_text: '',
+  });
+
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchData = async () => {
+  // ✅ chống gọi API 2 lần (StrictMode)
+  const hasFetched = useRef({});
+
+  // ================= FETCH =================
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+
     try {
       const [deckRes, cardsRes] = await Promise.all([
         deckApi.getById(id),
         cardApi.getByDeckId(id),
       ]);
+
       setDeck(deckRes);
       setCards(cardsRes);
     } catch (error) {
-      console.error('Lỗi khi tải chi tiết bộ thẻ', error);
+      console.error(error);
+      toast.error('Không thể tải dữ liệu', { id: 'fetch-error' });
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [deckRes, cardsRes] = await Promise.all([
-          deckApi.getById(id),
-          cardApi.getByDeckId(id),
-        ]);
-        setDeck(deckRes);
-        setCards(cardsRes);
-      } catch (error) {
-        console.error('Lỗi khi tải chi tiết bộ thẻ', error);
-        toast.error('Không thể tải dữ liệu', { id: 'fetch-error' });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
   }, [id]);
 
-  // Xử lý thêm thẻ mới
+  useEffect(() => {
+    if (hasFetched.current[id]) return;
+
+    hasFetched.current[id] = true;
+    fetchData();
+  }, [id, fetchData]);
+
+  // ================= ADD CARD =================
   const handleAddCard = async (e) => {
     e.preventDefault();
+
     if (!newCard.front_text.trim() || !newCard.back_text.trim()) {
-      return toast.error('Vui lòng điền đầy đủ 2 mặt của thẻ');
+      return toast.error('Nhập đầy đủ nội dung');
     }
 
     setSubmitting(true);
     try {
-      // Gọi API thêm thẻ (Gửi kèm deck_id)
       await cardApi.create({ ...newCard, deck_id: id });
 
-      toast.success('Đã thêm thẻ mới!');
-      setNewCard({ front_text: '', back_text: '' }); // Reset form để nhập tiếp
-      fetchData(); // Tải lại danh sách thẻ
+      toast.success('Đã thêm thẻ!');
+      setNewCard({ front_text: '', back_text: '' });
 
-      // Nếu muốn đóng modal ngay thì setIsModalOpen(false),
-      // nhưng thường người dùng sẽ muốn thêm nhiều thẻ liên tục.
+      fetchData();
     } catch (error) {
-      console.error('Lỗi khi thêm thẻ:', error);
-      toast.error('Không thể thêm thẻ. Vui lòng kiểm tra lại Backend!');
+      console.error(error);
+      toast.error('Lỗi thêm thẻ');
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (loading)
+  // ================= LOADING =================
+  if (loading) {
     return (
-      <div className="p-6 text-center text-slate-500">Đang tải dữ liệu...</div>
+      <div className="p-10 text-center text-slate-500">
+        Đang tải dữ liệu...
+      </div>
     );
+  }
 
+  // ================= UI =================
   return (
-    <div className="mx-auto max-w-5xl p-6">
-      {/* Header */}
-      <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+    <div className="mx-auto max-w-7xl px-6 py-10">
+      
+      {/* HEADER */}
+      <div className="mb-12 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <div>
-          <Link
-            to="/decks"
-            className="text-primary mb-2 inline-block text-sm hover:underline"
-          >
-            ← Quay lại danh sách
-          </Link>
-          <h1 className="text-3xl font-bold text-slate-800">{deck?.title}</h1>
-          <p className="mt-2 text-slate-500">{deck?.description}</p>
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">
+            {deck?.title}
+          </h1>
+          <p className="mt-2 text-slate-500 text-lg">
+            {deck?.description || 'Không có mô tả'}
+          </p>
         </div>
-        <div className="flex gap-3">
-          <Link
-            to={`/review/${id}`}
-            className="rounded-lg bg-emerald-500 px-6 py-2 font-bold text-white shadow-lg shadow-emerald-100 transition hover:bg-emerald-600"
-          >
-            Bắt đầu học ngay
-          </Link>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-primary rounded-lg px-4 py-2 text-white transition hover:opacity-90"
-          >
-            + Thêm thẻ mới
-          </button>
+
+        <button className="flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-white bg-linear-to-r from-blue-600 to-blue-500 shadow-lg hover:scale-[0.97] transition">
+          <span className="material-symbols-outlined">play_arrow</span>
+          Bắt đầu ôn tập
+        </button>
+      </div>
+
+      {/* STATS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-12">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <p className="text-sm text-slate-500">Tổng thẻ</p>
+          <p className="text-3xl font-bold text-blue-600 mt-1">
+            {cards.length}
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <p className="text-sm text-slate-500">Đã tạo</p>
+          <p className="text-3xl font-bold text-emerald-500 mt-1">
+            {cards.length}
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <p className="text-sm text-slate-500">Trạng thái</p>
+          <p className="text-3xl font-bold text-slate-800 mt-1">
+            Đang học
+          </p>
         </div>
       </div>
 
-      {/* List Cards */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-slate-700">
-          Danh sách thẻ ({cards.length})
-        </h2>
-        <div className="grid gap-3">
-          {cards.map((card) => (
-            <div
-              key={card.card_id}
-              className="group hover:border-primary flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition"
-            >
-              <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
-                <div>
-                  <span className="mb-1 block text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                    Mặt trước
-                  </span>
-                  <p className="font-medium text-slate-800">
-                    {card.front_text}
-                  </p>
-                </div>
-                <div>
-                  <span className="mb-1 block text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                    Mặt sau
-                  </span>
-                  <p className="text-slate-600 italic">{card.back_text}</p>
-                </div>
-              </div>
-              <div className="ml-4 flex gap-1 opacity-0 transition group-hover:opacity-100">
-                <button className="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-500">
-                  Sửa
-                </button>
-                <button className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-500">
-                  Xóa
-                </button>
-              </div>
-            </div>
-          ))}
+      {/* QUICK ADD */}
+      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="material-symbols-outlined text-blue-600 bg-blue-50 p-2 rounded-lg">
+            add_circle
+          </span>
+          <h3 className="text-xl font-bold text-slate-800">
+            Thêm thẻ mới
+          </h3>
         </div>
 
+        <form onSubmit={handleAddCard} className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              Mặt trước
+            </label>
+            <textarea
+              rows="4"
+              placeholder="Nhập câu hỏi..."
+              className="mt-2 w-full rounded-xl bg-slate-50 p-4 focus:ring-2 focus:ring-blue-500 outline-none transition"
+              value={newCard.front_text}
+              onChange={(e) =>
+                setNewCard({ ...newCard, front_text: e.target.value })
+              }
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              Mặt sau
+            </label>
+            <textarea
+              rows="4"
+              placeholder="Nhập đáp án..."
+              className="mt-2 w-full rounded-xl bg-slate-50 p-4 focus:ring-2 focus:ring-blue-500 outline-none transition"
+              value={newCard.back_text}
+              onChange={(e) =>
+                setNewCard({ ...newCard, back_text: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="md:col-span-2 flex justify-end">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-8 py-3 rounded-xl font-bold text-white bg-blue-600 shadow-lg hover:bg-blue-700 transition disabled:opacity-50"
+            >
+              {submitting ? 'Đang lưu...' : 'Lưu thẻ'}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* TABLE */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="flex justify-between items-center p-6 border-b">
+          <h3 className="text-xl font-bold text-slate-800">
+            Danh sách thẻ ({cards.length})
+          </h3>
+        </div>
+
+        <table className="w-full text-left">
+          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <tr>
+              <th className="px-6 py-4">Mặt trước</th>
+              <th className="px-6 py-4">Mặt sau</th>
+              <th className="px-6 py-4 text-right">Thao tác</th>
+            </tr>
+          </thead>
+
+          <tbody className="divide-y">
+            {cards.map((card) => (
+              <tr key={card.card_id} className="hover:bg-slate-50 transition">
+                <td className="px-6 py-5 font-semibold text-slate-800">
+                  {card.front_text}
+                </td>
+                <td className="px-6 py-5 italic text-slate-500">
+                  {card.back_text}
+                </td>
+                <td className="px-6 py-5 text-right">
+                  <div className="flex justify-end gap-2">
+                    <button className="px-3 py-1 rounded-lg hover:bg-blue-50 text-slate-500 hover:text-blue-600 transition">
+                      Sửa
+                    </button>
+                    <button className="px-3 py-1 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-500 transition">
+                      Xóa
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
         {cards.length === 0 && (
-          <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 py-16 text-center">
-            <p className="text-slate-400">
-              Bộ thẻ này đang trống. Hãy thêm những thẻ đầu tiên!
-            </p>
+          <div className="p-12 text-center text-slate-400">
+            Chưa có thẻ nào 😢
           </div>
         )}
       </div>
-
-      {/* MODAL THÊM THẺ MỚI */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-          <div className="animate-in fade-in zoom-in w-full max-w-lg rounded-2xl bg-white shadow-2xl duration-200">
-            <div className="flex items-center justify-between border-b p-6">
-              <h2 className="text-xl font-bold text-slate-800">Thêm thẻ mới</h2>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-2xl text-slate-400 hover:text-slate-600"
-              >
-                &times;
-              </button>
-            </div>
-
-            <form onSubmit={handleAddCard} className="space-y-5 p-6">
-              <div>
-                <label className="mb-2 block text-sm font-bold tracking-wide text-slate-700 uppercase">
-                  Mặt trước (Câu hỏi/Từ vựng)
-                </label>
-                <textarea
-                  rows="3"
-                  required
-                  placeholder="Nhập nội dung mặt trước..."
-                  className="focus:ring-primary/10 focus:border-primary w-full resize-none rounded-xl border border-slate-200 px-4 py-3 transition outline-none focus:ring-4"
-                  value={newCard.front_text}
-                  onChange={(e) =>
-                    setNewCard({ ...newCard, front_text: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-bold tracking-wide text-slate-700 uppercase">
-                  Mặt sau (Đáp án/Giải nghĩa)
-                </label>
-                <textarea
-                  rows="3"
-                  required
-                  placeholder="Nhập nội dung mặt sau..."
-                  className="focus:ring-primary/10 focus:border-primary w-full resize-none rounded-xl border border-slate-200 px-4 py-3 transition outline-none focus:ring-4"
-                  value={newCard.back_text}
-                  onChange={(e) =>
-                    setNewCard({ ...newCard, back_text: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 rounded-xl bg-slate-100 px-4 py-3 font-bold text-slate-600 transition hover:bg-slate-200"
-                >
-                  Xong
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="bg-primary hover:bg-primary/90 shadow-primary/20 flex-1 rounded-xl px-4 py-3 font-bold text-white shadow-lg transition disabled:opacity-50"
-                >
-                  {submitting ? 'Đang lưu...' : 'Thêm vào bộ thẻ'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

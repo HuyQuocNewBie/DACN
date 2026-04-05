@@ -5,28 +5,11 @@ import toast from 'react-hot-toast';
 import reviewApi from '../../api/review.api';
 import { calculateSM2 } from '../../utils/sm2';
 
-// ================= CONSTANTS =================
 const QUALITY = {
   AGAIN: 0,
   HARD: 3,
   GOOD: 4,
   EASY: 5,
-};
-
-const MESSAGES = {
-  DONE: '🎉 Bạn đã hoàn thành mục tiêu hôm nay!',
-  ERROR_FETCH: 'Không thể tải thẻ ôn tập!',
-  ERROR_SAVE: 'Không thể lưu kết quả. Vui lòng thử lại!',
-};
-
-// ================= HELPERS =================
-const showToastByQuality = (quality) => {
-  if (quality >= 4) {
-    return toast.success('Làm tốt lắm!', { duration: 1000 });
-  }
-  if (quality === 0) {
-    return toast.error('Sẽ ôn lại thẻ này sớm!', { duration: 1000 });
-  }
 };
 
 const ReviewPage = () => {
@@ -38,31 +21,28 @@ const ReviewPage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // ================= FETCH DATA =================
+  // ================= FETCH =================
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
 
     const fetchCards = async () => {
       try {
         const data = await reviewApi.getDueCards(id);
-        if (isMounted) {
-          setCards(data);
-        }
+        if (mounted) setCards(data);
       } catch {
-       toast.error(MESSAGES.ERROR_FETCH, { id: 'fetch-review-error' });
+        toast.error('Không thể tải thẻ!', {
+          id: 'fetch-review-error',
+        });
       } finally {
-        if (isMounted) setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     fetchCards();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => (mounted = false);
   }, [id]);
 
-  // ================= HANDLE REVIEW =================
+  // ================= REVIEW =================
   const handleReview = async (quality) => {
     const currentCard = cards[currentIndex];
     if (!currentCard) return;
@@ -77,107 +57,104 @@ const ReviewPage = () => {
     try {
       await reviewApi.updateCardProgress(currentCard.card_id, result);
 
-      showToastByQuality(quality);
-
-      // ✅ Đóng thẻ về mặt trước trước
       setIsFlipped(false);
 
-      // ✅ Delay để tránh bị "nhảy trạng thái lật"
       setTimeout(() => {
         if (currentIndex < cards.length - 1) {
           setCurrentIndex((prev) => prev + 1);
         } else {
-          toast(MESSAGES.DONE, { icon: '👏' });
-          setTimeout(() => navigate('/dashboard'), 2000);
+          toast.success('🎉 Hoàn thành!');
+          setTimeout(() => navigate('/dashboard'), 1500);
         }
-      }, 300); // nên đồng bộ với duration-500 (có thể 300–500ms)
+      }, 300);
     } catch {
-      toast.error(MESSAGES.ERROR_SAVE);
+      toast.error('Lỗi lưu dữ liệu');
     }
   };
 
-  // ================= UI STATES =================
-  if (loading) {
-    return (
-      <div className="p-10 text-center text-slate-500">Đang tải dữ liệu...</div>
-    );
-  }
-
-  if (cards.length === 0) {
-    return (
-      <div className="p-10 text-center">
-        Hôm nay không có thẻ nào cần ôn tập! 🎉
-      </div>
-    );
-  }
+  if (loading) return <div className="p-10 text-center">Đang tải...</div>;
+  if (cards.length === 0)
+    return <div className="p-10 text-center">Không có thẻ 🎉</div>;
 
   const currentCard = cards[currentIndex];
-  if (!currentCard) return null;
 
-  // ================= RENDER =================
   return (
-    <div className="flex min-h-[80vh] flex-col items-center justify-center p-4">
+    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 px-4">
       {/* Progress */}
-      <div className="mb-4 text-slate-400">
-        Thẻ {currentIndex + 1} / {cards.length}
+      <div className="mb-6 text-sm text-slate-400">
+        {currentIndex + 1} / {cards.length}
       </div>
 
       {/* Flashcard */}
       <div
         onClick={() => setIsFlipped(!isFlipped)}
-        className={`relative h-64 w-full max-w-md cursor-pointer transition-all duration-500 transform-3d ${
-          isFlipped ? 'rotate-y-180' : ''
-        }`}
+        className="group perspective relative w-full max-w-2xl cursor-pointer"
       >
-        {/* Front */}
-        <div className="border-primary absolute inset-0 flex items-center justify-center rounded-2xl border-2 bg-white text-2xl font-bold shadow-xl backface-hidden">
-          {currentCard.front_text}
-        </div>
+        <div
+          className={`transform-style preserve-3d relative h-80 w-full rounded-4xl transition-all duration-500 ${
+            isFlipped ? 'rotate-y-180' : ''
+          }`}
+        >
+          {/* FRONT */}
+          <div className="absolute inset-0 flex items-center justify-center rounded-4xl bg-white p-10 shadow-xl backface-hidden">
+            <h2 className="text-center text-3xl font-bold">
+              {currentCard.front_text}
+            </h2>
+          </div>
 
-        {/* Back */}
-        <div className="border-secondary absolute inset-0 flex rotate-y-180 items-center justify-center rounded-2xl border-2 bg-slate-50 p-6 text-center text-xl shadow-xl backface-hidden">
-          {currentCard.back_text}
+          {/* BACK */}
+          <div className="absolute inset-0 flex rotate-y-180 items-center justify-center rounded-4xl bg-blue-50 p-10 shadow-xl backface-hidden">
+            <p className="text-center text-xl">{currentCard.back_text}</p>
+          </div>
         </div>
       </div>
 
-      {/* Controls */}
+      {/* BUTTON */}
+      {!isFlipped && (
+        <button
+          onClick={() => setIsFlipped(true)}
+          className="mt-10 rounded-xl bg-blue-600 px-10 py-4 font-bold text-white shadow-lg transition hover:scale-105"
+        >
+          Hiển thị đáp án
+        </button>
+      )}
+
+      {/* RATING */}
       {isFlipped && (
-        <div className="mt-10 grid w-full max-w-md grid-cols-4 gap-3">
+        <div className="mt-10 grid w-full max-w-2xl grid-cols-2 gap-4 md:grid-cols-4">
           <button
             onClick={() => handleReview(QUALITY.AGAIN)}
-            className="rounded-lg bg-red-100 p-3 font-bold text-red-600 hover:bg-red-200"
+            className="rounded-xl bg-red-100 p-4 font-bold text-red-600 hover:bg-red-200"
           >
-            Again
+            Lặp lại
           </button>
 
           <button
             onClick={() => handleReview(QUALITY.HARD)}
-            className="rounded-lg bg-orange-100 p-3 font-bold text-orange-600 hover:bg-orange-200"
+            className="rounded-xl bg-orange-100 p-4 font-bold text-orange-600 hover:bg-orange-200"
           >
-            Hard
+            Khó
           </button>
 
           <button
             onClick={() => handleReview(QUALITY.GOOD)}
-            className="rounded-lg bg-blue-100 p-3 font-bold text-blue-600 hover:bg-blue-200"
+            className="rounded-xl bg-blue-100 p-4 font-bold text-blue-600 hover:bg-blue-200"
           >
-            Good
+            Tốt
           </button>
 
           <button
             onClick={() => handleReview(QUALITY.EASY)}
-            className="rounded-lg bg-green-100 p-3 font-bold text-green-600 hover:bg-green-200"
+            className="rounded-xl bg-green-100 p-4 font-bold text-green-600 hover:bg-green-200"
           >
-            Easy
+            Dễ
           </button>
         </div>
       )}
 
       {/* Hint */}
       {!isFlipped && (
-        <p className="mt-6 animate-bounce text-slate-400">
-          Chạm vào thẻ để xem đáp án
-        </p>
+        <p className="mt-6 animate-pulse text-slate-400">Click để lật thẻ</p>
       )}
     </div>
   );

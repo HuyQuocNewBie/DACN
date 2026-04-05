@@ -6,10 +6,13 @@ import toast from 'react-hot-toast';
 const DeckList = () => {
   const [decks, setDecks] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // State cho Modal và Form
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newDeck, setNewDeck] = useState({ title: '', description: '', is_public: false });
+  const [newDeck, setNewDeck] = useState({
+    title: '',
+    description: '',
+    is_public: false,
+  });
   const [submitting, setSubmitting] = useState(false);
 
   const fetchDecks = async () => {
@@ -17,7 +20,7 @@ const DeckList = () => {
       const data = await deckApi.getAll();
       setDecks(data);
     } catch (error) {
-      console.error("Không thể tải danh sách bộ thẻ", error);
+      console.error('Không thể tải danh sách bộ thẻ', error);
     } finally {
       setLoading(false);
     }
@@ -29,18 +32,17 @@ const DeckList = () => {
 
   const handleCreateDeck = async (e) => {
     e.preventDefault();
-    if (!newDeck.title.trim()) return toast.error("Vui lòng nhập tên bộ thẻ");
+    if (!newDeck.title.trim()) return toast.error('Vui lòng nhập tên bộ thẻ');
 
     setSubmitting(true);
     try {
       await deckApi.create(newDeck);
-      toast.success("Tạo bộ thẻ thành công!");
-      setIsModalOpen(false); // Đóng modal
-      setNewDeck({ title: '', description: '', is_public: false }); // Reset form
-      fetchDecks(); // Tải lại danh sách
-    } catch (error) {
-      console.error("Lỗi khi tạo bộ thẻ:", error);
-      toast.error("Không thể tạo bộ thẻ. Vui lòng thử lại!");
+      toast.success('Tạo bộ thẻ thành công!');
+      setIsModalOpen(false);
+      setNewDeck({ title: '', description: '', is_public: false });
+      fetchDecks();
+    } catch {
+      toast.error('Không thể tạo bộ thẻ!');
     } finally {
       setSubmitting(false);
     }
@@ -49,30 +51,75 @@ const DeckList = () => {
   if (loading) return <div className="p-6">Đang tải dữ liệu...</div>;
 
   return (
-    <div className="p-6 relative">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Bộ thẻ của tôi</h1>
-        <button 
+    <div className="mx-auto w-full max-w-7xl p-6 md:p-10">
+      {/* HEADER */}
+      <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div>
+          <h1 className="font-headline text-on-surface text-4xl font-extrabold">
+            Bộ thẻ của tôi
+          </h1>
+          <p className="text-on-surface-variant mt-1">
+            Khám phá và chinh phục kiến thức mỗi ngày 🚀
+          </p>
+        </div>
+
+        <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition shadow-lg shadow-primary/20"
+          className="bg-primary shadow-primary/20 flex items-center gap-2 rounded-xl px-6 py-3 font-bold text-white shadow-lg transition hover:-translate-y-1"
         >
-          + Tạo bộ thẻ mới
+          <span className="material-symbols-outlined">add</span>
+          Tạo bộ thẻ
         </button>
       </div>
 
-      {/* RENDER DANH SÁCH BỘ THẺ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* GRID */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* ADD CARD */}
+        <div
+          onClick={() => setIsModalOpen(true)}
+          className="group border-outline-variant hover:border-primary hover:bg-primary/5 flex min-h-55t cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 transition"
+        >
+          <div className="bg-surface-container group-hover:bg-primary/10 flex h-16 w-16 items-center justify-center rounded-full transition">
+            <span className="material-symbols-outlined text-outline-variant group-hover:text-primary text-4xl">
+              add_circle
+            </span>
+          </div>
+          <span className="text-on-surface-variant group-hover:text-primary mt-4 font-bold">
+            Thêm bộ thẻ mới
+          </span>
+        </div>
+
+        {/* DECK LIST */}
         {decks.map((deck) => (
-          <div key={deck.deck_id} className="bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition group">
-            <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">{deck.title}</h3>
-            <p className="text-slate-500 text-sm mb-4 line-clamp-2 h-10">{deck.description || "Không có mô tả"}</p>
-            <div className="flex justify-between items-center border-t pt-4">
-              <span className="text-xs font-medium px-2 py-1 bg-primary/5 rounded text-primary">
-                {deck.card_count || 0} thẻ
-              </span>
-              <Link 
+          <div
+            key={deck.deck_id}
+            className="bg-surface-container-lowest flex flex-col justify-between rounded-xl p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div>
+              <div className="mb-4 flex items-start justify-between">
+                <div className="bg-primary-fixed text-primary flex h-12 w-12 items-center justify-center rounded-lg">
+                  <span className="material-symbols-outlined">style</span>
+                </div>
+
+                <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-[10px] font-bold">
+                  {deck.card_count || 0} thẻ
+                </span>
+              </div>
+
+              <h3 className="font-headline text-on-surface mb-1 text-xl font-bold">
+                {deck.title}
+              </h3>
+
+              <p className="text-on-surface-variant mb-6 line-clamp-2 text-sm">
+                {deck.description || 'Không có mô tả'}
+              </p>
+            </div>
+
+            {/* ACTION */}
+            <div className="border-outline-variant/30 border-t pt-4">
+              <Link
                 to={`/decks/${deck.deck_id}`}
-                className="text-slate-600 font-medium text-sm hover:text-primary transition"
+                className="text-primary flex items-center gap-1 text-sm font-bold hover:underline"
               >
                 Quản lý thẻ →
               </Link>
@@ -80,65 +127,90 @@ const DeckList = () => {
           </div>
         ))}
       </div>
-      
+
+      {/* EMPTY */}
       {decks.length === 0 && (
-        <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-slate-200">
-          <p className="text-slate-400">Bạn chưa có bộ thẻ nào. Hãy tạo cái đầu tiên nhé!</p>
+        <div className="border-outline-variant mt-10 rounded-xl border-2 border-dashed py-20 text-center">
+          <p className="text-on-surface-variant">Bạn chưa có bộ thẻ nào 😢</p>
         </div>
       )}
 
-      {/* MODAL TẠO BỘ THẺ MỚI */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b">
-              <h2 className="text-xl font-bold text-slate-800">Tạo bộ thẻ mới</h2>
-            </div>
-            
-            <form onSubmit={handleCreateDeck} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Tên bộ thẻ *</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Ví dụ: Tiếng Anh chuyên ngành"
-                  className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
-                  value={newDeck.title}
-                  onChange={(e) => setNewDeck({...newDeck, title: e.target.value})}
-                />
-              </div>
+      {/* MODAL */}
+{isModalOpen && (
+  <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+    
+    <div className="bg-surface-container-lowest w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden ring-1 ring-black/5">
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Mô tả (không bắt buộc)</label>
-                <textarea 
-                  rows="3"
-                  placeholder="Mô tả ngắn gọn về bộ thẻ này..."
-                  className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition"
-                  value={newDeck.description}
-                  onChange={(e) => setNewDeck({...newDeck, description: e.target.value})}
-                />
-              </div>
+      <div className="p-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-extrabold text-on-surface font-headline">
+            Thêm bộ thẻ mới
+          </h2>
 
-              <div className="flex gap-3 pt-4">
-                <button 
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-2 rounded-xl bg-slate-100 text-slate-600 font-semibold hover:bg-slate-200 transition"
-                >
-                  Hủy
-                </button>
-                <button 
-                  type="submit"
-                  disabled={submitting}
-                  className="flex-1 px-4 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition disabled:opacity-50"
-                >
-                  {submitting ? "Đang tạo..." : "Tạo ngay"}
-                </button>
-              </div>
-            </form>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="text-on-surface-variant hover:text-error"
+          >
+            ✕
+          </button>
+        </div>
+
+        <form onSubmit={handleCreateDeck} className="space-y-6">
+
+          <div>
+            <label className="text-sm font-bold text-on-surface">
+              Tên bộ thẻ *
+            </label>
+            <input
+              className="w-full bg-surface-container-low rounded-xl py-4 px-5 mt-1 focus:ring-2 focus:ring-primary/20 outline-none"
+              placeholder="vd: 1000 từ TOEIC"
+              value={newDeck.title}
+              onChange={(e) =>
+                setNewDeck({ ...newDeck, title: e.target.value })
+              }
+            />
           </div>
-        </div>
-      )}
+
+          <div>
+            <label className="text-sm font-bold text-on-surface">
+              Mô tả
+            </label>
+            <textarea
+              rows="4"
+              className="w-full bg-surface-container-low rounded-xl py-4 px-5 mt-1 focus:ring-2 focus:ring-primary/20 outline-none"
+              placeholder="Mô tả ngắn..."
+              value={newDeck.description}
+              onChange={(e) =>
+                setNewDeck({ ...newDeck, description: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 py-4 rounded-xl bg-surface-container font-bold text-on-surface-variant"
+            >
+              Hủy
+            </button>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex-2 py-4 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20"
+            >
+              {submitting ? "Đang tạo..." : "Lưu"}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Gradient footer */}
+      <div className="h-1 w-full bg-linear-to-r from-primary to-primary-container"></div>
+    </div>
+  </div>
+)}
     </div>
   );
 };

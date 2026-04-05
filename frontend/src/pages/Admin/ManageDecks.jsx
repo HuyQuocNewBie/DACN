@@ -1,74 +1,53 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
+const FILTERS = [
+  { key: 'all', label: 'Tất cả' },
+  { key: 'public', label: 'Công khai' },
+  { key: 'private', label: 'Riêng tư' },
+];
+
 const ManageDecks = () => {
   const [decks, setDecks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // all, public, private
-
-  const fetchDecks = async () => {
-    setLoading(true);
-    try {
-      // 👉 Khi có backend thật thì dùng:
-      // const res = await adminApi.getAllDecks();
-      // setDecks(res.data);
-
-      // 👉 Mock data tạm để test UI
-      const mockDecks = [
-        {
-          id: 101,
-          title: 'Tiếng Anh Giao Tiếp cơ bản',
-          creator: 'Nguyễn Văn A',
-          cardCount: 50,
-          isPublic: true,
-          createdAt: '2026-03-01',
-        },
-        {
-          id: 102,
-          title: 'Từ vựng N3 Nhật Ngữ',
-          creator: 'Trần Thị B',
-          cardCount: 120,
-          isPublic: false,
-          createdAt: '2026-03-05',
-        },
-        {
-          id: 103,
-          title: 'Lập trình ReactJS từ A-Z',
-          creator: 'Lê Văn C',
-          cardCount: 35,
-          isPublic: true,
-          createdAt: '2026-03-10',
-        },
-      ];
-
-      setDecks(mockDecks);
-    } catch (error) {
-      console.error(error);
-      toast.error('Không thể tải danh sách bộ thẻ');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
+    const fetchDecks = async () => {
+      try {
+        setDecks([
+          {
+            id: 101,
+            title: 'Tiếng Anh Giao Tiếp cơ bản',
+            creator: 'Nguyễn Văn A',
+            cardCount: 50,
+            isPublic: true,
+            createdAt: '2026-03-01',
+          },
+          {
+            id: 102,
+            title: 'Từ vựng N3 Nhật Ngữ',
+            creator: 'Trần Thị B',
+            cardCount: 120,
+            isPublic: false,
+            createdAt: '2026-03-05',
+          },
+        ]);
+      } catch {
+        toast.error('Không thể tải bộ thẻ');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchDecks();
   }, []);
 
-  const handleDeleteDeck = async (deckId) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa bộ thẻ này? Hành động này không thể hoàn tác.')) {
-      try {
-        // 👉 Backend thật:
-        // await adminApi.deleteDeck(deckId);
+  const handleDeleteDeck = (id) => {
+    if (!window.confirm('Xóa bộ thẻ này?')) return;
 
-        // Update UI
-        setDecks((prev) => prev.filter((d) => d.id !== deckId));
-
-        toast.success('Đã xóa bộ thẻ vi phạm');
-      } catch (error) {
-        console.error(error);
-        toast.error('Xóa thất bại');
-      }
-    }
+    setDecks((prev) => prev.filter((d) => d.id !== id));
+    toast.success('Đã xóa bộ thẻ');
   };
 
   const filteredDecks = decks.filter((deck) => {
@@ -78,81 +57,98 @@ const ManageDecks = () => {
   });
 
   if (loading) {
-    return <div className="p-6 text-center">Đang tải danh sách bộ thẻ...</div>;
+    return <div className="p-10 text-center">Đang tải...</div>;
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
+    <div className="space-y-8">
+
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Kiểm duyệt bộ thẻ</h1>
-          <p className="text-slate-500 text-sm">
-            Quản lý nội dung học tập trên toàn hệ thống
+          <h1 className="text-3xl font-extrabold">
+            Bộ thẻ
+          </h1>
+          <p className="text-on-surface-variant text-sm">
+            Kiểm duyệt nội dung học tập
           </p>
         </div>
 
-        <select
-          className="px-4 py-2 border rounded-xl outline-none bg-white shadow-sm"
-          onChange={(e) => setFilter(e.target.value)}
-          value={filter}
-        >
-          <option value="all">Tất cả bộ thẻ</option>
-          <option value="public">Chỉ bộ thẻ Công khai</option>
-          <option value="private">Chỉ bộ thẻ Riêng tư</option>
-        </select>
+        {/* FILTER */}
+        <div className="flex gap-2 bg-surface-container-low p-1 rounded-xl">
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-4 py-1.5 text-sm font-semibold rounded-lg transition ${
+                filter === f.key
+                  ? 'bg-primary text-white shadow'
+                  : 'text-on-surface-variant hover:bg-surface-container'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-slate-50 border-b border-slate-100">
+      {/* TABLE */}
+      <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden">
+
+        <table className="w-full text-sm">
+          <thead className="bg-surface-container-low text-xs uppercase text-on-surface-variant">
             <tr>
-              <th className="p-4 font-semibold text-slate-600 text-sm">Bộ thẻ</th>
-              <th className="p-4 font-semibold text-slate-600 text-sm">Người tạo</th>
-              <th className="p-4 font-semibold text-slate-600 text-sm text-center">
-                Số thẻ
-              </th>
-              <th className="p-4 font-semibold text-slate-600 text-sm">Chế độ</th>
-              <th className="p-4 font-semibold text-slate-600 text-sm text-right">
-                Thao tác
-              </th>
+              <th className="px-6 py-4 text-left">Bộ thẻ</th>
+              <th className="px-6 py-4">Người tạo</th>
+              <th className="px-6 py-4 text-center">Số thẻ</th>
+              <th className="px-6 py-4 text-center">Trạng thái</th>
+              <th className="px-6 py-4 text-right">Hành động</th>
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-slate-50">
+          <tbody>
             {filteredDecks.map((deck) => (
-              <tr key={deck.id} className="hover:bg-slate-50/50 transition">
-                <td className="p-4 font-medium text-slate-800">{deck.title}</td>
+              <tr
+                key={deck.id}
+                className="hover:bg-surface-container-low transition"
+              >
+                {/* TITLE */}
+                <td className="px-6 py-4 font-semibold">
+                  {deck.title}
+                </td>
 
-                <td className="p-4 text-sm text-slate-600">
+                {/* CREATOR */}
+                <td className="px-6 py-4 text-on-surface-variant">
                   {deck.creator}
                 </td>
 
-                <td className="p-4 text-center text-sm font-bold text-primary">
+                {/* COUNT */}
+                <td className="px-6 py-4 text-center font-bold text-primary">
                   {deck.cardCount}
                 </td>
 
-                <td className="p-4">
+                {/* STATUS */}
+                <td className="px-6 py-4 text-center">
                   <span
-                    className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${
                       deck.isPublic
                         ? 'bg-emerald-100 text-emerald-600'
-                        : 'bg-slate-100 text-slate-500'
+                        : 'bg-surface-container text-on-surface-variant'
                     }`}
                   >
-                    {deck.isPublic ? 'Công khai' : 'Riêng tư'}
+                    {deck.isPublic ? 'Public' : 'Private'}
                   </span>
                 </td>
 
-                <td className="p-4 text-right">
-                  <button className="text-blue-500 hover:underline text-sm mr-4">
-                    Xem chi tiết
+                {/* ACTION */}
+                <td className="px-6 py-4 text-right space-x-2">
+                  <button className="px-3 py-1 text-sm rounded-lg hover:bg-surface-container transition">
+                    Xem
                   </button>
 
                   <button
                     onClick={() => handleDeleteDeck(deck.id)}
-                    className="text-red-500 hover:bg-red-50 px-3 py-1 rounded-lg text-sm font-semibold transition"
+                    className="px-3 py-1 text-sm font-semibold text-red-500 rounded-lg hover:bg-red-50 transition"
                   >
                     Xóa
                   </button>
@@ -163,8 +159,8 @@ const ManageDecks = () => {
         </table>
 
         {filteredDecks.length === 0 && (
-          <div className="p-10 text-center text-slate-400 italic">
-            Không có bộ thẻ nào được tìm thấy.
+          <div className="p-10 text-center text-on-surface-variant">
+            Không có bộ thẻ
           </div>
         )}
       </div>
