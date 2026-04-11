@@ -1,102 +1,84 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import authApi from '../../api/auth.api';
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ fullname: '', email: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      await toast.promise(authApi.register(formData), {
-        loading: 'Đang tạo tài khoản...',
-        success: 'Đăng ký thành công! Hãy đăng nhập.',
-        error: (err) =>
-          `Lỗi: ${err.response?.data?.message || 'Email đã tồn tại'}`,
+      // CHÚ Ý: Chỉnh sửa lại đường dẫn localhost này cho đúng với máy tính XAMPP của bạn
+      const res = await fetch("http://localhost:8000/api/auth/register.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
       });
-      navigate('/login');
-    } catch {
-      /* Toast đã xử lý */
+      const data = await res.json();
+
+      if (res.ok || res.status === 201) {
+        toast.success(data.message || "Đăng ký thành công! Hãy Đăng nhập.");
+        navigate('/login');
+      } else {
+        toast.error(data.message || "Lỗi đăng ký");
+      }
+    } catch (error) {
+      toast.error("Không kết nối được Backend: Nhớ bật XAMPP lên nhé!");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const inputClass =
-    'w-full px-4 py-3 bg-[#f3f4f5] border-none rounded-lg focus:ring-2 focus:ring-[#0058be]/20 text-[#191c1d] placeholder:text-[#c2c6d6] transition-all';
-  const labelClass =
-    'block text-[10px] font-bold uppercase tracking-wider text-[#424754] ml-1';
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Name Field */}
-      <div className="space-y-1.5">
-        <label className={labelClass}>Họ và tên</label>
-        <input
-          type="text"
-          placeholder="Nguyễn Văn A"
-          className={inputClass}
-          required
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-        />
-      </div>
-
-      {/* Email Field */}
-      <div className="space-y-1.5">
-        <label className={labelClass}>Email</label>
-        <input
-          type="email"
-          placeholder="name@example.com"
-          className={inputClass}
-          required
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-        />
-      </div>
-
-      {/* Password Field */}
-      <div className="space-y-1.5">
-        <label className={labelClass}>Mật khẩu</label>
-        <div className="relative">
-          <input
-            type={showPassword ? 'text' : 'password'}
-            placeholder="••••••••"
-            className={inputClass}
-            required
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-          />
-
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-1/2 right-3 -translate-y-1/2"
-          >
-            {showPassword ? (
-              <MdVisibilityOff className="text-xl text-[#c2c6d6] hover:text-[#191c1d]" />
-            ) : (
-              <MdVisibility className="text-xl text-[#c2c6d6] hover:text-[#191c1d]" />
-            )}
-          </button>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-50 px-4">
+      <div className="max-w-md w-full bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/40">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-extrabold text-slate-800">Tạo tài khoản mới</h2>
+          <p className="text-sm text-slate-500 mt-2">Ghi nhớ kiến thức hiệu quả hơn mỗi ngày</p>
         </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Họ và Tên</label>
+            <input 
+              type="text" name="fullname" required
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all duration-300 bg-slate-50 focus:bg-white"
+              placeholder="VD: Nguyễn Văn A"
+              onChange={(e) => setFormData({...formData, fullname: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <input 
+              type="email" name="email" required
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300 bg-slate-50 focus:bg-white"
+              placeholder="email@example.com"
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Mật khẩu</label>
+            <input 
+              type="password" name="password" required
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all duration-300 bg-slate-50 focus:bg-white"
+              placeholder="••••••••"
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+            />
+          </div>
+          <button 
+            type="submit" disabled={loading}
+            className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg transform transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-70"
+          >
+            {loading ? "Đang xử lý..." : "Đăng Ký Ngay"}
+          </button>
+        </form>
+        <p className="mt-6 text-center text-sm text-slate-600">
+          Đã có tài khoản? <Link to="/login" className="text-blue-600 hover:text-blue-800 font-semibold underline">Đăng nhập</Link>
+        </p>
       </div>
-
-      {/* Terms Agreement (Optional but looks professional) */}
-      <p className="px-1 text-[11px] text-[#424754] italic">
-        Bằng cách đăng ký, bạn đồng ý với các điều khoản dịch vụ của chúng tôi.
-      </p>
-
-      {/* Action Button */}
-      <button className="w-full rounded-lg bg-linear-to-r from-[#006c49] to-[#4edea3] py-4 font-bold text-white shadow-[0_8px_16px_-4px_rgba(0,108,73,0.3)] transition-all hover:opacity-90 active:scale-[0.98]">
-        Tạo tài khoản ngay
-      </button>
-    </form>
+    </div>
   );
 };
 
