@@ -3,12 +3,28 @@
 DACN
 ├─ backend
 │  ├─ api
-│  │  └─ auth
-│  │     ├─ login.php
-│  │     └─ register.php
+│  │  ├─ auth
+│  │  │  ├─ login.php
+│  │  │  └─ register.php
+│  │  ├─ cards
+│  │  │  ├─ create.php
+│  │  │  ├─ delete.php
+│  │  │  ├─ read.php
+│  │  │  └─ update.php
+│  │  ├─ decks
+│  │  │  ├─ clone.php
+│  │  │  ├─ create.php
+│  │  │  ├─ read.php
+│  │  │  └─ read_public.php
+│  │  └─ review
+│  │     ├─ get_due_cards.php
+│  │     └─ update_progress.php
 │  ├─ config
+│  │  ├─ jwt_helper.php
 │  │  └─ test.php
 │  └─ models
+│     ├─ Card.php
+│     ├─ Deck.php
 │     └─ User.php
 ├─ frontend
 │  ├─ .prettierrc
@@ -32,7 +48,6 @@ DACN
 │  │  │  ├─ review.api.js
 │  │  │  └─ user.api.js
 │  │  ├─ App.jsx
-│  │  ├─ assets
 │  │  ├─ components
 │  │  │  ├─ card
 │  │  │  │  ├─ CardForm.jsx
@@ -60,7 +75,6 @@ DACN
 │  │  ├─ index.css
 │  │  ├─ layouts
 │  │  │  ├─ AdminLayout.jsx
-│  │  │  ├─ AuthLayout.jsx
 │  │  │  └─ MainLayout.jsx
 │  │  ├─ main.jsx
 │  │  ├─ pages
@@ -78,6 +92,7 @@ DACN
 │  │  │  │  └─ DeckList.jsx
 │  │  │  ├─ Explore
 │  │  │  │  └─ ExplorePage.jsx
+│  │  │  ├─ LandingPage.jsx
 │  │  │  ├─ NotFound.jsx
 │  │  │  ├─ Profile
 │  │  │  │  └─ Profile.jsx
