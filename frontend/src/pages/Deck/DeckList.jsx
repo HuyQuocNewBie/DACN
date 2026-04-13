@@ -105,7 +105,7 @@ const DeckList = () => {
         {/* LIST DECKS */}
         {filteredDecks.map((deck) => (
           <div
-            key={deck.deck_id}
+            key={deck.id}
             className="group bg-white rounded-4xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-500 p-8 flex flex-col h-full relative overflow-hidden"
           >
             {/* Trang trí background card */}
@@ -121,7 +121,7 @@ const DeckList = () => {
                   {deck.is_public ? 'Công khai' : 'Riêng tư'}
                 </span>
                 <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1.5 rounded-xl uppercase tracking-widest">
-                  {deck.card_count || 0} Cards
+                  {deck.cards_count || 0} Cards
                 </span>
               </div>
 
@@ -136,7 +136,7 @@ const DeckList = () => {
 
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-50 relative z-10">
               <Link
-                to={`/decks/${deck.deck_id}`}
+                to={`/decks/${deck.id}`}
                 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-900 hover:text-primary transition-colors"
               >
                 Chi tiết bộ thẻ
