@@ -1,25 +1,24 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import Loading from '../../components/common/Loading'; // ✅ thêm dòng này
+import Loading from '../../components/common/Loading';
+import deckApi from '../../api/deck.api';
 
 const ExplorePage = () => {
   const [publicDecks, setPublicDecks] = useState([]);
+  const navigate = useNavigate();
+  const [cloningId, setCloningId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchPublicDecks = useCallback(async () => {
     setLoading(true);
     try {
-      const mockData = [
-        { id: 1, title: 'Tiếng Anh chuyên ngành IT', author: 'Phi Hùng', cards: 120, category: 'Ngoại ngữ', downloads: 85 },
-        { id: 2, title: 'Lịch sử Đảng Cộng Sản', author: 'Minh Anh', cards: 45, category: 'Chính trị', downloads: 120 },
-        { id: 3, title: 'React Hooks căn bản', author: 'Dev Master', cards: 30, category: 'Lập trình', downloads: 50 },
-        { id: 4, title: 'Từ vựng N3 Nhật Ngữ', author: 'Yuki', cards: 200, category: 'Ngoại ngữ', downloads: 300 },
-      ];
+      const data = await deckApi.getPublic();
 
-      const filtered = mockData.filter(d =>
+      const filtered = data.filter(d =>
         d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        d.category.toLowerCase().includes(searchQuery.toLowerCase())
+        (d.description || '').toLowerCase().includes(searchQuery.toLowerCase())
       );
 
       setPublicDecks(filtered);
@@ -34,11 +33,27 @@ const ExplorePage = () => {
     fetchPublicDecks();
   }, [fetchPublicDecks]);
 
-  const handleDownload = async() => {
+  const handleDownload = async(deckId) => {
+    if (cloningId) return;
+    setCloningId(deckId);
+    
+    // Khởi tạo tiến trình copy Transaction
+    const clonePromise = deckApi.clone(deckId);
+    
+    // Giao diện Toast Loading cực xịn chờ đợi Backend copy
+    toast.promise(clonePromise, {
+      loading: 'Đang tải bộ thẻ về kho...',
+      success: '🎉 Tải về thành công! Bạn có thể học ngay bây giờ.',
+      error: 'Tải bộ thẻ thất bại. Vui lòng thử lại.'
+    });
+
     try {
-      toast.success("Đã sao chép bộ thẻ vào thư viện của bạn!");
+      await clonePromise;
+      setTimeout(() => navigate('/decks'), 1500); // Chở về nhà kho để bóc tem học luôn
     } catch {
-      toast.error("Lỗi khi tải bộ thẻ");
+      // lỗi đã có toast.promise lo
+    } finally {
+      setCloningId(null);
     }
   };
 
@@ -88,12 +103,12 @@ const ExplorePage = () => {
 
             <div className="flex-1 relative z-10">
               <div className="flex justify-between items-start mb-6">
-                <span className="text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-xl border-2 bg-slate-50 text-slate-400 border-slate-100">
-                  {deck.category}
+                <span className="text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-xl border-2 bg-emerald-50 text-emerald-500 border-emerald-100">
+                  Cộng Đồng
                 </span>
 
                 <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1.5 rounded-xl uppercase tracking-widest">
-                  📥 {deck.downloads}
+                  Miễn phí
                 </span>
               </div>
 
@@ -103,23 +118,24 @@ const ExplorePage = () => {
 
               <p className="text-sm text-slate-400 font-medium italic flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">👤</span>
-                Tác giả: {deck.author}
+                {deck.author_name}
               </p>
             </div>
 
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-50 relative z-10">
               <div className="flex flex-col">
-                <span className="text-xl font-black text-slate-800">{deck.cards}</span>
+                <span className="text-xl font-black text-slate-800">{deck.cards_count || 0}</span>
                 <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">
-                  Cards
+                  Thẻ Nhớ
                 </span>
               </div>
 
               <button
                 onClick={() => handleDownload(deck.id)}
-                className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-slate-200 hover:shadow-primary/30 active:scale-95"
+                disabled={cloningId === deck.id}
+                className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-slate-200 hover:shadow-primary/30 active:scale-95 disabled:opacity-50"
               >
-                Tải về
+                {cloningId === deck.id ? 'Đang sao chép' : 'Tải về'}
               </button>
             </div>
           </div>
