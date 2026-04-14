@@ -4,18 +4,18 @@ const authApi = {
   // ================= LOGIN =================
   login: async (data) => {
     // -------- BACKDOOR LOGIN (Dùng cho môi trường dev) --------
-    const ADMIN_EMAIL = "test@gmail.com";
-    const ADMIN_PASS = "123456";
+    const ADMIN_EMAIL = 'test@gmail.com';
+    const ADMIN_PASS = '123456';
 
     if (data.email === ADMIN_EMAIL && data.password === ADMIN_PASS) {
       const fakeResponse = {
         user: {
           id: 99,
-          fullname: "Nguyễn Hoàng Phi Hùng",
+          fullname: 'Nguyễn Hoàng Phi Hùng',
           email: ADMIN_EMAIL,
-          role: "admin",
+          role: 'admin',
         },
-        token: "fake-jwt-token-2026-backdoor",
+        token: 'fake-jwt-token-2026-backdoor',
       };
       localStorage.setItem('sr_token', fakeResponse.token);
       localStorage.setItem('sr_user', JSON.stringify(fakeResponse.user));
@@ -26,11 +26,14 @@ const authApi = {
     const res = await axiosClient.post('/auth/login.php', data);
     if (res?.token) {
       localStorage.setItem('sr_token', res.token);
-      localStorage.setItem('sr_user', JSON.stringify({ 
-        role: res.role, 
-        fullname: res.fullname,
-        email: data.email // Lưu email để dùng cho profile
-      }));
+      localStorage.setItem(
+        'sr_user',
+        JSON.stringify({
+          role: res.role,
+          username: res.username,
+          email: data.email, // Lưu email để dùng cho profile
+        })
+      );
     }
     return res;
   },
@@ -43,8 +46,8 @@ const authApi = {
 
   // ================= UPDATE PROFILE =================
   updateProfile: (data) => {
-    // data: { email, fullname }
-    return axiosClient.post('/auth/update_profile.php', data);
+    // data: { username, password }
+    return axiosClient.post('/user/update_profile.php', data);
   },
 
   // ================= LOGOUT =================
