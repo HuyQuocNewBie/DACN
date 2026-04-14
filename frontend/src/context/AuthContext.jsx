@@ -4,9 +4,9 @@ import authApi from '../api/auth.api';
 // 1. Chuyển export này thành bình thường (không export ra ngoài nữa)
 const AuthContext = createContext();
 
-// Để các file khác dùng được Context, ta vẫn cần export nó hoặc dùng export này 
+// Để các file khác dùng được Context, ta vẫn cần export nó hoặc dùng export này
 // nhưng để tránh lỗi Fast Refresh, tốt nhất là export Hook riêng (Bước 1.1 bên dưới)
-export { AuthContext }; 
+export { AuthContext };
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -28,19 +28,31 @@ export const AuthProvider = ({ children }) => {
     checkLogin();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('sr_user', JSON.stringify(user));
+    }
+  }, [user]);
+
   const login = async (credentials) => {
     const res = await authApi.login(credentials);
-    setUser({ role: res.role, fullname: res.fullname });
+    const loggedUser = {
+      role: res.role,
+      username: res.username || res.fullname,
+      email: credentials.email,
+    };
+    setUser(loggedUser);
     return res;
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('sr_token');
+    localStorage.removeItem('sr_user');
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
