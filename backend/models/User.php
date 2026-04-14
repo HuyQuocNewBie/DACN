@@ -1,21 +1,25 @@
 <?php
-class User {
+class User
+{
     private $conn;
     private $table_name = "users";
 
     public $id;
-    public $fullname;
+    public $username;
     public $email;
     public $password_hash;
     public $role;
+    public $status;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
     // Kiem tra xem email ton tai khong
-    public function emailExists() {
-        $query = "SELECT id, fullname, password_hash, role
+    public function emailExists()
+    {
+        $query = "SELECT id, username, password_hash, role, IFNULL(status, 'active') as status
                   FROM " . $this->table_name . "
                   WHERE email = ?
                   LIMIT 0,1";
@@ -28,34 +32,35 @@ class User {
         if ($num > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $this->id = $row['id'];
-            $this->fullname = $row['fullname'];
+            $this->username = $row['username'];
             $this->password_hash = $row['password_hash'];
             $this->role = $row['role'];
+            $this->status = $row['status'];
             return true;
         }
         return false;
     }
 
     // Them User moi
-    public function create() {
+    public function create()
+    {
         $query = "INSERT INTO " . $this->table_name . "
-                  SET fullname = :fullname, email = :email, password_hash = :password_hash";
-        
+                  SET username = :username, email = :email, password_hash = :password_hash";
+
         $stmt = $this->conn->prepare($query);
-        
+
         // Loai bo tag html (Chong script injection)
         $this->email = htmlspecialchars(strip_tags($this->email));
-        $this->fullname = htmlspecialchars(strip_tags($this->fullname));
-        
+        $this->username = htmlspecialchars(strip_tags($this->username));
+
         // Bind cac the
-        $stmt->bindParam(':fullname', $this->fullname);
+        $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':password_hash', $this->password_hash);
-        
+
         if ($stmt->execute()) {
             return true;
         }
         return false;
     }
 }
-?>
