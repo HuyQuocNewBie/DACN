@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 import reviewApi from '../../api/review.api';
 import Loading from '../../components/common/Loading';
-
-
+import Flashcard from '../../components/review/Flashcard';
 
 const QUALITY = {
   AGAIN: 0,
@@ -23,20 +22,19 @@ const ReviewPage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // ================= FETCH =================
+  // ================= FETCH DATA =================
   useEffect(() => {
     let mounted = true;
 
     const fetchCards = async () => {
       try {
         setLoading(true);
-        // Gọi API thật
         const data = await reviewApi.getDueCards(id);
         if (mounted) {
           setCards(data || []);
         }
       } catch {
-        toast.error("Lỗi lấy dữ liệu từ Backend.");
+        toast.error("Không thể lấy dữ liệu ôn tập.");
         if (mounted) setCards([]);
       } finally {
         if (mounted) setLoading(false);
@@ -47,16 +45,16 @@ const ReviewPage = () => {
     return () => (mounted = false);
   }, [id]);
 
-  // ================= REVIEW =================
-  const handleReview = async (quality) => {
+  // ================= LOGIC XỬ LÝ ÔN TẬP =================
+  const handleReview = useCallback(async (quality) => {
     const currentCard = cards[currentIndex];
     if (!currentCard) return;
 
     try {
-      // Giao toàn bộ việc tính toán não bộ cho PHP Backend (API truyền mỗi quality)
-      await reviewApi.updateCardProgress(currentCard.id, { quality })
-        .catch(() => console.log("Mock: Cập nhật tiến độ thành công (Local)"));
+      // Gửi đánh giá về Backend
+      await reviewApi.updateCardProgress(currentCard.id, { quality });
 
+      // Hiệu ứng chuyển thẻ mượt mà
       setIsFlipped(false);
 
       setTimeout(() => {
@@ -66,16 +64,54 @@ const ReviewPage = () => {
           toast.success('🎉 Tuyệt vời! Bạn đã hoàn thành mục tiêu hôm nay.');
           setTimeout(() => navigate('/dashboard'), 1500);
         }
-      }, 200);
+      }, 250); // Đợi flip ngược lại rồi mới đổi card
     } catch {
-      toast.error('Lỗi lưu tiến trình học');
+      toast.error('Lỗi khi lưu tiến trình học');
     }
-  };
+  }, [cards, currentIndex, navigate]);
 
-  // ================= LOADING =================
+  // ================= LẮNG NGHE BÀN PHÍM =================
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Không làm gì nếu đang loading hoặc hết thẻ
+      if (loading || cards.length === 0) return;
+
+      // Nhấn Space để lật thẻ
+      if (e.code === 'Space') {
+        e.preventDefault(); // Tránh scroll trang khi bấm Space
+        if (!isFlipped) {
+          setIsFlipped(true);
+        }
+      }
+
+      // Nhấn 1-4 để chọn mức độ khi thẻ ĐÃ LẬT
+      if (isFlipped) {
+        switch (e.key) {
+          case '1':
+            handleReview(QUALITY.AGAIN);
+            break;
+          case '2':
+            handleReview(QUALITY.HARD);
+            break;
+          case '3':
+            handleReview(QUALITY.GOOD);
+            break;
+          case '4':
+            handleReview(QUALITY.EASY);
+            break;
+          default:
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFlipped, loading, cards.length, handleReview]);
+
+  // ================= GIAO DIỆN CHỜ & TRỐNG =================
   if (loading) return <Loading />;
 
-  // ================= EMPTY STATE =================
   if (cards.length === 0) return (
     <div className="flex h-[60vh] flex-col items-center justify-center text-center">
       <div className="mb-6 text-6xl">🏆</div>
@@ -98,7 +134,7 @@ const ReviewPage = () => {
   return (
     <div className="mx-auto flex max-w-4xl flex-col items-center py-4">
       
-      {/* Progress Bar & Counter */}
+      {/* 1. Thanh Tiến Độ */}
       <div className="mb-10 w-full max-w-2xl px-4">
         <div className="mb-3 flex items-center justify-between text-sm font-bold">
           <span className="text-slate-400 uppercase tracking-widest text-[10px]">
@@ -116,82 +152,49 @@ const ReviewPage = () => {
         </div>
       </div>
 
-      {/* Flashcard */}
-      <div className="perspective w-full max-w-2xl px-4">
-        <div
-          onClick={() => !isFlipped && setIsFlipped(true)}
-          className={`relative h-80 w-full cursor-pointer transition-all duration-700 preserve-3d shadow-2xl rounded-3xl ${
-            isFlipped ? 'rotate-y-180' : 'hover:-translate-y-1'
-          }`}
-          style={{ transformStyle: 'preserve-3d' }}
-        >
-          {/* FRONT */}
-          <div 
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-3xl bg-white p-12 text-center border border-slate-100 shadow-sm"
-            style={{ backfaceVisibility: 'hidden' }}
-          >
-            <span className="absolute top-8 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-300">
-              CÂU HỎI
-            </span>
-            <h2 className="text-2xl md:text-3xl font-black text-slate-800 leading-tight">
-              {currentCard.front_content}
-            </h2>
-            <p className="absolute bottom-10 animate-bounce text-slate-400 text-xs font-medium">
-              Chạm để lật thẻ 👆
-            </p>
-          </div>
+      {/* 2. Component Flashcard */}
+      <Flashcard 
+        card={currentCard} 
+        isFlipped={isFlipped} 
+        onFlip={() => setIsFlipped(true)} 
+      />
 
-          {/* BACK */}
-          <div 
-            className="absolute inset-0 flex rotate-y-180 flex-col items-center justify-center rounded-3xl bg-slate-900 p-12 text-center text-white shadow-2xl overflow-hidden"
-            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-          >
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-primary opacity-50"></div>
-            <span className="absolute top-8 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
-              ĐÁP ÁN
-            </span>
-
-            <div className="flex-1 flex items-center justify-center">
-              <p className="text-lg md:text-xl leading-relaxed font-medium">
-                {currentCard.back_content}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* RATING */}
-      <div className="mt-12 w-full max-w-2xl px-4 min-h-20">
+      {/* 3. Khu vực Nút bấm Đánh giá */}
+      <div className="mt-10 w-full max-w-2xl px-4 min-h-20">
         {isFlipped ? (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
             <button
               onClick={() => handleReview(QUALITY.AGAIN)}
-              className="group flex flex-col items-center gap-1 rounded-2xl bg-red-50 p-4 transition-all hover:bg-red-100 border border-red-100 active:scale-95"
+              className="group relative flex flex-col items-center gap-1 rounded-2xl bg-red-50 p-4 transition-all hover:bg-red-100 border border-red-100 active:scale-95"
             >
+              <span className="absolute top-2 left-2 text-[9px] font-mono text-red-300 bg-red-100/50 px-1.5 rounded">[1]</span>
               <span className="text-xs font-black uppercase text-red-600">Lặp lại</span>
               <span className="text-[10px] text-red-400">&lt; 1 phút</span>
             </button>
 
             <button
               onClick={() => handleReview(QUALITY.HARD)}
-              className="group flex flex-col items-center gap-1 rounded-2xl bg-orange-50 p-4 transition-all hover:bg-orange-100 border border-orange-100 active:scale-95"
+              className="group relative flex flex-col items-center gap-1 rounded-2xl bg-orange-50 p-4 transition-all hover:bg-orange-100 border border-orange-100 active:scale-95"
             >
+              <span className="absolute top-2 left-2 text-[9px] font-mono text-orange-300 bg-orange-100/50 px-1.5 rounded">[2]</span>
               <span className="text-xs font-black uppercase text-orange-600">Khó</span>
               <span className="text-[10px] text-orange-400">2 ngày</span>
             </button>
 
             <button
               onClick={() => handleReview(QUALITY.GOOD)}
-              className="group flex flex-col items-center gap-1 rounded-2xl bg-indigo-50 p-4 transition-all hover:bg-indigo-100 border border-indigo-100 active:scale-95"
+              className="group relative flex flex-col items-center gap-1 rounded-2xl bg-indigo-50 p-4 transition-all hover:bg-indigo-100 border border-indigo-100 active:scale-95"
             >
+              <span className="absolute top-2 left-2 text-[9px] font-mono text-indigo-300 bg-indigo-100/50 px-1.5 rounded">[3]</span>
               <span className="text-xs font-black uppercase text-indigo-600">Tốt</span>
               <span className="text-[10px] text-indigo-400">4 ngày</span>
             </button>
 
             <button
               onClick={() => handleReview(QUALITY.EASY)}
-              className="group flex flex-col items-center gap-1 rounded-2xl bg-emerald-50 p-4 transition-all hover:bg-emerald-100 border border-emerald-100 active:scale-95"
+              className="group relative flex flex-col items-center gap-1 rounded-2xl bg-emerald-50 p-4 transition-all hover:bg-emerald-100 border border-emerald-100 active:scale-95"
             >
+              <span className="absolute top-2 left-2 text-[9px] font-mono text-emerald-300 bg-emerald-100/50 px-1.5 rounded">[4]</span>
               <span className="text-xs font-black uppercase text-emerald-600">Dễ</span>
               <span className="text-[10px] text-emerald-400">7 ngày</span>
             </button>
@@ -200,9 +203,10 @@ const ReviewPage = () => {
           <div className="flex justify-center">
             <button
               onClick={() => setIsFlipped(true)}
-              className="rounded-2xl bg-slate-900 px-12 py-4 font-black text-white shadow-xl transition-all hover:bg-primary active:scale-95 text-sm uppercase tracking-widest"
+              className="rounded-2xl bg-slate-900 px-12 py-4 font-black text-white shadow-xl transition-all hover:bg-primary active:scale-95 text-sm uppercase tracking-widest flex items-center gap-3"
             >
               Hiển thị đáp án
+              <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded font-mono hidden sm:inline-block">Space</span>
             </button>
           </div>
         )}
