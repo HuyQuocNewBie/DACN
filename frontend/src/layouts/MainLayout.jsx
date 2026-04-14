@@ -19,12 +19,10 @@ const MainLayout = () => {
     <div className="bg-slate-50 min-h-screen flex">
       <Sidebar />
 
-      {/* Main wrapper: Đảm bảo lùi lề trái md:ml-64 đồng nhất */}
       <div className="flex min-h-screen flex-1 flex-col md:ml-64 transition-all duration-300">
         <Header title={getTitle()} />
 
-        {/* Content Area: Dùng p-8 để giống hệt Admin Layout */}
-        <main className="flex-1 p-8 mt-20"> {/* mt-20 để bù cho h-20 của fixed header */}
+        <main className="flex-1 p-8 mt-20">
           <div className="mx-auto w-full max-w-7xl">
             <Outlet />
           </div>

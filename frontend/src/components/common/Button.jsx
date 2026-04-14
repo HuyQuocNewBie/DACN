@@ -1,4 +1,3 @@
-// src/components/common/Button.jsx
 const Button = ({ children, variant = 'primary', className = '', ...props }) => {
   const variants = {
     primary: 'bg-primary text-white hover:bg-blue-600',

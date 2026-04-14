@@ -5,19 +5,17 @@ import Loading from '../../components/common/Loading';
 import deckApi from '../../api/deck.api';
 
 const ExplorePage = () => {
-  const [allDecks, setAllDecks] = useState([]); // Lưu trữ toàn bộ dữ liệu từ API
+  const [allDecks, setAllDecks] = useState([]);
   const [cloningId, setCloningId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // --- LOGIC PHÂN TRANG ---
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Hiển thị 6 bộ thẻ mỗi trang cho cân đối Grid
+  const itemsPerPage = 6;
 
   const navigate = useNavigate();
   const isInitialMount = useRef(true);
 
-  // Hàm gọi API lấy danh sách
   const fetchPublicDecks = useCallback(async (isMounted) => {
     setLoading(true);
     try {
@@ -39,10 +37,11 @@ const ExplorePage = () => {
   useEffect(() => {
     let isMounted = true;
     fetchPublicDecks(isMounted);
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [fetchPublicDecks]);
 
-  // Xử lý lọc dữ liệu (Client-side Search)
   const filteredDecks = useMemo(() => {
     return allDecks.filter(
       (d) =>
@@ -51,7 +50,6 @@ const ExplorePage = () => {
     );
   }, [searchQuery, allDecks]);
 
-  // Tính toán dữ liệu hiển thị trên trang hiện tại
   const paginatedDecks = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredDecks.slice(startIndex, startIndex + itemsPerPage);
@@ -59,7 +57,6 @@ const ExplorePage = () => {
 
   const totalPages = Math.ceil(filteredDecks.length / itemsPerPage);
 
-  // Reset về trang 1 khi bắt đầu tìm kiếm
   useEffect(() => {
     if (!isInitialMount.current) {
       setCurrentPage(1);
@@ -88,7 +85,7 @@ const ExplorePage = () => {
       await clonePromise;
       setTimeout(() => navigate('/decks'), 1500);
     } catch {
-      // Error handled by toast.promise
+      // toast.promise
     } finally {
       setCloningId(null);
     }
@@ -100,7 +97,6 @@ const ExplorePage = () => {
 
   return (
     <div className="animate-in fade-in space-y-10 duration-500">
-      {/* HEADER */}
       <div className="relative flex flex-col justify-between gap-8 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm md:p-10 lg:flex-row lg:items-center">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl"></div>
@@ -129,7 +125,6 @@ const ExplorePage = () => {
         </div>
       </div>
 
-      {/* GRID */}
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
         {paginatedDecks.map((deck) => (
           <div
@@ -182,26 +177,25 @@ const ExplorePage = () => {
         ))}
       </div>
 
-      {/* PAGINATION CONTROLS */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-4">
           <button
             disabled={currentPage === 1}
-            onClick={() => setCurrentPage(prev => prev - 1)}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed active:scale-90"
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
           >
             ←
           </button>
-          
+
           <div className="flex gap-2">
             {[...Array(totalPages)].map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
                 className={`h-12 w-12 rounded-2xl text-xs font-black transition-all ${
-                  currentPage === i + 1 
-                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-200' 
-                  : 'bg-white border border-slate-100 text-slate-400 hover:bg-slate-50'
+                  currentPage === i + 1
+                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
+                    : 'border border-slate-100 bg-white text-slate-400 hover:bg-slate-50'
                 }`}
               >
                 {i + 1}
@@ -211,15 +205,14 @@ const ExplorePage = () => {
 
           <button
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(prev => prev + 1)}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed active:scale-90"
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
           >
             →
           </button>
         </div>
       )}
 
-      {/* EMPTY STATE */}
       {filteredDecks.length === 0 && !loading && (
         <div className="flex flex-col items-center rounded-[2.5rem] border border-dashed border-slate-200 bg-white py-24 text-center">
           <div className="mb-6 text-6xl opacity-20">🏜️</div>

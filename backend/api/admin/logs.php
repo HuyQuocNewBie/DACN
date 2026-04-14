@@ -13,7 +13,6 @@ include_once '../../config/database.php';
 include_once '../../config/jwt_helper.php';
 include_once '../../models/ReviewLog.php'; 
 
-// AUTH ADMIN
 $authHeader = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : '';
 $jwt = str_replace('Bearer ', '', $authHeader);
 $user_data = JWT::validate($jwt);

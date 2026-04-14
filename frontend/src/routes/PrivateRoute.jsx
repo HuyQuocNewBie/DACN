@@ -12,10 +12,8 @@ const PrivateRoute = ({ allowRoles }) => {
     );
   }
 
-  // SỬA TẠI ĐÂY: Nếu không có user -> về thẳng trang chủ Landing Page
   if (!user) return <Navigate to="/" replace />;
 
-  // Nếu có Role nhưng không khớp -> về dashboard mặc định
   if (allowRoles && !allowRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
   }

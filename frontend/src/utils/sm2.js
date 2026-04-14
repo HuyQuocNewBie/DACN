@@ -37,7 +37,6 @@ export const calculateSM2 = (
 
   if (nextEaseFactor < 1.3) nextEaseFactor = 1.3;
 
-  // ✅ Tính ngày ôn tiếp theo
   const nextReviewDate = new Date();
   nextReviewDate.setDate(nextReviewDate.getDate() + nextInterval);
 
@@ -45,6 +44,6 @@ export const calculateSM2 = (
     repetitions: nextRepetitions,
     interval_days: nextInterval,
     ease_factor: nextEaseFactor,
-    next_review_date: nextReviewDate.toISOString().split('T')[0], // YYYY-MM-DD
+    next_review_date: nextReviewDate.toISOString().split('T')[0],
   };
 };

@@ -1,4 +1,3 @@
-// src/components/common/Loading.jsx
 const Loading = ({ fullPage = false }) => {
   const spinner = (
     <div className="flex flex-col items-center gap-2">

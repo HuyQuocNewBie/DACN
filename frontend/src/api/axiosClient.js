@@ -7,7 +7,6 @@ const axiosClient = axios.create({
   },
 });
 
-// Can thiệp vào request trước khi gửi đi
 axiosClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('sr_token');
@@ -19,11 +18,9 @@ axiosClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Can thiệp vào response nhận về
 axiosClient.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    // Xử lý lỗi tập trung (ví dụ: token hết hạn)
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('sr_token');
       localStorage.removeItem('sr_user');

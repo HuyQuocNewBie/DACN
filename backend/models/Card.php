@@ -9,7 +9,6 @@ class Card {
     public $back_content;
     public $image_url;
     
-    // Thuật toán ghi chú SM-2 gắn kèm
     public $repetitions;
     public $ease_factor;
     public $review_interval;
@@ -19,7 +18,6 @@ class Card {
         $this->conn = $db;
     }
 
-    // Đọc tất cả thẻ Nằm trong 1 Bộ (Dùng cho Giao diện Chỉnh Thẻ hoặc Bắt đầu Học)
     public function readByDeck($deck_id) {
         $query = "SELECT id, front_content, back_content, image_url, repetitions, ease_factor, review_interval, next_review_date
                   FROM " . $this->table_name . "
@@ -33,7 +31,6 @@ class Card {
         return $stmt;
     }
 
-    // Tạo thẻ mới (Sinh viên vừa bấm Add ở Frontend)
     public function create() {
         $query = "INSERT INTO " . $this->table_name . "
                   SET deck_id=:deck_id, front_content=:front_content, back_content=:back_content, image_url=:image_url, next_review_date=CURRENT_DATE";
@@ -55,7 +52,6 @@ class Card {
         return false;
     }
 
-    // [SM-2 SYSTEM] Cập nhật mốc đánh dấu trí nhớ sau khi học xong 1 thẻ
     public function updateSM2Progress() {
         $query = "UPDATE " . $this->table_name . "
                   SET repetitions = :repetitions, 

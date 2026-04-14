@@ -34,10 +34,8 @@ const AdminLayout = () => {
   return (
     <div className="bg-slate-50 min-h-screen flex">
       
-      {/* SIDEBAR - Đã chuyển sang w-64 */}
       <aside className="fixed z-50 hidden h-screen w-64 flex-col bg-slate-900 text-white p-6 md:flex transition-all duration-300">
         
-        {/* LOGO ADMIN */}
         <div className="mb-10 flex items-center gap-4 px-2 py-5 bg-white/5 rounded-4xl border border-white/10 relative overflow-hidden">
           <div className="bg-primary h-12 w-12 flex items-center justify-center rounded-2xl shadow-lg shadow-primary/20 relative z-10">
             <span className="material-symbols-outlined text-white text-2xl">
@@ -52,7 +50,6 @@ const AdminLayout = () => {
           </div>
         </div>
 
-        {/* MENU */}
         <nav className="flex-1 space-y-2">
           <p className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">
             Quản trị hệ thống
@@ -80,7 +77,6 @@ const AdminLayout = () => {
           })}
         </nav>
 
-        {/* QUAY LẠI USER & LOGOUT */}
         <div className="mt-auto space-y-3 pt-6 border-t border-white/5">
           <Link
             to="/dashboard"
@@ -99,10 +95,8 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      {/* MAIN CONTENT Area - Đã chuyển sang md:ml-64 */}
       <main className="flex min-h-screen flex-1 flex-col md:ml-64 transition-all duration-300">
         
-        {/* HEADER - Glassmorphism */}
         <header className="sticky top-0 z-40 flex h-20 items-center justify-between px-8 bg-white/80 backdrop-blur-xl border-b border-slate-100">
           <div>
             <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-1">Hệ thống</p>
@@ -117,7 +111,6 @@ const AdminLayout = () => {
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary border-2 border-white rounded-full"></span>
             </button>
 
-            {/* Admin Avatar */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setOpen(!open)}
@@ -163,14 +156,12 @@ const AdminLayout = () => {
           </div>
         </header>
 
-        {/* CONTENT AREA */}
         <div className="flex-1 p-8">
           <div className="mx-auto w-full max-w-7xl">
             <Outlet />
           </div>
         </div>
 
-        {/* FOOTER - Đồng nhất lề với header */}
         <footer className="border-t border-slate-100 py-8 px-8 flex justify-between items-center bg-white/50">
             <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
                 © {new Date().getFullYear()} <span className="text-slate-500">Focused Admin Console</span>

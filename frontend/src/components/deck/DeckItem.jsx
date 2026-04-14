@@ -1,22 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-// import deckApi from '../../api/deck.api'; // Hãy đảm bảo bạn đã import deckApi
 
 const DeckItem = ({ deck, onDelete }) => {
-  // Giả sử deck.is_public là dữ liệu từ Backend (1: công khai, 0: riêng tư)
   const [isPublic, setIsPublic] = useState(deck.is_public === 1);
   const [isChanging, setIsChanging] = useState(false);
 
   const handleTogglePublic = async (e) => {
-    e.preventDefault(); // Ngăn chặn sự kiện click lan ra Link
+    e.preventDefault();
     setIsChanging(true);
     
     try {
       const newStatus = !isPublic;
-      // Gọi API thật của bạn ở đây:
-      // await deckApi.update(deck.id, { is_public: newStatus ? 1 : 0 });
-      
       setIsPublic(newStatus);
       toast.success(newStatus ? "Đã công khai bộ thẻ" : "Đã chuyển về riêng tư");
     } catch {
@@ -37,7 +32,6 @@ const DeckItem = ({ deck, onDelete }) => {
         </div>
         
         <div className="flex gap-2">
-          {/* NÚT CÔNG KHAI / RIÊNG TƯ MỚI */}
           <button
             onClick={handleTogglePublic}
             disabled={isChanging}
@@ -70,7 +64,6 @@ const DeckItem = ({ deck, onDelete }) => {
           <span className="text-xs font-medium px-2 py-1 bg-slate-100 text-slate-600 rounded-lg">
             {deck.cards_count} thẻ
           </span>
-          {/* Badge nhỏ hiển thị trạng thái bằng chữ nếu bạn muốn rõ ràng hơn */}
           {isPublic && (
             <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded">
               PUBLIC

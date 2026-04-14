@@ -7,7 +7,6 @@ class ReviewLog {
         $this->conn = $db;
     }
 
-    // Lấy 10 hoạt động ôn tập mới nhất cho Admin
     public function readRecent() {
         $query = "SELECT 
                     rl.id, 

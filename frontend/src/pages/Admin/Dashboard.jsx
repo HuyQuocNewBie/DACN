@@ -44,7 +44,6 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
-  // Logic phân trang nhật ký
   const totalPages = Math.ceil(logs.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -156,7 +155,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="animate-in fade-in space-y-10 pb-10 duration-500">
-      {/* 1. HEADER SECTION */}
       <header className="relative flex flex-col justify-between gap-6 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm md:flex-row md:items-end md:p-10">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl"></div>
@@ -181,7 +179,6 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      {/* 2. STATS GRID */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {statCards.map((item, index) => (
           <div
@@ -210,7 +207,6 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* 3. SYSTEM LOGS & INFO */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="flex min-h-125 flex-col rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm lg:col-span-8">
           <div className="mb-8 flex items-center justify-between">
@@ -274,7 +270,6 @@ const AdminDashboard = () => {
             )}
           </div>
 
-          {/* PAGINATION CONTROLS */}
           {logs.length > itemsPerPage && (
             <div className="mt-10 flex items-center justify-center gap-2">
               <button
@@ -321,7 +316,6 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        {/* NOTIFICATIONS PANEL */}
         <div className="relative flex min-h-125 flex-col justify-between overflow-hidden rounded-[2.5rem] bg-slate-900 p-10 text-white shadow-2xl lg:col-span-4">
           <div className="absolute top-0 right-0 -mt-32 -mr-32 h-64 w-64 rounded-full bg-indigo-500/10 blur-[100px]"></div>
           <div className="relative z-10">

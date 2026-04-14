@@ -14,12 +14,10 @@ export const validateEmail = (email) => {
 export const validatePassword = (password) => {
   if (!password) return { isValid: false, message: "Vui lòng nhập mật khẩu" };
   
-  // Độ dài 8-32
   if (password.length < 8 || password.length > 32) {
     return { isValid: false, message: "Mật khẩu phải từ 8 đến 32 ký tự!" };
   }
 
-  // Chữ cái + (Số hoặc Đặc biệt)
   const hasLetter = /[a-zA-Z]/.test(password);
   const hasNumOrSpec = /[0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
 

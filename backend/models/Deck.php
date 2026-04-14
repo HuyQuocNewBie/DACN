@@ -2,8 +2,6 @@
 class Deck {
     private $conn;
     private $table_name = "decks";
-
-    // Các cột trong DB
     public $id;
     public $user_id;
 
@@ -16,10 +14,7 @@ class Deck {
         $this->conn = $db;
     }
 
-    // Đọc danh sách Bộ thẻ CÁ NHÂN của một user
     public function readByUser() {
-        // Query nối bảng Category lấy Tên thư mục, đếm số Card nằm trong bộ thẻ đó
-        // Bỏ truy cập cấu trúc category, chỉ còn User
         $query = "SELECT d.id, d.title, d.description, d.is_public, d.created_at,
                    (SELECT COUNT(*) FROM cards WHERE deck_id = d.id) as cards_count
                   FROM " . $this->table_name . " d
@@ -33,7 +28,6 @@ class Deck {
         return $stmt;
     }
 
-    // Đọc danh sách Bộ thẻ CÔNG KHAI trên mục Khám Phá
     public function readPublic() {
         $query = "SELECT d.id, d.title, d.description, u.username as author_name,
                    (SELECT COUNT(*) FROM cards WHERE deck_id = d.id) as cards_count
@@ -48,7 +42,6 @@ class Deck {
         return $stmt;
     }
 
-    // Tạo Bộ thẻ mới
     public function create() {
         $query = "INSERT INTO " . $this->table_name . "
                   SET user_id=:user_id, title=:title, description=:description, is_public=:is_public";
@@ -70,7 +63,6 @@ class Deck {
         return false;
     }
 
-    // Lấy 1 Bộ thẻ và đếm số lượng card của nó
     public function readSingle() {
         $query = "SELECT d.id, d.title, d.description, d.is_public, d.created_at, d.user_id,
                    (SELECT COUNT(*) FROM cards WHERE deck_id = d.id) as cards_count
@@ -82,7 +74,6 @@ class Deck {
         return $stmt;
     }
 
-    // Cập nhật Bộ thẻ
     public function update() {
         $query = "UPDATE " . $this->table_name . "
                   SET title = :title, description = :description, is_public = :is_public
@@ -101,7 +92,6 @@ class Deck {
         return $stmt->execute();
     }
 
-    // Xóa Bộ thẻ
     public function delete() {
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id AND user_id = :user_id";
         $stmt = $this->conn->prepare($query);

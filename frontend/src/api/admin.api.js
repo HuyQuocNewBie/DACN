@@ -1,15 +1,9 @@
 import axiosClient from './axiosClient';
 
 const adminApi = {
-  /* =========================
-     STATS & LOGS
-  ========================= */
   getStats: () => axiosClient.get('/admin/stats.php'),
   getLogs: () => axiosClient.get('/admin/logs.php'),
 
-  /* =========================
-     USERS
-  ========================= */
   getAllUsers: () => axiosClient.get('/admin/users.php'),
 
   updateUserStatus: (userId, status) =>
@@ -18,9 +12,6 @@ const adminApi = {
   deleteUser: (userId) =>
     axiosClient.delete(`/admin/users.php?id=${userId}`),
 
-  /* =========================
-     DECKS
-  ========================= */
   getAllDecks: () => axiosClient.get('/admin/decks.php'),
 
   getDeckDetail: (id) =>
@@ -32,7 +23,7 @@ const adminApi = {
   toggleDeckStatus: (id, isPublic) =>
     axiosClient.put('/admin/decks.php', {
       id,
-      is_public: Number(isPublic), // đảm bảo gửi 0/1
+      is_public: Number(isPublic),
     }),
 };
 

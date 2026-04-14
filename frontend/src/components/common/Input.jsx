@@ -1,4 +1,3 @@
-// src/components/common/Input.jsx
 const Input = ({ label, error, ...props }) => {
   return (
     <div className="flex flex-col gap-1 w-full">

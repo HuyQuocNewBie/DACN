@@ -25,13 +25,10 @@ import PrivateRoute from './PrivateRoute';
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Landing Page */}
       <Route path="/" element={<LandingPage />} />
 
-      {/* Cứu cánh: Redirect /login về / để tránh 404 */}
       <Route path="/login" element={<Navigate to="/" replace />} />
 
-      {/* Protected User Routes */}
       <Route element={<PrivateRoute allowRoles={['learner', 'admin']} />}>
         <Route element={<MainLayout />}>
           <Route path="dashboard" element={<Dashboard />} />
@@ -43,7 +40,6 @@ const AppRoutes = () => {
         </Route>
       </Route>
 
-      {/* Admin Routes */}
       <Route element={<PrivateRoute allowRoles={['admin']} />}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
@@ -52,7 +48,6 @@ const AppRoutes = () => {
         </Route>
       </Route>
 
-      {/* 404 Catch-all */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

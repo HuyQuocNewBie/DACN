@@ -26,13 +26,11 @@ const Header = ({ title = "Bảng điều khiển" }) => {
   }, []);
 
   const handleLogout = () => {
-    // Lấy tên đầy đủ của người dùng
     const fullName = getDisplayName(user);
     
     logout();
     setOpen(false);
     
-    // Khung trắng mặc định của react-hot-toast
     toast.success(`Hẹn gặp lại, ${fullName}! 👋`);
 
     navigate('/login');

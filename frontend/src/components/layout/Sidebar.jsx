@@ -14,7 +14,6 @@ const Sidebar = () => {
   return (
     <aside className="fixed top-0 left-0 z-50 hidden h-screen w-64 bg-white border-r border-slate-100 flex-col p-6 md:flex transition-all duration-300">
       
-      {/* LOGO SECTION */}
       <div className="mb-10 flex items-center justify-center px-2 py-4 bg-slate-50 rounded-4xl relative overflow-hidden group">
         <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         <Link to="/dashboard" className="flex items-center relative z-10">
@@ -23,12 +22,9 @@ const Sidebar = () => {
             alt="Logo"
             className="h-10 w-auto object-contain hover:scale-110 transition-transform duration-300"
           />
-          {/* Bạn có thể thêm Text logo nếu cần */}
-          {/* <span className="ml-3 font-black text-xl tracking-tighter text-slate-900">MEMO.</span> */}
         </Link>
       </div>
 
-      {/* MENU SECTION */}
       <nav className="flex-1 space-y-2">
         <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
           Menu chính
@@ -47,7 +43,6 @@ const Sidebar = () => {
                   : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
               }`}
             >
-              {/* Chỉ báo Active dạng vạch dọc nhỏ */}
               {isActive && (
                 <span className="absolute left-0 w-1 h-6 bg-primary rounded-r-full"></span>
               )}
@@ -72,10 +67,8 @@ const Sidebar = () => {
         })}
       </nav>
 
-      {/* FOOTER ACTION CARD */}
       <div className="mt-auto pt-6 border-t border-slate-50">
         <div className="bg-primary/5 rounded-4xl p-5 border border-primary/10 relative overflow-hidden group">
-            {/* Decor chìm */}
             <div className="absolute -right-4 -bottom-4 text-primary/10 text-6xl font-black rotate-12 group-hover:rotate-0 transition-transform duration-500 italic">
                 !
             </div>

@@ -1,11 +1,8 @@
 import { createContext, useState, useEffect } from 'react';
 import authApi from '../api/auth.api';
 
-// 1. Chuyển export này thành bình thường (không export ra ngoài nữa)
 const AuthContext = createContext();
 
-// Để các file khác dùng được Context, ta vẫn cần export nó hoặc dùng export này
-// nhưng để tránh lỗi Fast Refresh, tốt nhất là export Hook riêng (Bước 1.1 bên dưới)
 export { AuthContext };
 
 export const AuthProvider = ({ children }) => {
@@ -17,7 +14,6 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('sr_token');
       const savedUser = localStorage.getItem('sr_user');
       if (token && savedUser) {
-        // Tạm thời lấy User trực tiếp từ LocalStorage do Backend PHP chưa có hàm getProfile()
         setUser(JSON.parse(savedUser));
       } else {
         localStorage.removeItem('sr_token');

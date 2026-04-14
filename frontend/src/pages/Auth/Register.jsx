@@ -1,39 +1,40 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
-import { validateEmail, validatePassword } from '../../utils/validate'; // Import bộ não
+import { validateEmail, validatePassword } from '../../utils/validate';
 
 const Register = ({ onSwitch }) => {
-  const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validateForm = () => {
-    // 1. Kiểm tra Email qua utils
     const emailCheck = validateEmail(formData.email);
     if (!emailCheck.isValid) {
       toast.error(emailCheck.message);
       return false;
     }
 
-    // 2. Kiểm tra Password qua utils
     const passwordCheck = validatePassword(formData.password);
     if (!passwordCheck.isValid) {
       toast.error(passwordCheck.message);
       return false;
     }
 
-    // 3. Kiểm tra khớp mật khẩu (logic riêng của form)
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Mật khẩu nhập lại không khớp!");
+      toast.error('Mật khẩu nhập lại không khớp!');
       return false;
     }
 
     return {
       username: formData.email.split('@')[0],
       email: formData.email,
-      password: formData.password
+      password: formData.password,
     };
   };
 
@@ -44,27 +45,29 @@ const Register = ({ onSwitch }) => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/auth/register.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(validatedData)
+      const res = await fetch('http://localhost:8000/api/auth/register.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(validatedData),
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("Đăng ký thành công!");
+        toast.success('Đăng ký thành công!');
         if (onSwitch) onSwitch();
       } else {
-        toast.error(data.message || "Lỗi đăng ký");
+        toast.error(data.message || 'Lỗi đăng ký');
       }
     } catch {
-      toast.error("Lỗi kết nối server!");
+      toast.error('Lỗi kết nối server!');
     } finally {
       setLoading(false);
     }
   };
 
-  const inputClass = 'w-full px-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:ring-4 focus:ring-primary/10 focus:bg-white transition-all text-sm';
-  const labelClass = 'block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1';
+  const inputClass =
+    'w-full px-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:ring-4 focus:ring-primary/10 focus:bg-white transition-all text-sm';
+  const labelClass =
+    'block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -85,10 +88,20 @@ const Register = ({ onSwitch }) => {
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••"
             className={inputClass}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
           />
-          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400">
-            {showPassword ? <MdVisibilityOff size={20} /> : <MdVisibility size={20} />}
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400"
+          >
+            {showPassword ? (
+              <MdVisibilityOff size={20} />
+            ) : (
+              <MdVisibility size={20} />
+            )}
           </button>
         </div>
       </div>
@@ -100,17 +113,30 @@ const Register = ({ onSwitch }) => {
             type={showConfirmPassword ? 'text' : 'password'}
             placeholder="••••••••"
             className={inputClass}
-            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, confirmPassword: e.target.value })
+            }
           />
-          <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400">
-            {showConfirmPassword ? <MdVisibilityOff size={20} /> : <MdVisibility size={20} />}
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400"
+          >
+            {showConfirmPassword ? (
+              <MdVisibilityOff size={20} />
+            ) : (
+              <MdVisibility size={20} />
+            )}
           </button>
         </div>
       </div>
 
-      <div className="pt-2 space-y-4">
-        <button disabled={loading} className="w-full rounded-xl bg-slate-900 py-4 text-[11px] font-black uppercase text-white shadow-xl">
-          {loading ? "Đang xử lý..." : "Tạo tài khoản học viên"}
+      <div className="space-y-4 pt-2">
+        <button
+          disabled={loading}
+          className="w-full rounded-xl bg-slate-900 py-4 text-[11px] font-black text-white uppercase shadow-xl"
+        >
+          {loading ? 'Đang xử lý...' : 'Tạo tài khoản học viên'}
         </button>
       </div>
     </form>

@@ -4,8 +4,6 @@ import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import userApi from '../../api/user.api';
 import { validatePassword } from '../../utils/validate';
-
-// Import icon con mắt
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 
 const Profile = () => {
@@ -15,8 +13,6 @@ const Profile = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswordFields, setShowPasswordFields] = useState(false);
-
-  // State kiểm soát ẩn/hiện mật khẩu
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -52,7 +48,6 @@ const Profile = () => {
       toast.success('Cập nhật thông tin thành công!');
       setUser({ ...user, username });
 
-      // Reset form
       setPassword('');
       setConfirmPassword('');
       setShowPasswordFields(false);
@@ -67,7 +62,6 @@ const Profile = () => {
     }
   };
 
-  // Tái sử dụng class để code gọn hơn
   const inputClass =
     'focus:ring-primary/20 focus:border-primary w-full rounded-xl border border-slate-200 bg-white p-3.5 transition-all outline-none focus:ring-2 text-sm';
   const labelClass =
@@ -76,7 +70,6 @@ const Profile = () => {
   return (
     <div className="space-y-8">
       <div className="relative flex flex-col justify-between gap-6 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-6 shadow-sm md:flex-row md:items-center md:p-8">
-        {/* Hiệu ứng màu Indigo ở góc trên bên phải */}
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl"></div>
         </div>
@@ -92,10 +85,8 @@ const Profile = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* LEFT COLUMN: MAIN INFO */}
         <div className="space-y-8 lg:col-span-2">
           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
-            {/* TOP INFO & AVATAR */}
             <div className="flex flex-col gap-6 border-b border-slate-50 pb-8 md:flex-row md:items-center">
               <div className="group relative">
                 <div className="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 items-center justify-center rounded-full border-2 text-4xl font-bold shadow-inner">
@@ -124,7 +115,6 @@ const Profile = () => {
               </button>
             </div>
 
-            {/* UPDATE FORM */}
             <form onSubmit={handleUpdate} className="mt-8 space-y-6">
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
@@ -147,7 +137,6 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* PASSWORD SECTION */}
               <div
                 className={`rounded-xl border transition-all duration-300 ${showPasswordFields ? 'border-primary/20 bg-primary/5 p-5' : 'border-slate-100 bg-slate-50/50 p-4'}`}
               >
@@ -179,7 +168,6 @@ const Profile = () => {
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
-                      {/* Password Input */}
                       <div className="space-y-2">
                         <label className={labelClass}>Mật khẩu mới</label>
                         <div className="relative">
@@ -204,7 +192,6 @@ const Profile = () => {
                         </div>
                       </div>
 
-                      {/* Confirm Password Input */}
                       <div className="space-y-2">
                         <label className={labelClass}>Xác nhận lại</label>
                         <div className="relative">
@@ -248,7 +235,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: STATS */}
         <div className="space-y-6">
           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
             <h3 className="mb-6 flex items-center gap-2 font-bold text-slate-800">
