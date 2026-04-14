@@ -79,10 +79,14 @@ DACN
 │  │  │  │  ├─ DeckDetail.jsx
 │  │  │  │  └─ DeckItem.jsx
 │  │  │  ├─ layout
-│  │  │  │  ├─ Footer.jsx
-│  │  │  │  ├─ Header.jsx
-│  │  │  │  ├─ Navbar.jsx
-│  │  │  │  └─ Sidebar.jsx
+│  │  │  │  ├─ admin
+│  │  │  │  │  ├─ Footer.jsx
+│  │  │  │  │  ├─ Header.jsx
+│  │  │  │  │  └─ Sidebar.jsx
+│  │  │  │  └─ user
+│  │  │  │     ├─ Footer.jsx
+│  │  │  │     ├─ Header.jsx
+│  │  │  │     └─ Sidebar.jsx
 │  │  │  └─ review
 │  │  │     └─ Flashcard.jsx
 │  │  ├─ context
