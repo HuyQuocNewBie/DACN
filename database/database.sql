@@ -3,7 +3,7 @@ DROP DATABASE IF EXISTS spaced_repetition;
 CREATE DATABASE spaced_repetition;
 USE spaced_repetition;
 
--- Bảng người dùng và phân quyền
+-- Bảng Người dùng
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Bảng bộ thẻ (Decks)
+-- Bảng Bộ thẻ (Decks)
 CREATE TABLE decks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE decks (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Bảng thẻ học (Flashcards) và tiến độ SM-2
+-- Bảng Thẻ học (Cards)
 CREATE TABLE cards (
     id INT AUTO_INCREMENT PRIMARY KEY,
     deck_id INT NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE cards (
     FOREIGN KEY (deck_id) REFERENCES decks(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Bảng lịch sử ôn tập (Review Logs)
+-- Bảng Lịch sử ôn tập
 CREATE TABLE review_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
