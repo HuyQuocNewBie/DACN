@@ -2,15 +2,15 @@ import axiosClient from './axiosClient';
 
 const adminApi = {
   // Stats
-  getStats: () => axiosClient.get('/admin/stats'),
+  getStats: () => axiosClient.get('/admin/stats.php'),
 
   // Users
   getAllUsers: () => {
-    return axiosClient.get('/admin/users');
+    return axiosClient.get('/admin/users.php');
   },
 
   updateUserStatus: (userId, status) => {
-    return axiosClient.put(`/admin/users/${userId}/status`, { status });
+    return axiosClient.put('/admin/user_status.php', { userId, status });
   },
 
   deleteUser: (userId) => {
