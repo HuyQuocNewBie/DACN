@@ -5,18 +5,17 @@ const Sidebar = ({ menuItems, handleLogout }) => {
 
   return (
     <aside className="fixed z-50 hidden h-screen w-64 flex-col bg-slate-900 text-white p-6 md:flex transition-all duration-300">
-      <div className="mb-10 flex items-center gap-4 px-2 py-5 bg-white/5 rounded-4xl border border-white/10 relative overflow-hidden">
-        <div className="bg-primary h-12 w-12 flex items-center justify-center rounded-2xl shadow-lg shadow-primary/20 relative z-10">
-          <span className="material-symbols-outlined text-white text-2xl">
-            admin_panel_settings
-          </span>
-        </div>
-        <div className="relative z-10">
-          <p className="text-sm font-black tracking-tight leading-none">ADMIN PANEL</p>
-          <p className="text-[10px] font-bold tracking-[0.2em] text-primary mt-1 uppercase">
-            Memo.Space
-          </p>
-        </div>
+      
+      {/* KHỐI LOGO ĐƯỢC ĐỒNG BỘ GIỐNG BÊN USER */}
+      <div className="mb-10 flex items-center justify-center px-2 py-4 bg-white/5 rounded-4xl border border-white/10 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <Link to="/admin" className="flex items-center relative z-10">
+          <img
+            src="/icons/Logo.png"
+            alt="Logo"
+            className="h-10 w-auto object-contain hover:scale-110 transition-transform duration-300"
+          />
+        </Link>
       </div>
 
       <nav className="flex-1 space-y-2">
