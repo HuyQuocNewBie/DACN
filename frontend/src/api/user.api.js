@@ -1,23 +1,11 @@
 import axiosClient from './axiosClient';
 
 const userApi = {
-  getStatistics: async () => {
-    await new Promise(resolve => setTimeout(resolve, 700));
+  getStatistics: () => axiosClient.get('/user/statistics.php'),
 
-    return {
-      total_decks: 4,
-      cards_learned: 156,
-      mastered_count: 89,
-      streak: 5, // 5 ngày liên tiếp
-      chart_data: [12, 19, 3, 5, 2, 3, 9], // Số thẻ học mỗi ngày trong tuần
-      upcoming_reviews: 15, // Số thẻ cần học hôm nay
-    };
+  getProfile: () => axiosClient.get('/user/profile.php'),
 
-    // Khi có backend thật:
-    // return axiosClient.get('/user/statistics');
-  },
-
-  getProfile: () => axiosClient.get('/user/profile'),
+  updateProfile: (data) => axiosClient.post('/user/update_profile.php', data),
 };
 
 export default userApi;
