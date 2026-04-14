@@ -16,6 +16,9 @@ const DeckDetail = () => {
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
+  const [isEditDeckOpen, setIsEditDeckOpen] = useState(false);
+  const [editDeckData, setEditDeckData] = useState({ title: '', description: '', is_public: false });
+
   const [newCard, setNewCard] = useState({
     front_content: '',
     back_content: '',
@@ -79,6 +82,44 @@ const DeckDetail = () => {
       isComponentMounted.current = false;
     };
   }, [id]);
+
+  useEffect(() => {
+    if (deck) {
+       setEditDeckData({ 
+         title: deck.title || '', 
+         description: deck.description || '', 
+         is_public: deck.is_public || false 
+       });
+    }
+  }, [deck]);
+
+  // ================= DECK ACTIONS =================
+  const handleUpdateDeck = async (e) => {
+    e.preventDefault();
+    if (!editDeckData.title.trim()) return toast.error('Vui lòng nhập tên bộ thẻ');
+    setSubmitting(true);
+    try {
+       await deckApi.update(id, editDeckData);
+       toast.success('Đã cập nhật bộ thẻ!');
+       setIsEditDeckOpen(false);
+       fetchData();
+    } catch {
+       toast.error('Lỗi khi cập nhật bộ thẻ');
+    } finally {
+       setSubmitting(false);
+    }
+  };
+
+  const handleDeleteDeck = async () => {
+    if (!window.confirm("BẠN CÓ CHẮC KHÔNG? Toàn bộ thẻ bên trong sẽ bị xóa vĩnh viễn và không thể khôi phục!")) return;
+    try {
+       await deckApi.delete(id);
+       toast.success('Đã xóa bộ thẻ!');
+       navigate('/decks');
+    } catch {
+       toast.error('Không thể xóa bộ thẻ');
+    }
+  };
 
   // ================= ACTIONS =================
   const handleAddCard = async (e) => {
@@ -160,6 +201,18 @@ const DeckDetail = () => {
               <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase">
                 {cards.length} thẻ
               </span>
+              <div className="flex gap-1 ml-4 border-l border-slate-100 pl-4">
+                  <button onClick={() => setIsEditDeckOpen(true)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-xl transition-all" title="Sửa tên bộ thẻ">
+                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                           <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                       </svg>
+                  </button>
+                  <button onClick={handleDeleteDeck} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all" title="Xóa bộ thẻ">
+                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                           <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                       </svg>
+                  </button>
+              </div>
             </div>
             <p className="text-slate-500 max-w-2xl leading-relaxed">
               {deck?.description || 'Bộ thẻ này chưa có mô tả.'}
@@ -314,6 +367,76 @@ const DeckDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* MODAL EDIT DECK */}
+      {isEditDeckOpen && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6 backdrop-blur-md bg-slate-900/40 animate-in fade-in duration-300">
+          <div 
+            className="absolute inset-0"
+            onClick={() => !submitting && setIsEditDeckOpen(false)}
+          />
+          <div className="relative bg-white w-full max-w-xl rounded-[3rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] overflow-hidden animate-in zoom-in-95 duration-300 border border-white">
+            <div className="h-3 bg-primary w-full"></div>
+            
+            <div className="p-10 md:p-12">
+              <div className="flex justify-between items-center mb-10">
+                <div>
+                    <h2 className="text-3xl font-black text-slate-900 tracking-tight">Cập nhật bộ thẻ</h2>
+                </div>
+                <button
+                  onClick={() => setIsEditDeckOpen(false)}
+                  className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-400 transition-all active:scale-90"
+                >✕</button>
+              </div>
+
+              <form onSubmit={handleUpdateDeck} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tên bộ thẻ học</label>
+                  <input
+                    autoFocus
+                    className="w-full bg-slate-50 rounded-2xl py-4 px-6 border border-slate-100 focus:ring-4 focus:ring-primary/10 outline-none font-bold text-slate-700"
+                    value={editDeckData.title}
+                    onChange={(e) => setEditDeckData({ ...editDeckData, title: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mô tả bộ thẻ</label>
+                  <textarea
+                    rows="3"
+                    className="w-full bg-slate-50 rounded-2xl py-4 px-6 border border-slate-100 focus:ring-4 focus:ring-primary/10 outline-none resize-none font-medium text-slate-600"
+                    value={editDeckData.description}
+                    onChange={(e) => setEditDeckData({ ...editDeckData, description: e.target.value })}
+                  />
+                </div>
+
+                <div 
+                    className="group flex items-center gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 cursor-pointer hover:bg-emerald-50 hover:border-emerald-100 transition-all"
+                    onClick={() => setEditDeckData({...editDeckData, is_public: !editDeckData.is_public})}
+                >
+                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${editDeckData.is_public ? 'bg-emerald-500 border-emerald-500' : 'bg-white border-slate-200'}`}>
+                        {editDeckData.is_public && <span className="text-white text-xs font-bold">✓</span>}
+                    </div>
+                    <div>
+                        <p className="text-sm font-bold text-slate-700 group-hover:text-emerald-700">Công khai bộ thẻ</p>
+                    </div>
+                </div>
+
+                <div className="flex gap-4 pt-6">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-1 py-5 rounded-2xl bg-slate-900 text-white font-black shadow-xl hover:bg-primary disabled:opacity-50 transition-all uppercase tracking-[0.2em] text-xs"
+                  >
+                    {submitting ? "Đang xử lý..." : "Lưu cập nhật"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
