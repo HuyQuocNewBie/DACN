@@ -7,7 +7,7 @@ const NotFound = () => {
       <h2 className="text-2xl font-bold text-slate-800 mt-4">Không tìm thấy trang</h2>
       <p className="text-slate-500 mt-2">Đường dẫn bạn truy cập không tồn tại hoặc đã bị xóa.</p>
       <Link 
-        to="/" 
+        to="/dashboard" 
         className="mt-6 bg-primary text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition"
       >
         Quay lại bảng điều khiển
