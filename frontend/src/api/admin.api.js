@@ -1,36 +1,39 @@
 import axiosClient from './axiosClient';
 
 const adminApi = {
-  // Stats
+  /* =========================
+     STATS & LOGS
+  ========================= */
   getStats: () => axiosClient.get('/admin/stats.php'),
+  getLogs: () => axiosClient.get('/admin/logs.php'),
 
-  // Users
-  getAllUsers: () => {
-    return axiosClient.get('/admin/users.php');
-  },
+  /* =========================
+     USERS
+  ========================= */
+  getAllUsers: () => axiosClient.get('/admin/users.php'),
 
-  updateUserStatus: (userId, status) => {
-    return axiosClient.put('/admin/user_status.php', { userId, status });
-  },
+  updateUserStatus: (userId, status) =>
+    axiosClient.put('/admin/user_status.php', { userId, status }),
 
-  deleteUser: (userId) => {
-    return axiosClient.delete(`/admin/users/${userId}`);
-  },
+  deleteUser: (userId) =>
+    axiosClient.delete(`/admin/users.php?id=${userId}`),
 
-  // Decks
-  getAllDecks: () => {
-    return axiosClient.get('/admin/decks');
-  },
+  /* =========================
+     DECKS
+  ========================= */
+  getAllDecks: () => axiosClient.get('/admin/decks.php'),
 
-  deleteDeck: (deckId) => {
-    return axiosClient.delete(`/admin/decks/${deckId}`);
-  },
+  getDeckDetail: (id) =>
+    axiosClient.get(`/admin/decks.php?id=${id}`),
 
-  toggleDeckVisibility: (deckId, isPublic) => {
-    return axiosClient.put(`/admin/decks/${deckId}/visibility`, {
-      is_public: isPublic,
-    });
-  },
+  deleteDeck: (deckId) =>
+    axiosClient.delete(`/admin/decks.php?id=${deckId}`),
+
+  toggleDeckStatus: (id, isPublic) =>
+    axiosClient.put('/admin/decks.php', {
+      id,
+      is_public: Number(isPublic), // đảm bảo gửi 0/1
+    }),
 };
 
 export default adminApi;

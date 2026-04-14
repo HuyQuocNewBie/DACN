@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Loading from '../../components/common/Loading';
@@ -6,56 +6,67 @@ import deckApi from '../../api/deck.api';
 
 const ExplorePage = () => {
   const [allDecks, setAllDecks] = useState([]); // Lưu trữ toàn bộ dữ liệu từ API
-  const [displayDecks, setDisplayDecks] = useState([]); // Dữ liệu sau khi lọc để hiển thị
   const [cloningId, setCloningId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
+  // --- LOGIC PHÂN TRANG ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; // Hiển thị 6 bộ thẻ mỗi trang cho cân đối Grid
+
   const navigate = useNavigate();
   const isInitialMount = useRef(true);
 
-  // Hàm gọi API lấy danh sách (chỉ gọi 1 lần khi load trang)
+  // Hàm gọi API lấy danh sách
   const fetchPublicDecks = useCallback(async (isMounted) => {
     setLoading(true);
     try {
       const data = await deckApi.getPublic();
       if (isMounted) {
         setAllDecks(data);
-        setDisplayDecks(data);
       }
     } catch {
       if (isMounted) {
-        // Thêm ID để tránh hiện nhiều thông báo lỗi cùng lúc
-        toast.error("Không thể tải danh sách bộ thẻ công khai", { id: 'fetch-decks-error' });
+        toast.error('Không thể tải danh sách bộ thẻ công khai', {
+          id: 'fetch-decks-error',
+        });
       }
     } finally {
       if (isMounted) setLoading(false);
     }
   }, []);
 
-  // Effect khởi tạo dữ liệu
   useEffect(() => {
     let isMounted = true;
     fetchPublicDecks(isMounted);
-    
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [fetchPublicDecks]);
 
-  // Effect xử lý việc lọc dữ liệu tại Client (tối ưu hơn việc gọi API liên tục)
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
-    const filtered = allDecks.filter(d =>
-      d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (d.description || '').toLowerCase().includes(searchQuery.toLowerCase())
+  // Xử lý lọc dữ liệu (Client-side Search)
+  const filteredDecks = useMemo(() => {
+    return allDecks.filter(
+      (d) =>
+        d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (d.description || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setDisplayDecks(filtered);
   }, [searchQuery, allDecks]);
+
+  // Tính toán dữ liệu hiển thị trên trang hiện tại
+  const paginatedDecks = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredDecks.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredDecks, currentPage]);
+
+  const totalPages = Math.ceil(filteredDecks.length / itemsPerPage);
+
+  // Reset về trang 1 khi bắt đầu tìm kiếm
+  useEffect(() => {
+    if (!isInitialMount.current) {
+      setCurrentPage(1);
+    } else {
+      isInitialMount.current = false;
+    }
+  }, [searchQuery]);
 
   const handleDownload = async (deckId) => {
     if (cloningId) return;
@@ -63,17 +74,21 @@ const ExplorePage = () => {
 
     const clonePromise = deckApi.clone(deckId);
 
-    toast.promise(clonePromise, {
-      loading: 'Đang tải bộ thẻ về kho...',
-      success: '🎉 Tải về thành công!',
-      error: 'Tải bộ thẻ thất bại. Vui lòng thử lại.'
-    }, { id: 'clone-toast' }); // Dùng ID để toast không bị đè
+    toast.promise(
+      clonePromise,
+      {
+        loading: 'Đang tải bộ thẻ về kho...',
+        success: '🎉 Tải về thành công!',
+        error: 'Tải bộ thẻ thất bại. Vui lòng thử lại.',
+      },
+      { id: 'clone-toast' }
+    );
 
     try {
       await clonePromise;
       setTimeout(() => navigate('/decks'), 1500);
     } catch {
-      // Đã có toast.promise xử lý hiển thị lỗi
+      // Error handled by toast.promise
     } finally {
       setCloningId(null);
     }
@@ -84,65 +99,73 @@ const ExplorePage = () => {
   }
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-500">
+    <div className="animate-in fade-in space-y-10 duration-500">
       {/* HEADER */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+      <div className="relative flex flex-col justify-between gap-8 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm md:p-10 lg:flex-row lg:items-center">
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
+          <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl"></div>
+        </div>
 
         <div className="relative z-10">
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">
             Khám phá cộng đồng
           </h1>
-          <p className="text-slate-500 font-medium mt-2">
+          <p className="mt-2 font-medium text-slate-500">
             Tìm kiếm và học hỏi từ các bộ thẻ được chia sẻ
           </p>
         </div>
 
-        <div className="relative w-full lg:w-112.5 z-10">
-          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-xl opacity-40">🔍</span>
+        <div className="relative z-10 w-full lg:w-112.5">
+          <span className="absolute top-1/2 left-5 -translate-y-1/2 text-xl opacity-40">
+            🔍
+          </span>
           <input
             type="text"
             placeholder="Tìm bộ thẻ, chủ đề..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-14 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-4 focus:ring-primary/10 focus:bg-white focus:border-primary transition-all shadow-inner font-medium"
+            className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-4 pr-6 pl-14 font-medium shadow-inner transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
           />
         </div>
       </div>
 
       {/* GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {displayDecks.map((deck) => (
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+        {paginatedDecks.map((deck) => (
           <div
             key={deck.id}
-            className="group bg-white rounded-4xl border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-500 p-8 flex flex-col h-full relative overflow-hidden"
+            className="group hover:shadow-primary/10 relative flex h-full flex-col overflow-hidden rounded-4xl border border-slate-100 bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 group-hover:bg-primary/5 transition-colors duration-500"></div>
+            <div className="group-hover:bg-primary/10 absolute top-0 right-0 -mt-16 -mr-16 h-32 w-32 rounded-full bg-slate-100 blur-2xl transition-colors duration-500"></div>
 
-            <div className="flex-1 relative z-10">
-              <div className="flex justify-between items-start mb-6">
-                <span className="text-[10px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-xl border-2 bg-emerald-50 text-emerald-500 border-emerald-100">
+            <div className="relative z-10 flex-1">
+              <div className="mb-6 flex items-start justify-between">
+                <span className="rounded-xl border-2 border-emerald-100 bg-emerald-50 px-3 py-1.5 text-[10px] font-black tracking-[0.15em] text-emerald-500 uppercase">
                   Cộng Đồng
                 </span>
-                <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1.5 rounded-xl uppercase tracking-widest">
+                <span className="text-primary bg-primary/10 rounded-xl px-3 py-1.5 text-[10px] font-black tracking-widest uppercase">
                   Miễn phí
                 </span>
               </div>
 
-              <h3 className="font-black text-slate-900 text-2xl mb-3 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+              <h3 className="group-hover:text-primary mb-3 line-clamp-2 text-2xl leading-tight font-black text-slate-900 transition-colors">
                 {deck.title}
               </h3>
 
-              <p className="text-sm text-slate-400 font-medium italic flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px]">👤</span>
+              <p className="flex items-center gap-2 text-sm font-medium text-slate-400 italic">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-[10px]">
+                  👤
+                </span>
                 {deck.author_name || 'Ẩn danh'}
               </p>
             </div>
 
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-50 relative z-10">
+            <div className="relative z-10 mt-8 flex items-center justify-between border-t border-slate-50 pt-6">
               <div className="flex flex-col">
-                <span className="text-xl font-black text-slate-800">{deck.cards_count || 0}</span>
-                <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">
+                <span className="text-xl font-black text-slate-800">
+                  {deck.cards_count || 0}
+                </span>
+                <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
                   Thẻ Nhớ
                 </span>
               </div>
@@ -150,7 +173,7 @@ const ExplorePage = () => {
               <button
                 onClick={() => handleDownload(deck.id)}
                 disabled={cloningId !== null}
-                className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-slate-200 hover:shadow-primary/30 active:scale-95 disabled:opacity-50"
+                className="hover:bg-primary hover:shadow-primary/30 rounded-2xl bg-slate-900 px-6 py-3 text-xs font-black tracking-widest text-white uppercase shadow-xl shadow-slate-200 transition-all active:scale-95 disabled:opacity-50"
               >
                 {cloningId === deck.id ? 'Đang sao chép' : 'Tải về'}
               </button>
@@ -159,19 +182,56 @@ const ExplorePage = () => {
         ))}
       </div>
 
+      {/* PAGINATION CONTROLS */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(prev => prev - 1)}
+            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed active:scale-90"
+          >
+            ←
+          </button>
+          
+          <div className="flex gap-2">
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`h-12 w-12 rounded-2xl text-xs font-black transition-all ${
+                  currentPage === i + 1 
+                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-200' 
+                  : 'bg-white border border-slate-100 text-slate-400 hover:bg-slate-50'
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(prev => prev + 1)}
+            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed active:scale-90"
+          >
+            →
+          </button>
+        </div>
+      )}
+
       {/* EMPTY STATE */}
-      {displayDecks.length === 0 && !loading && (
-        <div className="text-center py-24 bg-white rounded-[2.5rem] border border-dashed border-slate-200 flex flex-col items-center">
-          <div className="text-6xl mb-6 opacity-20">🏜️</div>
-          <p className="text-slate-400 font-black uppercase tracking-widest text-sm">
+      {filteredDecks.length === 0 && !loading && (
+        <div className="flex flex-col items-center rounded-[2.5rem] border border-dashed border-slate-200 bg-white py-24 text-center">
+          <div className="mb-6 text-6xl opacity-20">🏜️</div>
+          <p className="text-sm font-black tracking-widest text-slate-400 uppercase">
             Không tìm thấy kết quả
           </p>
-          <p className="text-slate-300 text-sm mt-2">
+          <p className="mt-2 text-sm text-slate-300">
             Thử thay đổi từ khóa tìm kiếm nhé!
           </p>
           <button
             onClick={() => setSearchQuery('')}
-            className="mt-6 text-primary font-medium hover:underline"
+            className="text-primary mt-6 font-medium hover:underline"
           >
             Xóa bộ lọc
           </button>

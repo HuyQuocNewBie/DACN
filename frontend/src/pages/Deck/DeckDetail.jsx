@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import cardApi from '../../api/card.api';
 import deckApi from '../../api/deck.api';
@@ -26,6 +26,10 @@ const DeckDetail = () => {
 
   const hasFetched = useRef({});
   const isComponentMounted = useRef(true); // Dùng ref để theo dõi trạng thái mount xuyên suốt
+
+  // --- LOGIC PHÂN TRANG ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3; // Số thẻ hiển thị trên mỗi trang
 
   // ================= FETCH DATA (Dùng để refresh danh sách) =================
   const fetchData = useCallback(async () => {
@@ -167,16 +171,38 @@ const DeckDetail = () => {
       await cardApi.delete(cardId);
       toast.success('Đã xóa thẻ');
       setCards(prev => prev.filter(c => c.id !== cardId));
+      
+      // Xử lý edge-case: Nếu xóa thẻ cuối cùng của trang hiện tại, lùi về trang trước đó
+      if (paginatedCards.length === 1 && currentPage > 1) {
+        setCurrentPage(prev => prev - 1);
+      }
     } catch {
       toast.error('Không thể xóa thẻ');
     }
   };
 
-  // ================= FILTER =================
-  const filteredCards = cards.filter((card) =>
-    card.front_content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    card.back_content.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // ================= FILTER & PAGINATION LOGIC =================
+  
+  // Reset về trang 1 khi người dùng gõ tìm kiếm
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  const filteredCards = useMemo(() => {
+    return cards.filter((card) =>
+      card.front_content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      card.back_content.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [cards, searchQuery]);
+
+  const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+
+  const paginatedCards = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredCards.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredCards, currentPage]);
+
+  // ============================================================
 
   if (loading) return <Loading />;
 
@@ -187,22 +213,30 @@ const DeckDetail = () => {
       <div className="flex flex-col gap-4">
         <button 
           onClick={() => navigate('/decks')}
-          className="flex items-center gap-2 text-slate-400 hover:text-primary font-bold text-xs uppercase tracking-widest transition-colors w-fit"
+          className="flex items-center gap-2 text-slate-400 hover:text-indigo-600 font-bold text-xs uppercase tracking-widest transition-colors w-fit"
         >
           <span>←</span> Quay lại kho thẻ
         </button>
 
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-          <div className="space-y-2">
+        <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+          
+          {/* Hiệu ứng màu Indigo ở góc trên bên phải */}
+          <div className="absolute inset-0 overflow-hidden rounded-[2.5rem] pointer-events-none z-0">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-50 rounded-full blur-3xl -mr-20 -mt-20"></div>
+          </div>
+
+          <div className="relative z-10 space-y-2">
             <div className="flex items-center gap-3">
                <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
                 {deck?.title}
               </h1>
-              <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase">
+              <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-black uppercase tracking-wider">
                 {cards.length} thẻ
               </span>
+              
+              {/* Nhóm nút chức năng */}
               <div className="flex gap-1 ml-4 border-l border-slate-100 pl-4">
-                  <button onClick={() => setIsEditDeckOpen(true)} className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-xl transition-all" title="Sửa tên bộ thẻ">
+                  <button onClick={() => setIsEditDeckOpen(true)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all" title="Sửa tên bộ thẻ">
                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                        </svg>
@@ -214,7 +248,7 @@ const DeckDetail = () => {
                   </button>
               </div>
             </div>
-            <p className="text-slate-500 max-w-2xl leading-relaxed">
+            <p className="text-slate-500 max-w-2xl leading-relaxed font-medium">
               {deck?.description || 'Bộ thẻ này chưa có mô tả.'}
             </p>
           </div>
@@ -222,7 +256,7 @@ const DeckDetail = () => {
           <button 
             onClick={() => navigate(`/review/${id}`)}
             disabled={cards.length === 0}
-            className="flex items-center justify-center gap-3 px-10 py-4 rounded-2xl font-black text-white bg-primary shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale cursor-pointer"
+            className="relative z-10 flex items-center justify-center gap-3 px-10 py-4 rounded-2xl font-black text-white bg-indigo-600 shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale cursor-pointer"
           >
             <span className="text-xl">▶</span>
             Bắt đầu ôn tập
@@ -291,7 +325,7 @@ const DeckDetail = () => {
 
         {/* RIGHT: CARD LIST TABLE */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
             
             {/* SEARCH & TITLE */}
             <div className="p-6 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -313,7 +347,7 @@ const DeckDetail = () => {
             </div>
 
             {/* TABLE */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto flex-1">
               <table className="w-full">
                 <thead>
                   <tr className="bg-slate-50/50 text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -323,7 +357,7 @@ const DeckDetail = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {filteredCards.map((card) => (
+                  {paginatedCards.map((card) => (
                     <tr key={card.id} className="group hover:bg-slate-50/80 transition-colors">
                       <td className="px-6 py-5">
                         <p className="text-sm font-bold text-slate-700 leading-snug">{card.front_content}</p>
@@ -364,6 +398,32 @@ const DeckDetail = () => {
                 <p className="text-slate-400 text-sm font-medium italic">Không tìm thấy nội dung yêu cầu</p>
               </div>
             )}
+
+            {/* PAGINATION CONTROLS */}
+            {totalPages > 1 && (
+              <div className="p-6 flex items-center justify-between border-t border-slate-50 bg-slate-50/30">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  Trang {currentPage} / {totalPages}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => prev - 1)}
+                    className="p-3 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
+                  >
+                    ←
+                  </button>
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                    className="p-3 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       </div>

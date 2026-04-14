@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import userApi from '../../api/user.api';
@@ -10,6 +10,10 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // --- LOGIC PHÂN TRANG ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3; // Mỗi trang hiển thị 5 hoạt động
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -24,6 +28,15 @@ const Dashboard = () => {
     };
     fetchStats();
   }, []);
+
+  // Tính toán dữ liệu hiển thị cho trang hiện tại
+  const paginatedActivities = useMemo(() => {
+    if (!stats?.recent_activities) return [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return stats.recent_activities.slice(startIndex, startIndex + itemsPerPage);
+  }, [stats?.recent_activities, currentPage]);
+
+  const totalPages = Math.ceil((stats?.recent_activities?.length || 0) / itemsPerPage);
 
   if (loading) return <Loading />;
 
@@ -122,7 +135,6 @@ const Dashboard = () => {
       {/* CALL TO ACTION BANNER */}
       {stats?.due_today > 0 && (
         <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-slate-200 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
-          {/* Trang trí background banner */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[100px] -mr-32 -mt-32"></div>
           
           <div className="flex items-center gap-6 text-center md:text-left relative z-10">
@@ -130,7 +142,7 @@ const Dashboard = () => {
             <div>
               <h3 className="text-2xl font-black tracking-tight">Sẵn sàng bứt phá hôm nay?</h3>
               <p className="text-slate-400 text-sm mt-2 font-medium">
-                Bạn có <span className="text-white font-bold underline decoration-primary decoration-2 underline-offset-4">{stats.due_today} thẻ</span> cần xử lý để duy trì chuỗi ghi nhớ dài hạn.
+                Bạn có <span className="text-white font-bold underline decoration-primary decoration-2 underline-offset-4">{stats.due_today} thẻ</span> cần xử lý.
               </p>
             </div>
           </div>
@@ -191,8 +203,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* ACTIVITY LOG */}
-        <div className="lg:col-span-7 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100">
+        {/* ACTIVITY LOG WITH PAGINATION */}
+        <div className="lg:col-span-7 bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col">
           <div className="flex items-center justify-between mb-10">
             <div>
                 <h3 className="font-black text-slate-900 text-xl tracking-tight">Hoạt động gần đây</h3>
@@ -201,18 +213,17 @@ const Dashboard = () => {
             <div className="h-12 w-12 bg-slate-50 rounded-2xl flex items-center justify-center text-xl shadow-inner">⚡</div>
           </div>
 
-          <div className="relative space-y-10 before:absolute before:left-2.75 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-50">
-            {stats?.recent_activities?.length > 0 ? (
-              stats.recent_activities.map((activity, index) => (
+          <div className="relative flex-1 space-y-10 before:absolute before:left-2.75 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-50">
+            {paginatedActivities.length > 0 ? (
+              paginatedActivities.map((activity, index) => (
                 <div key={index} className="flex items-start gap-8 relative group">
-                  {/* Timeline dot */}
                   <div className="w-6 h-6 rounded-full bg-white border-[6px] border-slate-100 group-hover:border-primary transition-colors shrink-0 z-10 shadow-sm"></div>
                   
                   <div className="flex-1 -mt-1.5 p-4 rounded-2xl group-hover:bg-slate-50 transition-colors">
                     <p className="text-slate-800 font-bold text-base leading-snug">{activity.content}</p>
                     <div className="text-slate-400 text-[11px] mt-2 flex items-center gap-2 font-black uppercase tracking-wider">
-                       <span className="text-primary/40 leading-none">●</span>
-                       {formatDate(activity.time)}
+                        <span className="text-primary/40 leading-none">●</span>
+                        {formatDate(activity.time)}
                     </div>
                   </div>
                 </div>
@@ -227,6 +238,31 @@ const Dashboard = () => {
               </div>
             )}
           </div>
+
+          {/* PAGINATION CONTROLS */}
+          {totalPages > 1 && (
+            <div className="mt-10 flex items-center justify-between border-t border-slate-50">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Trang {currentPage} / {totalPages}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(prev => prev - 1)}
+                  className="p-3 rounded-xl border border-slate-100 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
+                >
+                  ←
+                </button>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(prev => prev + 1)}
+                  className="p-3 rounded-xl border border-slate-100 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
+                >
+                  →
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
