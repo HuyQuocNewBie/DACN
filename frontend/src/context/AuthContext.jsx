@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }) => {
       role: res.role,
       username: res.username || res.fullname,
       email: credentials.email,
+      avatar: res.avatar || null,
     };
     setUser(loggedUser);
     return res;
