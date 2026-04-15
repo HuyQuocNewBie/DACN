@@ -6,8 +6,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Logic xử lý khi nhấn vào Ôn tập hoặc Quick Action
   const handleReviewClick = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     try {
       const data = await userApi.getStatistics();
       if (data.due_deck_id) {
@@ -24,30 +25,35 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { icon: 'grid_view', label: 'Dashboard', path: '/dashboard' },
     { icon: 'explore', label: 'Khám phá', path: '/explore' },
     { icon: 'layers', label: 'Bộ thẻ của tôi', path: '/decks' },
-    { 
-      icon: 'auto_stories', 
-      label: 'Ôn tập', 
+    {
+      icon: 'auto_stories',
+      label: 'Ôn tập',
       path: '/review',
-      onClick: handleReviewClick  // Thêm handler
+      onClick: handleReviewClick,
     },
     { icon: 'account_circle', label: 'Cá nhân', path: '/profile' },
   ];
 
   return (
-    <aside className={`fixed top-0 left-0 z-50 hidden h-screen bg-white border-r border-slate-100 flex-col py-6 md:flex transition-all duration-300 ${isOpen ? 'w-64 px-6' : 'w-24 px-4'}`}>
-      
+    <aside
+      className={`fixed top-0 left-0 z-50 hidden h-screen flex-col border-r border-slate-100 bg-white py-6 transition-all duration-300 md:flex ${isOpen ? 'w-64 px-6' : 'w-24 px-4'}`}
+    >
+      {/* Nút Toggle Sidebar */}
       <button
         onClick={toggleSidebar}
-        className="absolute -right-4 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-slate-900 hover:text-white transition-all z-50 shadow-md"
+        className="absolute top-1/2 -right-4 z-50 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-md transition-all hover:bg-slate-900 hover:text-white"
       >
         <span className="material-symbols-outlined text-[18px]">
           {isOpen ? 'chevron_left' : 'chevron_right'}
         </span>
       </button>
 
-      <div className={`mb-10 flex items-center justify-center py-4 bg-slate-50 rounded-4xl relative overflow-hidden group transition-all duration-300 ${isOpen ? 'px-2' : 'px-0'}`}>
-        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <Link to="/dashboard" className="flex items-center relative z-10">
+      {/* Logo Section */}
+      <div
+        className={`group relative mb-10 flex items-center justify-center overflow-hidden rounded-4xl bg-slate-50 py-4 transition-all duration-300 ${isOpen ? 'px-2' : 'px-0'}`}
+      >
+        <div className="bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
+        <Link to="/dashboard" className="relative z-10 flex items-center">
           <img
             src="/icons/Logo.png"
             alt="Logo"
@@ -56,11 +62,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </Link>
       </div>
 
+      {/* Navigation Menu */}
       <nav className="flex-1 space-y-2">
-        <p className={`text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 whitespace-nowrap transition-all duration-300 ${isOpen ? 'px-4 opacity-100' : 'text-center opacity-0 h-0 mb-0'}`}>
+        <p
+          className={`mb-4 text-[10px] font-black tracking-[0.2em] whitespace-nowrap text-slate-400 uppercase transition-all duration-300 ${isOpen ? 'px-4 opacity-100' : 'mb-0 h-0 text-center opacity-0'}`}
+        >
           Menu chính
         </p>
-        
+
         {menuItems.map((item) => {
           const isActive = location.pathname.startsWith(item.path);
 
@@ -68,57 +77,73 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <Link
               key={item.path}
               to={item.path}
-              onClick={item.onClick}  // Thêm onClick
-              className={`group flex items-center gap-4 rounded-2xl px-5 py-3.5 transition-all duration-300 relative ${
+              onClick={item.onClick}
+              title={!isOpen ? item.label : ''}
+              className={`group relative flex items-center rounded-2xl py-3.5 transition-all duration-300 ${
+                isOpen ? 'gap-4 px-5' : 'justify-center px-0'
+              } ${
                 isActive
-                  ? 'bg-slate-900 text-white shadow-xl shadow-slate-200 translate-x-2'
+                  ? 'translate-x-2 bg-slate-900 text-white shadow-xl shadow-slate-200'
                   : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
               }`}
             >
               {isActive && (
-                <span className="absolute left-0 w-1 h-6 bg-primary rounded-r-full"></span>
+                <span className="bg-primary absolute left-0 h-6 w-1 rounded-r-full"></span>
               )}
 
               <span
-                className={`material-symbols-outlined text-[22px] shrink-0 transition-transform duration-300 group-hover:scale-110 ${
+                className={`material-symbols-outlined shrink-0 text-[22px] transition-transform duration-300 group-hover:scale-110 ${
                   isActive ? 'text-primary' : 'opacity-70'
                 }`}
               >
                 {item.icon}
               </span>
-              
-              <span className={`text-sm tracking-tight whitespace-nowrap transition-all duration-300 ${isActive ? 'font-black' : 'font-bold'} ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>
+
+              <span
+                className={`text-sm tracking-tight whitespace-nowrap transition-all duration-300 ${isActive ? 'font-black' : 'font-bold'} ${isOpen ? 'w-auto opacity-100' : 'w-0 overflow-hidden opacity-0'}`}
+              >
                 {item.label}
               </span>
 
               {!isActive && isOpen && (
-                <span className="ml-auto w-1.5 h-1.5 shrink-0 rounded-full bg-slate-200 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-slate-200 opacity-0 transition-opacity group-hover:opacity-100"></span>
               )}
             </Link>
           );
         })}
       </nav>
 
-      <div className="mt-auto pt-6 border-t border-slate-50">
-        <div className={`bg-primary/5 rounded-4xl border border-primary/10 relative overflow-hidden group transition-all duration-300 ${isOpen ? 'p-5' : 'p-3'}`}>
-            
-            {isOpen && (
-              <div className="absolute -right-4 -bottom-4 text-primary/10 text-6xl font-black rotate-12 group-hover:rotate-0 transition-transform duration-500 italic">
-                  !
-              </div>
-            )}
-            
-            <p className={`relative z-10 text-[10px] font-black text-primary uppercase tracking-widest whitespace-nowrap transition-all duration-300 ${isOpen ? 'mb-3 opacity-100' : 'h-0 opacity-0 mb-0 overflow-hidden'}`}>
-                Quick Action
-            </p>
-            
-            <button
-              onClick={handleReviewClick}
-              className="relative z-10 flex items-center justify-center gap-2 bg-slate-900 hover:bg-primary text-white w-full rounded-xl py-3.5 text-xs font-black uppercase tracking-[0.15em] shadow-lg shadow-slate-200 hover:shadow-primary/30 transition-all active:scale-95"
+      {/* Quick Action Section */}
+      <div className="mt-auto border-t border-slate-50 pt-6">
+        <div
+          className={`bg-primary/5 border-primary/10 group relative overflow-hidden rounded-4xl border transition-all duration-300 ${isOpen ? 'p-5' : 'p-3'}`}
+        >
+          {isOpen && (
+            <div className="text-primary/10 absolute -right-4 -bottom-4 rotate-12 text-6xl font-black italic transition-transform duration-500 group-hover:rotate-0">
+              !
+            </div>
+          )}
+
+          <p
+            className={`text-primary relative z-10 text-[10px] font-black tracking-widest whitespace-nowrap uppercase transition-all duration-300 ${isOpen ? 'mb-3 opacity-100' : 'mb-0 h-0 overflow-hidden opacity-0'}`}
+          >
+            Quick Action
+          </p>
+
+          <button
+            onClick={handleReviewClick}
+            title={!isOpen ? 'Bắt đầu học' : ''}
+            className={`hover:bg-primary hover:shadow-primary/30 relative z-10 flex w-full items-center justify-center rounded-xl bg-slate-900 text-white shadow-lg shadow-slate-200 transition-all active:scale-95 ${isOpen ? 'gap-2 py-3.5' : 'py-3'}`}
+          >
+            <span className="material-symbols-outlined shrink-0 text-sm">
+              bolt
+            </span>
+            <span
+              className={`text-xs font-black tracking-[0.15em] whitespace-nowrap uppercase transition-all duration-300 ${isOpen ? 'w-auto opacity-100' : 'w-0 overflow-hidden opacity-0'}`}
             >
-              <span className="material-symbols-outlined text-sm">bolt</span>
               Bắt đầu học
-            </button>
+            </span>
+          </button>
         </div>
       </div>
     </aside>
