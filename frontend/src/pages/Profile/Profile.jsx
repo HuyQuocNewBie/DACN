@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
@@ -9,18 +9,68 @@ import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 const Profile = () => {
   const { user, setUser } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState('');
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (user?.username) {
       setUsername(user.username);
     }
+    if (user?.avatar) {
+      setAvatarPreview(user.avatar);
+    }
   }, [user]);
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validation
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+
+    if (!allowedTypes.includes(file.type)) {
+      return toast.error('Chỉ hỗ trợ ảnh JPG hoặc PNG');
+    }
+
+    if (file.size > maxSize) {
+      return toast.error('Ảnh không được vượt quá 2MB');
+    }
+
+    // Preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setAvatarPreview(event.target?.result || '');
+    };
+    reader.readAsDataURL(file);
+
+    // Upload
+    setAvatarLoading(true);
+    try {
+      const response = await userApi.uploadAvatar(file);
+      toast.success('Cập nhật ảnh đại diện thành công!');
+      setUser({ ...user, avatar: response.avatar });
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Lỗi khi upload ảnh');
+      setAvatarPreview(user?.avatar || '');
+    } finally {
+      setAvatarLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -89,13 +139,35 @@ const Profile = () => {
           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
             <div className="flex flex-col gap-6 border-b border-slate-50 pb-8 md:flex-row md:items-center">
               <div className="group relative">
-                <div className="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 items-center justify-center rounded-full border-2 text-4xl font-bold shadow-inner">
-                  {username?.charAt(0)?.toUpperCase() || 'U'}
+                <div className="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2 text-4xl font-bold shadow-inner">
+                  {avatarPreview ? (
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    username?.charAt(0)?.toUpperCase() || 'U'
+                  )}
                 </div>
-                <div className="absolute -right-1 -bottom-1 rounded-full border border-slate-100 bg-white p-2 shadow-md">
-                  📷
-                </div>
+                <button
+                  type="button"
+                  onClick={handleAvatarClick}
+                  disabled={avatarLoading}
+                  className="absolute -right-1 -bottom-1 cursor-pointer rounded-full border border-slate-100 bg-white p-2 shadow-md transition-all hover:bg-slate-50 disabled:opacity-50"
+                >
+                  {avatarLoading ? '⏳' : '📷'}
+                </button>
               </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={handleAvatarChange}
+                className="hidden"
+                disabled={avatarLoading}
+              />
 
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-slate-800">
@@ -109,9 +181,11 @@ const Profile = () => {
 
               <button
                 type="button"
-                className="hover:bg-primary rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-200 transition-all active:scale-95"
+                onClick={handleAvatarClick}
+                disabled={avatarLoading}
+                className="hover:bg-primary rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-200 transition-all active:scale-95 disabled:opacity-50"
               >
-                Chỉnh sửa ảnh
+                {avatarLoading ? 'Đang tải...' : 'Chỉnh sửa ảnh'}
               </button>
             </div>
 
