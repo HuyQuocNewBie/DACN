@@ -1,13 +1,35 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import userApi from '../../../api/user.api';
+import toast from 'react-hot-toast';
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleReviewClick = async (e) => {
+    e.preventDefault();
+    try {
+      const data = await userApi.getStatistics();
+      if (data.due_deck_id) {
+        navigate(`/review/${data.due_deck_id}`);
+      } else {
+        toast.error('Không có bộ thẻ nào cần ôn tập');
+      }
+    } catch {
+      toast.error('Lỗi khi tải dữ liệu');
+    }
+  };
 
   const menuItems = [
     { icon: 'grid_view', label: 'Dashboard', path: '/dashboard' },
     { icon: 'explore', label: 'Khám phá', path: '/explore' },
     { icon: 'layers', label: 'Bộ thẻ của tôi', path: '/decks' },
-    { icon: 'auto_stories', label: 'Ôn tập', path: '/review' },
+    { 
+      icon: 'auto_stories', 
+      label: 'Ôn tập', 
+      path: '/review',
+      onClick: handleReviewClick  // Thêm handler
+    },
     { icon: 'account_circle', label: 'Cá nhân', path: '/profile' },
   ];
 
@@ -37,6 +59,7 @@ const Sidebar = () => {
             <Link
               key={item.path}
               to={item.path}
+              onClick={item.onClick}  // Thêm onClick
               className={`group flex items-center gap-4 rounded-2xl px-5 py-3.5 transition-all duration-300 relative ${
                 isActive
                   ? 'bg-slate-900 text-white shadow-xl shadow-slate-200 translate-x-2'
@@ -77,13 +100,13 @@ const Sidebar = () => {
                 Quick Action
             </p>
             
-            <Link
-              to="/review"
+            <button
+              onClick={handleReviewClick}
               className="relative z-10 flex items-center justify-center gap-2 bg-slate-900 hover:bg-primary text-white w-full rounded-xl py-3.5 text-xs font-black uppercase tracking-[0.15em] shadow-lg shadow-slate-200 hover:shadow-primary/30 transition-all active:scale-95"
             >
               <span className="material-symbols-outlined text-sm">bolt</span>
               Bắt đầu học
-            </Link>
+            </button>
         </div>
       </div>
     </aside>
