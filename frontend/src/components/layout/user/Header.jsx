@@ -6,13 +6,13 @@ import { toast } from 'react-hot-toast';
 const getDisplayName = (user) =>
   user?.username || user?.fullname || user?.name || 'Học viên';
 
-const Header = ({ title = 'Bảng điều khiển' }) => {
+const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [open, setOpen] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // State quản lý modal đăng xuất
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dropdownRef = useRef(null);
 
   const isAdminPath = location.pathname.startsWith('/admin');
@@ -27,13 +27,11 @@ const Header = ({ title = 'Bảng điều khiển' }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Hàm mở modal xác nhận
   const handleLogoutClick = () => {
     setOpen(false);
     setShowLogoutModal(true);
   };
 
-  // Hàm thực hiện đăng xuất thật
   const confirmLogout = () => {
     const fullName = getDisplayName(user);
 
@@ -47,7 +45,8 @@ const Header = ({ title = 'Bảng điều khiển' }) => {
 
   return (
     <>
-      <header className="fixed top-0 right-0 left-0 z-40 flex h-20 items-center justify-between border-b border-slate-100 bg-white/80 px-8 backdrop-blur-xl transition-all duration-300 md:left-64">
+      {/* THAY ĐỔI Ở ĐÂY: Dùng template string để đổi md:left-64 thành md:left-24 dựa vào isSidebarOpen */}
+      <header className={`fixed top-0 right-0 left-0 z-40 flex h-20 items-center justify-between border-b border-slate-100 bg-white/80 px-8 backdrop-blur-xl transition-all duration-300 ${isSidebarOpen ? 'md:left-64' : 'md:left-24'}`}>
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-black tracking-tight text-slate-900 md:text-2xl">
             {title}
@@ -157,9 +156,8 @@ const Header = ({ title = 'Bảng điều khiển' }) => {
         </div>
       </header>
 
-      {/* Modal xác nhận đăng xuất */}
       {showLogoutModal && (
-        <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300">
+        <div className="animate-in fade-in fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300">
           <div
             className="absolute inset-0 cursor-pointer"
             onClick={() => setShowLogoutModal(false)}

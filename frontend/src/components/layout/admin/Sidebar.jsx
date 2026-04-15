@@ -6,7 +6,6 @@ const Sidebar = ({ menuItems, handleLogout, isOpen, toggleSidebar }) => {
   return (
     <aside className={`fixed z-50 hidden h-screen flex-col bg-slate-900 text-white py-6 md:flex transition-all duration-300 ${isOpen ? 'w-64 px-6' : 'w-24 px-4'}`}>
       
-      {/* NÚT TOGGLE */}
       <button
         onClick={toggleSidebar}
         className="absolute -right-4 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 border-2 border-slate-700 text-white hover:bg-primary hover:border-primary transition-all z-50 shadow-lg"
@@ -16,7 +15,6 @@ const Sidebar = ({ menuItems, handleLogout, isOpen, toggleSidebar }) => {
         </span>
       </button>
 
-      {/* KHỐI LOGO */}
       <div className={`mb-10 flex items-center justify-center py-4 bg-white/5 rounded-4xl border border-white/10 relative overflow-hidden group ${isOpen ? 'px-2' : 'px-0'}`}>
         <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         <Link to="/admin" className="flex items-center relative z-10">
@@ -28,7 +26,6 @@ const Sidebar = ({ menuItems, handleLogout, isOpen, toggleSidebar }) => {
         </Link>
       </div>
 
-      {/* MENU NAV - ĐÃ XÓA overflow-x-hidden Ở ĐÂY */}
       <nav className="flex-1 space-y-2">
         <p className={`text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 whitespace-nowrap transition-all duration-300 ${isOpen ? 'px-4 opacity-100' : 'text-center opacity-0 h-0 mb-0'}`}>
           Quản trị hệ thống
@@ -60,7 +57,6 @@ const Sidebar = ({ menuItems, handleLogout, isOpen, toggleSidebar }) => {
         })}
       </nav>
 
-      {/* FOOTER CỦA SIDEBAR - ĐÃ XÓA overflow-x-hidden Ở ĐÂY */}
       <div className="mt-auto space-y-3 pt-6 border-t border-white/5">
         <Link
           to="/dashboard"

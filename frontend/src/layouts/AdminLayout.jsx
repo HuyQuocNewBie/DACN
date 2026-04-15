@@ -32,7 +32,6 @@ const AdminLayout = () => {
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
       />
 
-      {/* Điều chỉnh margin-left dựa trên trạng thái isOpen */}
       <main className={`flex min-h-screen flex-1 flex-col transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-24'}`}>
         <Header handleLogout={handleLogout} />
 

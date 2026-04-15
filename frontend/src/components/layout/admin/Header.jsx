@@ -41,7 +41,6 @@ const Header = () => {
   return (
     <>
       <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-100 bg-white/80 px-8 backdrop-blur-xl transition-all duration-300">
-        {/* Tiêu đề trang */}
         <div>
           <p className="mb-1 text-[10px] font-black leading-none tracking-widest text-primary uppercase">
             Hệ thống
@@ -52,7 +51,6 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-6">
-          {/* Nút thông báo */}
           <button className="hover:bg-primary/10 hover:text-primary group relative rounded-2xl bg-slate-50 p-2.5 text-slate-400 transition-all active:scale-95">
             <span className="material-symbols-outlined text-[24px] leading-none">
               notifications
@@ -60,7 +58,6 @@ const Header = () => {
             <span className="absolute top-2.5 right-2.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-primary group-hover:animate-ping"></span>
           </button>
 
-          {/* Cụm Dropdown User */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setOpen(!open)}
@@ -84,7 +81,6 @@ const Header = () => {
               </span>
             </button>
 
-            {/* Menu thả xuống */}
             {open && (
               <div className="animate-in fade-in slide-in-from-top-4 absolute right-0 z-50 mt-4 w-64 overflow-hidden rounded-4xl border border-slate-100 bg-white py-3 shadow-[0_20px_50px_rgba(0,0,0,0.1)] duration-200">
                 <div className="mb-2 border-b border-slate-50 px-6 py-4">
@@ -106,7 +102,6 @@ const Header = () => {
                   </div>
                 </div>
 
-                {/* Nút về trang User */}
                 <div className="space-y-1 px-2">
                   <button
                     onClick={() => {
@@ -122,12 +117,11 @@ const Header = () => {
                   </button>
                 </div>
 
-                {/* Nút Đăng xuất */}
                 <div className="mt-2 border-t border-slate-50 px-2 pt-2">
                   <button
                     onClick={() => {
-                      setIsLogoutModalOpen(true); // Bật modal xác nhận
-                      setOpen(false); // Đóng dropdown
+                      setIsLogoutModalOpen(true);
+                      setOpen(false);
                     }}
                     className="group flex w-full items-center gap-4 rounded-[1.25rem] px-4 py-3 text-sm font-black text-red-500 transition-all hover:bg-red-50"
                   >
@@ -143,7 +137,6 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Modal Cảnh báo Đăng xuất */}
       {isLogoutModalOpen && (
         <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300">
           <div
