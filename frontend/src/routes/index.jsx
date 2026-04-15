@@ -35,6 +35,7 @@ const AppRoutes = () => {
           <Route path="explore" element={<ExplorePage />} />
           <Route path="decks" element={<DeckList />} />
           <Route path="decks/:id" element={<DeckDetail />} />
+          <Route path="review" element={<ReviewPage />} />
           <Route path="review/:id" element={<ReviewPage />} />
           <Route path="profile" element={<Profile />} />
         </Route>
