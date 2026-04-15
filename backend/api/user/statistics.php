@@ -1,11 +1,12 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, OPTIONS"); 
+header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200); exit();
+    http_response_code(200);
+    exit();
 }
 
 include_once '../../config/database.php';
@@ -16,7 +17,8 @@ $jwt = str_replace('Bearer ', '', $authHeader);
 $user_data = JWT::validate($jwt);
 
 if (!$user_data) {
-    http_response_code(401); exit();
+    http_response_code(401);
+    exit();
 }
 
 $db = (new Database())->getConnection();
@@ -29,7 +31,8 @@ $stats = [
     'learning_cards' => 0,
     'mastered_cards' => 0,
     'retention_rate' => 0,
-    'recent_activities' => []
+    'recent_activities' => [],
+    'due_deck_id' => null
 ];
 
 try {
@@ -81,7 +84,7 @@ try {
                         ORDER BY r.reviewed_at DESC LIMIT 5";
     $stmtActivities = $db->prepare($queryActivities);
     $stmtActivities->execute([$uid]);
-    
+
     $qualitiesTranslate = [
         0 => 'Chưa thuộc',
         3 => 'Ghi nhớ Khó',
@@ -90,10 +93,10 @@ try {
     ];
 
     while ($row = $stmtActivities->fetch(PDO::FETCH_ASSOC)) {
-        $frontStr = mb_strlen($row['front_content']) > 25 
-            ? mb_substr($row['front_content'], 0, 25) . "..." 
+        $frontStr = mb_strlen($row['front_content']) > 25
+            ? mb_substr($row['front_content'], 0, 25) . "..."
             : $row['front_content'];
-            
+
         $qText = isset($qualitiesTranslate[$row['quality']]) ? $qualitiesTranslate[$row['quality']] : 'Ôn tập';
 
         $stats['recent_activities'][] = [
@@ -101,12 +104,20 @@ try {
             'content' => "Đã xem thẻ: \"{$frontStr}\" ({$qText})"
         ];
     }
-    
+
+    // 5. Due deck
+    $queryDueDeck = "SELECT d.id FROM decks d
+                 JOIN cards c ON c.deck_id = d.id
+                 WHERE d.user_id = ? AND c.next_review_date <= CURDATE()
+                 LIMIT 1";
+    $stmtDueDeck = $db->prepare($queryDueDeck);
+    $stmtDueDeck->execute([$uid]);
+    $rowDueDeck = $stmtDueDeck->fetch(PDO::FETCH_ASSOC);
+    $stats['due_deck_id'] = $rowDueDeck ? (int)$rowDueDeck['id'] : null;
+
     http_response_code(200);
     echo json_encode($stats);
-
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['message' => 'Lỗi truy xuất hệ thống thống kê.', 'error' => $e->getMessage()]);
 }
-?>
