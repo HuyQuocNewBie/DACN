@@ -113,7 +113,8 @@ DACN
 │  │  │  │  └─ DeckList.jsx
 │  │  │  ├─ Explore
 │  │  │  │  └─ ExplorePage.jsx
-│  │  │  ├─ LandingPage.jsx
+│  │  │  ├─ LandingPage
+│  │  │  │  └─ LandingPage.jsx
 │  │  │  ├─ NotFound.jsx
 │  │  │  ├─ Profile
 │  │  │  │  └─ Profile.jsx

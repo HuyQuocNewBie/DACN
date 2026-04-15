@@ -5,7 +5,7 @@ import MainLayout from '../layouts/MainLayout';
 import AdminLayout from '../layouts/AdminLayout';
 
 // Pages
-import LandingPage from '../pages/LandingPage';
+import LandingPage from '../pages/LandingPage/LandingPage';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import ExplorePage from '../pages/Explore/ExplorePage';
 import DeckList from '../pages/Deck/DeckList';

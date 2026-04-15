@@ -1,14 +1,12 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { FaFacebookF } from 'react-icons/fa';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { FaFacebookF, FaArrowUp } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
-import Login from './Auth/Login';
-import Register from './Auth/Register';
+import Login from '../Auth/Login';
+import Register from '../Auth/Register';
 
-// --- SUB-COMPONENTS ---
-
-const NavLink = ({ children }) => (
+const NavLink = ({ children, href }) => (
   <a
-    href="#"
+    href={href}
     className="hover:text-primary group relative text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase transition-all"
   >
     {children}
@@ -31,8 +29,6 @@ const FeatureCard = ({ title, icon, desc }) => (
   </div>
 );
 
-// --- NEW SUB-COMPONENTS ---
-
 const StepCard = ({ step, title, desc, icon }) => (
   <div className="group relative rounded-4xl border border-slate-100 bg-white p-10 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
     <div className="absolute -top-6 -right-2 z-0 text-8xl font-black text-slate-50 transition-colors duration-500 group-hover:text-slate-100">
@@ -43,7 +39,9 @@ const StepCard = ({ step, title, desc, icon }) => (
         {icon}
       </div>
       <h4 className="mb-3 text-xl font-black text-slate-900">{title}</h4>
-      <p className="text-sm leading-relaxed font-medium text-slate-500">{desc}</p>
+      <p className="text-sm leading-relaxed font-medium text-slate-500">
+        {desc}
+      </p>
     </div>
   </div>
 );
@@ -51,12 +49,18 @@ const StepCard = ({ step, title, desc, icon }) => (
 const TestimonialCard = ({ name, role, quote, avatar }) => (
   <div className="group rounded-4xl border border-slate-100 bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
     <div className="mb-6 flex gap-1 text-sm text-orange-400">★★★★★</div>
-    <p className="mb-8 font-medium leading-relaxed text-slate-600">"{quote}"</p>
+    <p className="mb-8 leading-relaxed font-medium text-slate-600">"{quote}"</p>
     <div className="flex items-center gap-4">
-      <img src={avatar} alt={name} className="h-12 w-12 rounded-full border-2 border-slate-50 object-cover" />
+      <img
+        src={avatar}
+        alt={name}
+        className="h-12 w-12 rounded-full border-2 border-slate-50 object-cover"
+      />
       <div>
         <h5 className="font-black text-slate-900">{name}</h5>
-        <p className="mt-0.5 text-[10px] font-bold tracking-widest text-slate-400 uppercase">{role}</p>
+        <p className="mt-0.5 text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+          {role}
+        </p>
       </div>
     </div>
   </div>
@@ -64,7 +68,39 @@ const TestimonialCard = ({ name, role, quote, avatar }) => (
 
 const LandingPage = () => {
   const [authMode, setAuthMode] = useState(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
   const closeAuth = useCallback(() => setAuthMode(null), []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Hàm xử lý cuộn lên đầu
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  const navItems = useMemo(
+    () => [
+      { name: 'Tính năng', href: '#tinh-nang' },
+      { name: 'Quy trình', href: '#quy-trinh' },
+      { name: 'Cộng đồng', href: '#cong-dong' },
+    ],
+    []
+  );
 
   const features = useMemo(
     () => [
@@ -89,9 +125,7 @@ const LandingPage = () => {
 
   return (
     <div className="selection:bg-primary/20 selection:text-primary min-h-screen bg-[#FDFDFF] text-slate-900">
-      {/* ================= NAVIGATION ================= */}
       <nav className="fixed inset-x-0 top-0 z-50 flex h-24 items-center justify-between border-b border-slate-50 bg-white/70 px-8 backdrop-blur-2xl md:px-12">
-        {/* LOGO REPLACED HERE */}
         <div className="group flex cursor-pointer items-center gap-3">
           <img
             src="/icons/Logo.png"
@@ -101,8 +135,10 @@ const LandingPage = () => {
         </div>
 
         <div className="hidden items-center gap-12 md:flex">
-          {['Tính năng', 'Giải pháp', 'Cộng đồng'].map((item) => (
-            <NavLink key={item}>{item}</NavLink>
+          {navItems.map((item) => (
+            <NavLink key={item.name} href={item.href}>
+              {item.name}
+            </NavLink>
           ))}
         </div>
 
@@ -123,7 +159,6 @@ const LandingPage = () => {
       </nav>
 
       <main className="pt-24">
-        {/* ================= HERO SECTION ================= */}
         <section className="mx-auto grid max-w-7xl items-center gap-16 px-8 py-20 lg:grid-cols-12 lg:py-32">
           <div className="animate-in fade-in slide-in-from-left space-y-10 duration-1000 lg:col-span-7">
             <div className="bg-primary/5 inline-flex items-center gap-3 rounded-full px-5 py-2">
@@ -191,7 +226,6 @@ const LandingPage = () => {
             </div>
           </div>
 
-          {/* FLOATING CARD DECOR */}
           <div className="animate-in zoom-in relative delay-200 duration-1000 lg:col-span-5">
             <div className="bg-primary/5 absolute top-1/2 left-1/2 h-[120%] w-[120%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px]"></div>
 
@@ -234,8 +268,7 @@ const LandingPage = () => {
           </div>
         </section>
 
-        {/* ================= FEATURES ================= */}
-        <section className="bg-slate-50/50 px-8 py-32">
+        <section id="tinh-nang" className="bg-slate-50/50 px-8 py-32">
           <div className="mx-auto max-w-7xl">
             <div className="mb-20 space-y-4 text-center">
               <h2 className="text-primary text-[10px] font-black tracking-[0.3em] uppercase">
@@ -253,8 +286,7 @@ const LandingPage = () => {
           </div>
         </section>
 
-        {/* ================= HOW IT WORKS (NEW) ================= */}
-        <section className="px-8 py-32">
+        <section id="quy-trinh" className="px-8 py-32">
           <div className="mx-auto max-w-7xl">
             <div className="mb-20 space-y-4 text-center">
               <h2 className="text-primary text-[10px] font-black tracking-[0.3em] uppercase">
@@ -264,35 +296,33 @@ const LandingPage = () => {
                 3 bước để ghi nhớ vĩnh viễn
               </p>
             </div>
-            
+
             <div className="relative grid gap-8 md:grid-cols-3">
-              {/* Connecting line pattern for desktop */}
               <div className="absolute top-1/2 left-0 -z-10 hidden h-0.5 w-full -translate-y-1/2 border-t-2 border-dashed border-slate-100 md:block"></div>
-              
-              <StepCard 
-                step="01" 
-                title="Tạo bộ thẻ" 
-                desc="Tự do sáng tạo flashcard của riêng bạn hoặc import hàng loạt từ Excel, Quizlet chỉ trong 1 nốt nhạc." 
-                icon="📝" 
+
+              <StepCard
+                step="01"
+                title="Tạo bộ thẻ"
+                desc="Tự do sáng tạo flashcard của riêng bạn hoặc import hàng loạt từ Excel, Quizlet chỉ trong 1 nốt nhạc."
+                icon="📝"
               />
-              <StepCard 
-                step="02" 
-                title="Ôn tập thông minh" 
-                desc="Ứng dụng sẽ tự động tính toán 'điểm rơi quên lãng' để nhắc bạn ôn tập đúng lúc cần thiết nhất." 
-                icon="🔄" 
+              <StepCard
+                step="02"
+                title="Ôn tập thông minh"
+                desc="Ứng dụng sẽ tự động tính toán 'điểm rơi quên lãng' để nhắc bạn ôn tập đúng lúc cần thiết nhất."
+                icon="🔄"
               />
-              <StepCard 
-                step="03" 
-                title="Làm chủ kiến thức" 
-                desc="Theo dõi biểu đồ tiến độ. Biến mọi thông tin ngắn hạn từ não bộ đi sâu vào vùng trí nhớ vĩnh cửu." 
-                icon="🏆" 
+              <StepCard
+                step="03"
+                title="Làm chủ kiến thức"
+                desc="Theo dõi biểu đồ tiến độ. Biến mọi thông tin ngắn hạn từ não bộ đi sâu vào vùng trí nhớ vĩnh cửu."
+                icon="🏆"
               />
             </div>
           </div>
         </section>
 
-        {/* ================= TESTIMONIALS (NEW) ================= */}
-        <section className="bg-slate-50/50 px-8 py-32">
+        <section id="cong-dong" className="bg-slate-50/50 px-8 py-32">
           <div className="mx-auto max-w-7xl">
             <div className="mb-20 space-y-4 text-center">
               <h2 className="text-primary text-[10px] font-black tracking-[0.3em] uppercase">
@@ -302,23 +332,23 @@ const LandingPage = () => {
                 Hàng ngàn người đã thay đổi cách học
               </p>
             </div>
-            
+
             <div className="grid gap-8 md:grid-cols-3">
-              <TestimonialCard 
-                name="Hải Đăng" 
-                role="Sinh viên Y Khoa" 
+              <TestimonialCard
+                name="Hải Đăng"
+                role="Sinh viên Y Khoa"
                 quote="Khối lượng kiến thức ngành Y khổng lồ khiến mình từng stress nặng. Từ khi dùng nền tảng này, mình ghi nhớ tên thuốc và giải phẫu nhẹ nhàng hơn hẳn."
                 avatar="https://i.pravatar.cc/100?u=41"
               />
-              <TestimonialCard 
-                name="Minh Anh" 
-                role="Chinh phục IELTS 8.0" 
+              <TestimonialCard
+                name="Minh Anh"
+                role="Chinh phục IELTS 8.0"
                 quote="Thuật toán lặp lại ngắt quãng thực sự là cứu tinh cho việc học từ vựng tiếng Anh. Giao diện lại cực kỳ sạch sẽ và hiện đại, không bị rối mắt chút nào."
                 avatar="https://i.pravatar.cc/100?u=22"
               />
-              <TestimonialCard 
-                name="Hoàng Nam" 
-                role="Kỹ sư phần mềm" 
+              <TestimonialCard
+                name="Hoàng Nam"
+                role="Kỹ sư phần mềm"
                 quote="Mình dùng app để ghi nhớ các design pattern và syntax của ngôn ngữ lập trình mới. Tốc độ nạp kiến thức hiệu quả hơn việc đọc tài liệu chay rất nhiều."
                 avatar="https://i.pravatar.cc/100?u=33"
               />
@@ -326,10 +356,8 @@ const LandingPage = () => {
           </div>
         </section>
 
-        {/* ================= CTA BANNER ================= */}
         <section className="px-8 py-32">
           <div className="group relative mx-auto max-w-6xl overflow-hidden rounded-[4rem] bg-slate-900 p-16 md:p-24">
-            {/* Background Decor */}
             <div className="bg-primary/20 group-hover:bg-primary/30 absolute top-0 right-0 -mt-48 -mr-48 h-96 w-96 rounded-full blur-[120px] transition-all"></div>
 
             <div className="relative z-10 space-y-12 text-center">
@@ -353,7 +381,18 @@ const LandingPage = () => {
         </section>
       </main>
 
-      {/* ================= MODAL AUTH ================= */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed right-6 bottom-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-slate-800 text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-slate-900 ${
+          showScrollTop
+            ? 'translate-y-0 opacity-50 hover:opacity-100'
+            : 'pointer-events-none translate-y-5 opacity-0'
+        }`}
+        aria-label="Cuộn lên đầu trang"
+      >
+        <FaArrowUp className="text-lg" />
+      </button>
+
       {authMode && (
         <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-xl duration-300">
           <div className="absolute inset-0" onClick={closeAuth} />
@@ -371,17 +410,24 @@ const LandingPage = () => {
                 </p>
               </div>
 
-              {/* Toggle Login/Register */}
               <div className="mb-10 flex rounded-2xl bg-slate-50 p-1.5">
                 <button
                   onClick={() => setAuthMode('login')}
-                  className={`flex-1 rounded-xl py-3 text-xs font-black tracking-widest uppercase transition-all ${authMode === 'login' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}
+                  className={`flex-1 rounded-xl py-3 text-xs font-black tracking-widest uppercase transition-all ${
+                    authMode === 'login'
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-400'
+                  }`}
                 >
                   Đăng nhập
                 </button>
                 <button
                   onClick={() => setAuthMode('register')}
-                  className={`flex-1 rounded-xl py-3 text-xs font-black tracking-widest uppercase transition-all ${authMode === 'register' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}
+                  className={`flex-1 rounded-xl py-3 text-xs font-black tracking-widest uppercase transition-all ${
+                    authMode === 'register'
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-400'
+                  }`}
                 >
                   Đăng ký
                 </button>
@@ -419,9 +465,7 @@ const LandingPage = () => {
         </div>
       )}
 
-      {/* FOOTER */}
       <footer className="space-y-8 border-t border-slate-50 bg-white py-20 text-center">
-        {/* FOOTER LOGO REPLACED HERE */}
         <div className="group flex cursor-pointer items-center justify-center gap-2 opacity-40 grayscale transition-all duration-500 hover:opacity-100 hover:grayscale-0">
           <img
             src="/icons/Logo.png"
