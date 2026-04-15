@@ -68,7 +68,15 @@ const Header = ({ title = 'Bảng điều khiển' }) => {
               className="group flex items-center gap-3 rounded-[1.25rem] bg-slate-50 p-1.5 pr-4 transition-all hover:bg-slate-100 focus:outline-none active:scale-95"
             >
               <div className="group-hover:bg-primary group-hover:shadow-primary/30 flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-slate-900 text-sm font-black text-white shadow-lg shadow-slate-200 transition-all">
-                {getDisplayName(user).charAt(0).toUpperCase()}
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={getDisplayName(user)}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  getDisplayName(user).charAt(0).toUpperCase()
+                )}
               </div>
               <div className="hidden text-left md:block">
                 <p className="text-xs leading-none font-black text-slate-900">
@@ -174,9 +182,10 @@ const Header = ({ title = 'Bảng điều khiển' }) => {
                 Đăng xuất?
               </h3>
               <p className="mt-2 text-sm font-medium text-slate-500">
-                Bạn có chắc chắn muốn rời đi? Mọi tiến trình học tập của bạn đều đã được lưu lại an toàn.
+                Bạn có chắc chắn muốn rời đi? Mọi tiến trình học tập của bạn đều
+                đã được lưu lại an toàn.
               </p>
-              
+
               <div className="mt-8 flex gap-3">
                 <button
                   onClick={() => setShowLogoutModal(false)}
