@@ -11,6 +11,7 @@ const DeckDetail = () => {
 
   const [deck, setDeck] = useState(null);
   const [cards, setCards] = useState([]);
+  const [cardsError, setCardsError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -28,7 +29,6 @@ const DeckDetail = () => {
     back_content: '',
   });
 
-  const hasFetched = useRef({});
   const isComponentMounted = useRef(true);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,57 +36,37 @@ const DeckDetail = () => {
 
   const fetchData = useCallback(async () => {
     try {
+      setLoading(true);
       const [deckRes, cardsRes] = await Promise.all([
         deckApi.getById(id),
         cardApi.getByDeckId(id),
       ]);
+
       if (isComponentMounted.current) {
-        setDeck(deckRes);
-        setCards(cardsRes);
+        setDeck(deckRes || null);
+        setCards(Array.isArray(cardsRes) ? cardsRes : []);
+        setCardsError(false);
       }
     } catch {
       if (isComponentMounted.current) {
-        toast.error('Không thể tải lại dữ liệu', { id: 'fetch-detail-error' });
+        toast.error('Không thể tải dữ liệu bộ thẻ', {
+          id: 'fetch-detail-error',
+        });
+        setCardsError(true);
       }
+    } finally {
+      if (isComponentMounted.current) setLoading(false);
     }
   }, [id]);
 
   useEffect(() => {
     isComponentMounted.current = true;
-
-    const loadData = async () => {
-      if (hasFetched.current[id]) return;
-      hasFetched.current[id] = true;
-
-      try {
-        setLoading(true);
-        const [deckRes, cardsRes] = await Promise.all([
-          deckApi.getById(id),
-          cardApi.getByDeckId(id),
-        ]);
-
-        if (isComponentMounted.current) {
-          setDeck(deckRes);
-          setCards(cardsRes);
-        }
-      } catch {
-        if (isComponentMounted.current) {
-          toast.error('Không thể tải dữ liệu bộ thẻ', {
-            id: 'fetch-detail-error',
-          });
-        }
-        hasFetched.current[id] = false;
-      } finally {
-        if (isComponentMounted.current) setLoading(false);
-      }
-    };
-
-    loadData();
+    fetchData();
 
     return () => {
       isComponentMounted.current = false;
     };
-  }, [id]);
+  }, [fetchData]);
 
   useEffect(() => {
     if (deck) {
@@ -193,11 +173,14 @@ const DeckDetail = () => {
   }, [searchQuery]);
 
   const filteredCards = useMemo(() => {
-    return cards.filter(
-      (card) =>
-        card.front_content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        card.back_content.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    if (!Array.isArray(cards)) return [];
+
+    const query = searchQuery.toLowerCase();
+    return cards.filter((card) => {
+      const front = String(card.front_content || '').toLowerCase();
+      const back = String(card.back_content || '').toLowerCase();
+      return front.includes(query) || back.includes(query);
+    });
   }, [cards, searchQuery]);
 
   const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
@@ -208,6 +191,29 @@ const DeckDetail = () => {
   }, [filteredCards, currentPage]);
 
   if (loading) return <Loading />;
+
+  if (!deck) {
+    return (
+      <div className="animate-in fade-in space-y-8 duration-500">
+        <button
+          onClick={() => navigate('/decks')}
+          className="flex w-fit items-center gap-2 text-xs font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
+        >
+          <span>←</span> Quay lại kho thẻ
+        </button>
+
+        <div className="rounded-3xl border border-rose-100 bg-rose-50 p-8 shadow-sm">
+          <h2 className="text-2xl font-bold text-rose-700">
+            Không tìm thấy bộ thẻ
+          </h2>
+          <p className="mt-3 text-slate-600">
+            Không thể tải bộ thẻ này. Vui lòng kiểm tra lại liên kết hoặc quay
+            lại danh sách bộ thẻ.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-in fade-in space-y-8 duration-500">
@@ -230,7 +236,8 @@ const DeckDetail = () => {
                 {deck?.title}
               </h1>
               <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-black tracking-wider text-indigo-600 uppercase">
-                {cards.length} thẻ
+                {Array.isArray(cards) ? cards.length : deck?.cards_count || 0}{' '}
+                thẻ
               </span>
 
               <div className="ml-4 flex gap-1 border-l border-slate-100 pl-4">
@@ -455,14 +462,22 @@ const DeckDetail = () => {
               </table>
             </div>
 
-            {filteredCards.length === 0 && (
+            {cardsError ? (
+              <div className="space-y-3 py-20 text-center">
+                <div className="text-4xl text-rose-400">⚠️</div>
+                <p className="text-sm font-medium text-rose-500">
+                  Không thể tải nội dung thẻ. Vui lòng thử lại hoặc kiểm tra kết
+                  nối API.
+                </p>
+              </div>
+            ) : filteredCards.length === 0 ? (
               <div className="space-y-3 py-20 text-center">
                 <div className="text-4xl opacity-20 grayscale">📭</div>
                 <p className="text-sm font-medium text-slate-400 italic">
                   Không tìm thấy nội dung yêu cầu
                 </p>
               </div>
-            )}
+            ) : null}
 
             {totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-slate-50 bg-slate-50/30 p-6">
