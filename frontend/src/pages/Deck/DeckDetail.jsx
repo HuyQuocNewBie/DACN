@@ -443,75 +443,94 @@ const DeckDetail = () => {
             </div>
 
             <div className="flex-1 overflow-x-auto">
-  <table className="w-full">
-    <thead>
-      <tr className="bg-slate-50/50 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-        <th className="px-6 py-4 text-left">Mặt trước</th>
-        <th className="px-6 py-4 text-left">Mặt sau</th>
-        {/* THÊM CỘT NÀY */}
-        <th className="px-6 py-4 text-left">Thời gian ôn</th>
-        <th className="px-6 py-4 text-right">Thao tác</th>
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-slate-50">
-      {paginatedCards.map((card) => (
-        <tr
-          key={card.id}
-          className="group transition-colors hover:bg-slate-50/80"
-        >
-          <td className="px-6 py-5">
-            <p className="text-sm leading-snug font-bold text-slate-700">
-              {card.front_content}
-            </p>
-          </td>
-          <td className="px-6 py-5">
-            <p className="text-sm leading-snug font-medium text-slate-500 italic">
-              {card.back_content}
-            </p>
-          </td>
-          
-          {/* THÊM DỮ LIỆU CỘT THỜI GIAN ÔN TẬP */}
-          <td className="px-6 py-5">
-            <div className="flex flex-col">
-              <span className={`text-xs font-bold ${
-                new Date(card.next_review_date) <= new Date() 
-                ? 'text-rose-500' // Quá hạn hoặc đến hạn hôm nay thì hiện màu đỏ
-                : 'text-emerald-500' // Chưa đến hạn hiện màu xanh
-              }`}>
-                {new Date(card.next_review_date).toLocaleDateString('vi-VN')}
-              </span>
-              <span className="text-[10px] text-slate-400">
-                {card.review_interval > 0 ? `Khoảng cách: ${card.review_interval} ngày` : 'Thẻ mới'}
-              </span>
-            </div>
-          </td>
+              <table className="w-full table-fixed">
+                <thead>
+                  <tr className="bg-slate-50/50 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                    <th className="w-[30%] px-6 py-4 text-left">Mặt trước</th>
+                    <th className="w-[30%] px-6 py-4 text-left">Mặt sau</th>
+                    <th className="w-[20%] px-6 py-4 text-left">
+                      Thời gian ôn
+                    </th>
+                    <th className="w-[20%] px-6 py-4 text-right">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {paginatedCards.map((card) => (
+                    <tr
+                      key={card.id}
+                      className="group transition-colors hover:bg-slate-50/80"
+                    >
+                      <td className="px-6 py-5">
+                        <p className="text-sm leading-snug font-bold text-slate-700">
+                          {card.front_content}
+                        </p>
+                      </td>
+                      <td className="px-6 py-5">
+                        <p className="text-sm leading-snug font-medium text-slate-500 italic">
+                          {card.back_content}
+                        </p>
+                      </td>
 
-          <td className="px-6 py-5 text-right">
-            <div className="flex justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-              {/* ... các nút sửa/xóa giữ nguyên ... */}
-              <button
-                onClick={() => handleEditClick(card)}
-                className="rounded-lg p-2 text-slate-400 transition-all hover:bg-indigo-50 hover:text-indigo-600"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                </svg>
-              </button>
-              <button
-                onClick={() => handleDeleteCard(card.id)}
-                className="rounded-lg p-2 text-slate-400 transition-all hover:bg-red-50 hover:text-red-500"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              </button>
+                      <td className="px-6 py-5">
+                        <div className="flex flex-col">
+                          <span
+                            className={`text-xs font-bold ${
+                              new Date(card.next_review_date) <= new Date()
+                                ? 'text-rose-500'
+                                : 'text-emerald-500'
+                            }`}
+                          >
+                            {new Date(card.next_review_date).toLocaleDateString(
+                              'vi-VN'
+                            )}
+                          </span>
+                          <span className="text-[10px] text-slate-400">
+                            {card.review_interval > 0
+                              ? `Khoảng cách: ${card.review_interval} ngày`
+                              : 'Thẻ mới'}
+                          </span>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5 text-right">
+                        <div className="flex justify-end gap-1 transition-opacity group-hover:opacity-100">
+                          <button
+                            onClick={() => handleEditClick(card)}
+                            className="rounded-lg p-2 text-slate-400 transition-all hover:bg-indigo-50 hover:text-indigo-600"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCard(card.id)}
+                            className="rounded-lg p-2 text-slate-400 transition-all hover:bg-red-50 hover:text-red-500"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
 
             {cardsError ? (
               <div className="space-y-3 py-20 text-center">
