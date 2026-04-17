@@ -1,11 +1,12 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST"); 
+header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200); exit();
+    http_response_code(200);
+    exit();
 }
 
 include_once '../../config/database.php';
@@ -17,7 +18,8 @@ $jwt = str_replace('Bearer ', '', $authHeader);
 $user_data = JWT::validate($jwt);
 
 if (!$user_data) {
-    http_response_code(401); exit();
+    http_response_code(401);
+    exit();
 }
 
 $db = (new Database())->getConnection();
@@ -29,26 +31,28 @@ if (!empty($data->card_id) && isset($data->quality)) {
     $stmt = $db->prepare($query);
     $stmt->bindParam(":card_id", $data->card_id);
     $stmt->execute();
-    
+
     if ($stmt->rowCount() == 0) {
-        http_response_code(404); echo json_encode(["message" => "Thẻ không tồn tại"]); exit();
+        http_response_code(404);
+        echo json_encode(["message" => "Thẻ không tồn tại"]);
+        exit();
     }
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     $repetitions = $row['repetitions'];
     $ease_factor = $row['ease_factor'];
     $review_interval = $row['review_interval'];
-    
+
     // Mức đánh giá của sinh viên (Ví dụ: 0=Quên, 3=Bình thường, 5=Dễ quá)
-    $quality = $data->quality; 
-    
+    $quality = $data->quality;
+
     // ======================================================
     //     TÍNH TOÁN SUPERMEMO-2 (SM-2) CORE ENGINE
     // ======================================================
     if ($quality < 3) {
         // Sinh viên trả lời Sai: Lưới nhớ bị đứt, lùi lại về vạch xuất phát
         $repetitions = 0;
-        $review_interval = 1; 
+        $review_interval = 1;
     } else {
         // Trả lời Trúng: Chuỗi ghi nhớ tăng lên
         $repetitions += 1;
@@ -78,21 +82,17 @@ if (!empty($data->card_id) && isset($data->quality)) {
     $card->next_review_date = $next_review_date;
 
     if ($card->updateSM2Progress()) {
-        http_response_code(200);
-        echo json_encode(["message" => "Nã Đạn Trí Nhớ thành công.", "next_review_date" => $next_review_date]);
-        
-        // BONUS: Rót thẳng dữ liệu bấm nút của người dùng vào Quỹ Lịch Sử Thống Kê
+        // ...existing code...
         $log_query = "INSERT INTO review_logs SET user_id=:u, card_id=:c, quality=:q";
         $log_stmt = $db->prepare($log_query);
         $log_stmt->bindParam(":u", $user_data->id);
         $log_stmt->bindParam(":c", $data->card_id);
         $log_stmt->bindParam(":q", $quality);
         $log_stmt->execute();
-        
-    } else {
-        http_response_code(503); echo json_encode(["message" => "Lỗi ghi nhận dòng máu kỹ thuật số."]);
+        http_response_code(200);
+        echo json_encode(["message" => "Nã Đạn Trí Nhớ thành công.", "next_review_date" => $next_review_date]);
     }
 } else {
-    http_response_code(400); echo json_encode(["message" => "Lệnh kích hoạt não bộ bị khuyết thiếu Card ID hoặc Thang điểm (Quality)."]);
+    http_response_code(503);
+    echo json_encode(["message" => "Lỗi ghi nhận dòng máu kỹ thuật số."]);
 }
-?>
