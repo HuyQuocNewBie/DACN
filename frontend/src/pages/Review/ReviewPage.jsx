@@ -22,7 +22,6 @@ const ReviewPage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // ================= FETCH DATA =================
   useEffect(() => {
     let mounted = true;
 
@@ -45,16 +44,13 @@ const ReviewPage = () => {
     return () => (mounted = false);
   }, [id]);
 
-  // ================= LOGIC XỬ LÝ ÔN TẬP =================
   const handleReview = useCallback(async (quality) => {
     const currentCard = cards[currentIndex];
     if (!currentCard) return;
 
     try {
-      // Gửi đánh giá về Backend
       await reviewApi.updateCardProgress(currentCard.id, { quality });
 
-      // Hiệu ứng chuyển thẻ mượt mà
       setIsFlipped(false);
 
       setTimeout(() => {
@@ -64,27 +60,23 @@ const ReviewPage = () => {
           toast.success('🎉 Tuyệt vời! Bạn đã hoàn thành mục tiêu hôm nay.');
           setTimeout(() => navigate('/dashboard'), 1500);
         }
-      }, 250); // Đợi flip ngược lại rồi mới đổi card
+      }, 250);
     } catch {
       toast.error('Lỗi khi lưu tiến trình học');
     }
   }, [cards, currentIndex, navigate]);
 
-  // ================= LẮNG NGHE BÀN PHÍM =================
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Không làm gì nếu đang loading hoặc hết thẻ
       if (loading || cards.length === 0) return;
 
-      // Nhấn Space để lật thẻ
       if (e.code === 'Space') {
-        e.preventDefault(); // Tránh scroll trang khi bấm Space
+        e.preventDefault();
         if (!isFlipped) {
           setIsFlipped(true);
         }
       }
 
-      // Nhấn 1-4 để chọn mức độ khi thẻ ĐÃ LẬT
       if (isFlipped) {
         switch (e.key) {
           case '1':
@@ -109,7 +101,6 @@ const ReviewPage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isFlipped, loading, cards.length, handleReview]);
 
-  // ================= GIAO DIỆN CHỜ & TRỐNG =================
   if (loading) return <Loading />;
 
   if (cards.length === 0) return (
@@ -134,7 +125,6 @@ const ReviewPage = () => {
   return (
     <div className="mx-auto flex max-w-4xl flex-col items-center py-4">
       
-      {/* 1. Thanh Tiến Độ */}
       <div className="mb-10 w-full max-w-2xl px-4">
         <div className="mb-3 flex items-center justify-between text-sm font-bold">
           <span className="text-slate-400 uppercase tracking-widest text-[10px]">
@@ -152,14 +142,12 @@ const ReviewPage = () => {
         </div>
       </div>
 
-      {/* 2. Component Flashcard */}
       <Flashcard 
         card={currentCard} 
         isFlipped={isFlipped} 
         onFlip={() => setIsFlipped(true)} 
       />
 
-      {/* 3. Khu vực Nút bấm Đánh giá */}
       <div className="mt-10 w-full max-w-2xl px-4 min-h-20">
         {isFlipped ? (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
