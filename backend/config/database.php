@@ -11,11 +11,13 @@ class Database
     public function __construct()
     {
         $this->loadEnv(__DIR__ . '/../.env');
-        $this->servername = getenv('DB_HOST') ?: "localhost";
-        $this->port = getenv('DB_PORT') ?: "3306";
-        $this->db_name = getenv('DB_NAME') ?: "spaced_repetition";
-        $this->username = getenv('DB_USER') ?: "root";
-        $this->password = getenv('DB_PASS') ?: "";
+
+        // Use $_ENV directly instead of getenv()
+        $this->servername = $_ENV['DB_HOST'] ?? "localhost";
+        $this->port = $_ENV['DB_PORT'] ?? "3306";
+        $this->db_name = $_ENV['DB_NAME'] ?? "spaced_repetition";
+        $this->username = $_ENV['DB_USER'] ?? "root";
+        $this->password = $_ENV['DB_PASS'] ?? "";
     }
 
     private function loadEnv($filePath)
@@ -49,7 +51,6 @@ class Database
 
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
         } catch (PDOException $exception) {
             header('Content-Type: application/json');
             http_response_code(500);
@@ -62,4 +63,3 @@ class Database
         return $this->conn;
     }
 }
-?>
