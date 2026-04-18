@@ -4,7 +4,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 
 const getDisplayName = (user) =>
-  user?.username || user?.fullname || user?.name || 'Admin';
+  user?.username || user?.fullname || user?.name || 'Quản trị viên';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -12,7 +12,7 @@ const Header = () => {
   const navigate = useNavigate();
   
   const [open, setOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // State quản lý Modal đăng xuất
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -25,16 +25,12 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Hàm Đăng xuất
   const handleLogout = () => {
     const fullName = getDisplayName(user);
-
     logout();
     setOpen(false);
-    setIsLogoutModalOpen(false); // Đóng modal
-
+    setIsLogoutModalOpen(false);
     toast.success(`Hẹn gặp lại, ${fullName}! 👋`);
-
     navigate('/login');
   };
 
@@ -63,9 +59,19 @@ const Header = () => {
               onClick={() => setOpen(!open)}
               className="group flex items-center gap-3 rounded-[1.25rem] bg-slate-50 p-1.5 pr-4 transition-all hover:bg-slate-100 focus:outline-none active:scale-95"
             >
-              <div className="group-hover:bg-primary group-hover:shadow-primary/30 flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-slate-900 text-sm font-black text-white shadow-lg shadow-slate-200 transition-all">
-                {getDisplayName(user).charAt(0).toUpperCase()}
+              {/* Avatar Container: Đã sửa màu nền bg-primary/10 để ảnh sáng hơn */}
+              <div className="group-hover:bg-primary group-hover:shadow-primary/30 flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-primary/10 text-sm font-black text-primary shadow-lg shadow-slate-200 transition-all">
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={getDisplayName(user)}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  getDisplayName(user).charAt(0).toUpperCase()
+                )}
               </div>
+              
               <div className="hidden text-left md:block">
                 <p className="text-xs leading-none font-black text-slate-900">
                   {getDisplayName(user).split(' ').pop()}
@@ -88,8 +94,12 @@ const Header = () => {
                     Tài khoản của bạn
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-lg">
-                      👤
+                    <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl bg-slate-50 text-lg">
+                      {user?.avatar ? (
+                        <img src={user.avatar} className="h-full w-full object-cover" alt="" />
+                      ) : (
+                        '👤'
+                      )}
                     </div>
                     <div className="overflow-hidden">
                       <p className="truncate text-sm font-black text-slate-900">
@@ -137,6 +147,7 @@ const Header = () => {
         </div>
       </header>
 
+      {/* Logout Confirmation Modal */}
       {isLogoutModalOpen && (
         <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300">
           <div

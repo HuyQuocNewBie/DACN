@@ -129,11 +129,10 @@ DACN
 │  │     ├─ constants.js
 │  │     ├─ errorHandler.js
 │  │     ├─ formatDate.js
-│  │     ├─ sm2.js
 │  │     └─ validate.js
 │  └─ vite.config.js
 ├─ package-lock.json
 ├─ package.json
 └─ README.md
 
-```
+``` 

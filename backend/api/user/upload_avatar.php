@@ -28,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     exit();
 }
 
-// Kiểm tra file upload
 if (!isset($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
     http_response_code(400);
     echo json_encode(['message' => 'No file uploaded or upload error']);
@@ -37,9 +36,8 @@ if (!isset($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
 
 $file = $_FILES['avatar'];
 $allowed_types = ['image/jpeg', 'image/jpg', 'image/png'];
-$max_size = 2 * 1024 * 1024; // 2MB
+$max_size = 2 * 1024 * 1024;
 
-// Validation
 if (!in_array($file['type'], $allowed_types)) {
     http_response_code(400);
     echo json_encode(['message' => 'Invalid file type. Only JPEG and PNG allowed']);
@@ -53,26 +51,35 @@ if ($file['size'] > $max_size) {
 }
 
 try {
-    // Tạo thư mục uploads nếu chưa có
+    $db = (new Database())->getConnection();
+
+    $stmt_get = $db->prepare("SELECT avatar FROM users WHERE id = ?");
+    $stmt_get->execute([$user_data->id]);
+    $old_user_data = $stmt_get->fetch(PDO::FETCH_ASSOC);
+
+    if ($old_user_data && !empty($old_user_data['avatar'])) {
+        $old_avatar_path = '../../' . $old_user_data['avatar']; 
+
+        if (file_exists($old_avatar_path) && is_file($old_avatar_path)) {
+            unlink($old_avatar_path);
+        }
+    }
+
     $uploads_dir = '../../uploads/avatars';
     if (!is_dir($uploads_dir)) {
         mkdir($uploads_dir, 0755, true);
     }
 
-    // Tạo tên file unique
     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = 'avatar_' . $user_data->id . '_' . time() . '.' . $extension;
     $filepath = $uploads_dir . '/' . $filename;
 
-    // Move file
     if (!move_uploaded_file($file['tmp_name'], $filepath)) {
         http_response_code(500);
         echo json_encode(['message' => 'Failed to save file']);
         exit();
     }
 
-    // Lưu path vào database
-    $db = (new Database())->getConnection();
     $stmt = $db->prepare("UPDATE users SET avatar = ? WHERE id = ?");
     $avatar_path = 'uploads/avatars/' . $filename;
     $stmt->execute([$avatar_path, $user_data->id]);

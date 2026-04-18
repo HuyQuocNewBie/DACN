@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import reviewApi from '../../api/review.api';
 import { useParams, useNavigate } from 'react-router-dom';
 import cardApi from '../../api/card.api';
 import deckApi from '../../api/deck.api';
@@ -16,6 +17,7 @@ const DeckDetail = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [checkingReview, setCheckingReview] = useState(false);
 
   const [isEditDeckOpen, setIsEditDeckOpen] = useState(false);
   const [editDeckData, setEditDeckData] = useState({
@@ -190,6 +192,41 @@ const DeckDetail = () => {
     return filteredCards.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredCards, currentPage]);
 
+  const handleStartReview = async () => {
+    if (cards.length === 0) {
+      return toast.error('Bộ thẻ này chưa có thẻ nào để ôn tập!');
+    }
+
+    setCheckingReview(true);
+    try {
+      const dueCards = await reviewApi.getDueCards(id);
+
+      if (dueCards && dueCards.length > 0) {
+        navigate(`/review/${id}`);
+      } else {
+        toast(
+          'Tuyệt vời! Bạn đã hoàn thành hết các thẻ cần ôn tập cho hôm nay.',
+          {
+            icon: '🎉',
+            style: {
+              borderRadius: '16px',
+              background: '#ffffff',
+              color: '#1e293b',
+              border: '1px solid #e2e8f0',
+              padding: '16px',
+              fontWeight: '600',
+              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+            },
+          }
+        );
+      }
+    } catch {
+      toast.error('Không thể kiểm tra lịch ôn tập');
+    } finally {
+      setCheckingReview(false);
+    }
+  };
+
   if (loading) return <Loading />;
 
   if (!deck) {
@@ -279,14 +316,22 @@ const DeckDetail = () => {
               {deck?.description || 'Bộ thẻ này chưa có mô tả.'}
             </p>
           </div>
-
           <button
-            onClick={() => navigate(`/review/${id}`)}
-            disabled={cards.length === 0}
+            onClick={handleStartReview}
+            disabled={cards.length === 0 || checkingReview}
             className="relative z-10 flex cursor-pointer items-center justify-center gap-3 rounded-2xl bg-indigo-600 px-10 py-4 font-black text-white shadow-xl shadow-indigo-200 transition-all hover:scale-[1.02] hover:bg-indigo-700 active:scale-95 disabled:opacity-50 disabled:grayscale"
           >
-            <span className="text-xl">▶</span>
-            Bắt đầu ôn tập
+            {checkingReview ? (
+              <span className="flex items-center gap-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                Đang kiểm tra...
+              </span>
+            ) : (
+              <>
+                <span className="text-xl">▶</span>
+                Bắt đầu ôn tập
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -398,12 +443,15 @@ const DeckDetail = () => {
             </div>
 
             <div className="flex-1 overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full table-fixed">
                 <thead>
                   <tr className="bg-slate-50/50 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-                    <th className="px-6 py-4 text-left">Mặt trước</th>
-                    <th className="px-6 py-4 text-left">Mặt sau</th>
-                    <th className="px-6 py-4 text-right">Thao tác</th>
+                    <th className="w-[30%] px-6 py-4 text-left">Mặt trước</th>
+                    <th className="w-[30%] px-6 py-4 text-left">Mặt sau</th>
+                    <th className="w-[20%] px-6 py-4 text-left">
+                      Thời gian ôn
+                    </th>
+                    <th className="w-[20%] px-6 py-4 text-right">Thao tác</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -422,8 +470,30 @@ const DeckDetail = () => {
                           {card.back_content}
                         </p>
                       </td>
+
+                      <td className="px-6 py-5">
+                        <div className="flex flex-col">
+                          <span
+                            className={`text-xs font-bold ${
+                              new Date(card.next_review_date) <= new Date()
+                                ? 'text-rose-500'
+                                : 'text-emerald-500'
+                            }`}
+                          >
+                            {new Date(card.next_review_date).toLocaleDateString(
+                              'vi-VN'
+                            )}
+                          </span>
+                          <span className="text-[10px] text-slate-400">
+                            {card.review_interval > 0
+                              ? `Khoảng cách: ${card.review_interval} ngày`
+                              : 'Thẻ mới'}
+                          </span>
+                        </div>
+                      </td>
+
                       <td className="px-6 py-5 text-right">
-                        <div className="flex justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                        <div className="flex justify-end gap-1 transition-opacity group-hover:opacity-100">
                           <button
                             onClick={() => handleEditClick(card)}
                             className="rounded-lg p-2 text-slate-400 transition-all hover:bg-indigo-50 hover:text-indigo-600"

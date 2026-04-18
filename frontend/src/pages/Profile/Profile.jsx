@@ -9,15 +9,38 @@ import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 const Profile = () => {
   const { user, setUser } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [avatarLoading, setAvatarLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswordFields, setShowPasswordFields] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [avatarPreview, setAvatarPreview] = useState('');
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState(null);
   const fileInputRef = useRef(null);
+
+  const [stats, setStats] = useState({
+    total_decks: 0,
+    mastered_cards: 0,
+    retention_rate: 100,
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        const response = await userApi.getStatistics();
+        setStats(response);
+      } catch (error) {
+        console.error('Lỗi khi lấy thống kê:', error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchStatistics();
+  }, []);
 
   useEffect(() => {
     if (user?.username) {
@@ -32,12 +55,11 @@ const Profile = () => {
     fileInputRef.current?.click();
   };
 
-  const handleAvatarChange = async (e) => {
+  const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validation
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    const maxSize = 2 * 1024 * 1024;
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
 
     if (!allowedTypes.includes(file.type)) {
@@ -48,27 +70,16 @@ const Profile = () => {
       return toast.error('Ảnh không được vượt quá 2MB');
     }
 
-    // Preview
     const reader = new FileReader();
     reader.onload = (event) => {
       setAvatarPreview(event.target?.result || '');
     };
     reader.readAsDataURL(file);
 
-    // Upload
-    setAvatarLoading(true);
-    try {
-      const response = await userApi.uploadAvatar(file);
-      toast.success('Cập nhật ảnh đại diện thành công!');
-      setUser({ ...user, avatar: response.avatar });
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Lỗi khi upload ảnh');
-      setAvatarPreview(user?.avatar || '');
-    } finally {
-      setAvatarLoading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+    setSelectedAvatarFile(file);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -94,10 +105,19 @@ const Profile = () => {
 
     setLoading(true);
     try {
-      await userApi.updateProfile(updateData);
-      toast.success('Cập nhật thông tin thành công!');
-      setUser({ ...user, username });
+      let updatedUser = { ...user, username };
 
+      if (selectedAvatarFile) {
+        const response = await userApi.uploadAvatar(selectedAvatarFile);
+        updatedUser.avatar = response.avatar;
+      }
+
+      await userApi.updateProfile(updateData);
+
+      toast.success('Cập nhật thông tin thành công!');
+      setUser(updatedUser);
+
+      setSelectedAvatarFile(null);
       setPassword('');
       setConfirmPassword('');
       setShowPasswordFields(false);
@@ -107,6 +127,8 @@ const Profile = () => {
       toast.error(
         error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật'
       );
+      setAvatarPreview(user?.avatar || '');
+      setSelectedAvatarFile(null);
     } finally {
       setLoading(false);
     }
@@ -153,10 +175,10 @@ const Profile = () => {
                 <button
                   type="button"
                   onClick={handleAvatarClick}
-                  disabled={avatarLoading}
+                  disabled={loading}
                   className="absolute -right-1 -bottom-1 cursor-pointer rounded-full border border-slate-100 bg-white p-2 shadow-md transition-all hover:bg-slate-50 disabled:opacity-50"
                 >
-                  {avatarLoading ? '⏳' : '📷'}
+                  📷
                 </button>
               </div>
 
@@ -166,7 +188,7 @@ const Profile = () => {
                 accept="image/png, image/jpeg"
                 onChange={handleAvatarChange}
                 className="hidden"
-                disabled={avatarLoading}
+                disabled={loading}
               />
 
               <div className="flex-1">
@@ -182,10 +204,10 @@ const Profile = () => {
               <button
                 type="button"
                 onClick={handleAvatarClick}
-                disabled={avatarLoading}
+                disabled={loading}
                 className="hover:bg-primary rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-200 transition-all active:scale-95 disabled:opacity-50"
               >
-                {avatarLoading ? 'Đang tải...' : 'Chỉnh sửa ảnh'}
+                Chỉnh sửa ảnh
               </button>
             </div>
 
@@ -315,37 +337,49 @@ const Profile = () => {
               📊 Thống kê tổng quát
             </h3>
             <div className="space-y-5">
-              <div className="flex items-center justify-between rounded-xl bg-blue-50 p-4">
-                <div>
-                  <p className="text-xs font-bold text-blue-600 uppercase">
-                    Bộ thẻ
-                  </p>
-                  <p className="mt-0.5 text-2xl font-black text-blue-900">12</p>
+              {loadingStats ? (
+                <div className="flex h-40 items-center justify-center rounded-xl bg-slate-50 text-sm font-medium text-slate-500">
+                  Đang tải dữ liệu...
                 </div>
-                <span className="text-2xl">🗂️</span>
-              </div>
-              <div className="flex items-center justify-between rounded-xl bg-purple-50 p-4">
-                <div>
-                  <p className="text-xs font-bold text-purple-600 uppercase">
-                    Đã học
-                  </p>
-                  <p className="mt-0.5 text-2xl font-black text-purple-900">
-                    320
-                  </p>
-                </div>
-                <span className="text-2xl">🧠</span>
-              </div>
-              <div className="flex items-center justify-between rounded-xl bg-orange-50 p-4">
-                <div>
-                  <p className="text-xs font-bold text-orange-600 uppercase">
-                    Streak
-                  </p>
-                  <p className="mt-0.5 text-2xl font-black text-orange-900">
-                    7 ngày
-                  </p>
-                </div>
-                <span className="text-2xl">🔥</span>
-              </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between rounded-xl bg-blue-50 p-4">
+                    <div>
+                      <p className="text-xs font-bold text-blue-600 uppercase">
+                        Bộ thẻ
+                      </p>
+                      <p className="mt-0.5 text-2xl font-black text-blue-900">
+                        {stats.total_decks}
+                      </p>
+                    </div>
+                    <span className="text-2xl">🗂️</span>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl bg-purple-50 p-4">
+                    <div>
+                      <p className="text-xs font-bold text-purple-600 uppercase">
+                        Thẻ thành thạo
+                      </p>
+                      <p className="mt-0.5 text-2xl font-black text-purple-900">
+                        {stats.mastered_cards}
+                      </p>
+                    </div>
+                    <span className="text-2xl">🧠</span>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl bg-orange-50 p-4">
+                    <div>
+                      <p className="text-xs font-bold text-orange-600 uppercase">
+                        Tỷ lệ ghi nhớ
+                      </p>
+                      <p className="mt-0.5 text-2xl font-black text-orange-900">
+                        {stats.retention_rate}%
+                      </p>
+                    </div>
+                    <span className="text-2xl">🔥</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

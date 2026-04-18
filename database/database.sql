@@ -50,3 +50,8 @@ CREATE TABLE review_logs (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- LÙI NGÀY ĐỂ THẺ XUẤT HIỆN TRONG PHIÊN ÔN TẬP
+-- UPDATE cards
+-- SET next_review_date = DATE_SUB(next_review_date, INTERVAL 1 DAY)
+-- WHERE id IN (1, 2);
