@@ -154,7 +154,7 @@ const DeckList = () => {
                   {deck.is_public ? 'Công khai' : 'Riêng tư'}
                 </span>
                 <span className="rounded-xl bg-indigo-50 px-3 py-1.5 text-[10px] font-black tracking-widest text-indigo-600 uppercase">
-                  {deck.cards_count || 0} Cards
+                  {deck.cards_count || 0} Thẻ
                 </span>
               </div>
 

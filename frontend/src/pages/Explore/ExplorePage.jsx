@@ -37,7 +37,9 @@ const ExplorePage = () => {
   useEffect(() => {
     let isMounted = true;
     fetchPublicDecks(isMounted);
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [fetchPublicDecks]);
 
   const filteredDecks = useMemo(() => {
@@ -137,7 +139,7 @@ const ExplorePage = () => {
                   Cộng Đồng
                 </span>
                 <span className="text-primary bg-primary/10 rounded-xl px-3 py-1.5 text-[10px] font-black tracking-widest uppercase">
-                  Miễn phí
+                  {deck.cards_count || 0} Thẻ
                 </span>
               </div>
 
@@ -156,10 +158,10 @@ const ExplorePage = () => {
             <div className="relative z-10 mt-8 flex items-center justify-between border-t border-slate-50 pt-6">
               <div className="flex flex-col">
                 <span className="text-xl font-black text-slate-800">
-                  {deck.cards_count || 0}
+                  {deck.clones_count || 0}
                 </span>
                 <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                  Thẻ Nhớ
+                  Lượt tải
                 </span>
               </div>
 
@@ -179,21 +181,21 @@ const ExplorePage = () => {
         <div className="flex items-center justify-center gap-4">
           <button
             disabled={currentPage === 1}
-            onClick={() => setCurrentPage(prev => prev - 1)}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed active:scale-90"
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
           >
             ←
           </button>
-          
+
           <div className="flex gap-2">
             {[...Array(totalPages)].map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
                 className={`h-12 w-12 rounded-2xl text-xs font-black transition-all ${
-                  currentPage === i + 1 
-                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-200' 
-                  : 'bg-white border border-slate-100 text-slate-400 hover:bg-slate-50'
+                  currentPage === i + 1
+                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
+                    : 'border border-slate-100 bg-white text-slate-400 hover:bg-slate-50'
                 }`}
               >
                 {i + 1}
@@ -203,8 +205,8 @@ const ExplorePage = () => {
 
           <button
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(prev => prev + 1)}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed active:scale-90"
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:bg-slate-50 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
           >
             →
           </button>
