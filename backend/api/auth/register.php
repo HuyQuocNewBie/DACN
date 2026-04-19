@@ -24,7 +24,6 @@ if (!empty($data->username) && !empty($data->email) && !empty($data->password)) 
     $email = $data->email;
     $password = $data->password;
 
-    // Validate Email
     if (preg_match('/\s/', $email)) {
         http_response_code(400); echo json_encode(["message" => "Email không được chứa khoảng trắng."]); exit();
     }
@@ -34,22 +33,18 @@ if (!empty($data->username) && !empty($data->email) && !empty($data->password)) 
     
     $localPart = explode('@', $email)[0];
     
-    // ĐÃ SỬA: Tăng giới hạn tên email (trước @) lên 64 ký tự
     if (strlen($localPart) < 5 || strlen($localPart) > 64) {
         http_response_code(400); echo json_encode(["message" => "Tên Gmail phải từ 5 đến 64 ký tự."]); exit();
     }
 
-    // --- CẬP NHẬT LOGIC MẬT KHẨU TẠI ĐÂY ---
     if (preg_match('/\s/', $password)) {
         http_response_code(400); echo json_encode(["message" => "Mật khẩu không được có khoảng trắng."]); exit();
     }
     
-    // ĐÃ SỬA: Tăng giới hạn độ dài mật khẩu lên 64 ký tự
     if (strlen($password) < 8 || strlen($password) > 64) {
         http_response_code(400); echo json_encode(["message" => "Mật khẩu phải từ 8 đến 64 ký tự."]); exit();
     }
     
-    // Kiểm tra: Có chữ cái VÀ (Số hoặc ký tự đặc biệt)
     $hasLetter = preg_match('/[a-zA-Z]/', $password);
     $hasNumberOrSpecial = preg_match('/[0-9\W_]/', $password);
 
