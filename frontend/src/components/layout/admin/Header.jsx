@@ -3,6 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth'; 
 import { toast } from 'react-hot-toast';
 
+// 1. IMPORT HOOK useTheme
+import { useTheme } from '../../../context/ThemeContext';
+
 const getDisplayName = (user) =>
   user?.username || user?.fullname || user?.name || 'Quản trị viên';
 
@@ -11,30 +14,12 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
+  // 2. GỌI HOOK LẤY TRẠNG THÁI VÀ HÀM TOGGLE TỪ CONTEXT
+  const { isDarkMode, toggleTheme } = useTheme();
+  
   const [open, setOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const dropdownRef = useRef(null);
-
-  // --- STATE VÀ LOGIC CHO DARK MODE ---
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'dark' || 
-             (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (isDarkMode) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDarkMode]);
-  // ------------------------------------
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -57,7 +42,6 @@ const Header = () => {
 
   return (
     <>
-      {/* Thêm dark:bg-slate-900/80, dark:border-slate-800 để header đổi màu khi bật Dark Mode */}
       <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-100 bg-white/80 px-8 backdrop-blur-xl transition-all duration-300 dark:border-slate-800 dark:bg-slate-900/80">
         <div>
           <p className="mb-1 text-[10px] font-black leading-none tracking-widest text-primary uppercase">
@@ -70,9 +54,9 @@ const Header = () => {
 
         <div className="flex items-center gap-6">
           
-          {/* --- NÚT TOGGLE DARK MODE --- */}
+          {/* 3. NÚT TOGGLE DARK MODE GỌI HÀM TỪ CONTEXT */}
           <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
+            onClick={toggleTheme}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-900 focus:outline-none active:scale-95 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-50"
             title={isDarkMode ? "Bật chế độ sáng" : "Bật chế độ tối"}
           >

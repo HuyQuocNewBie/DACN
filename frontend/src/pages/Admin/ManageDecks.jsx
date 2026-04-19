@@ -146,23 +146,25 @@ const ManageDecks = () => {
 
   return (
     <div className="animate-in fade-in space-y-8 duration-500">
-      <div className="relative flex flex-col justify-between gap-8 rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm md:p-10 xl:flex-row xl:items-center">
+      {/* --- HEADER & SEARCH --- */}
+      <div className="relative flex flex-col justify-between gap-8 rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 md:p-10 xl:flex-row xl:items-center dark:border-slate-800 dark:bg-slate-900">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
-          <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl"></div>
+          <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl dark:bg-indigo-500/10"></div>
         </div>
 
         <div className="relative z-10">
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 transition-colors duration-300 md:text-4xl dark:text-white">
             Kho bộ thẻ
           </h1>
-          <p className="mt-1 font-medium text-slate-500">
+          <p className="mt-1 font-medium text-slate-500 transition-colors duration-300 dark:text-slate-400">
             Kiểm duyệt và điều phối nội dung học tập cộng đồng
           </p>
         </div>
 
         <div className="relative z-20 flex w-full flex-col items-center gap-4 sm:flex-row xl:w-auto">
+          {/* Ô Tìm kiếm */}
           <div className="relative w-full sm:w-72">
-            <span className="absolute top-1/2 left-4 -translate-y-1/2 opacity-40">
+            <span className="absolute top-1/2 left-4 -translate-y-1/2 opacity-40 dark:text-slate-400">
               🔍
             </span>
             <input
@@ -170,14 +172,15 @@ const ManageDecks = () => {
               placeholder="Tìm tên, tác giả..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-3.5 pr-4 pl-12 text-sm font-medium shadow-inner transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+              className="w-full rounded-2xl border border-slate-100 bg-slate-50 py-3.5 pr-4 pl-12 text-sm font-medium text-slate-900 shadow-inner transition-all outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-indigo-500 dark:focus:bg-slate-900"
             />
           </div>
 
+          {/* Bộ lọc Dropdown */}
           <div className="relative w-full sm:w-auto">
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-white px-6 py-3.5 text-xs font-black tracking-widest uppercase shadow-sm transition-all hover:bg-slate-50 active:scale-95 sm:w-40"
+              className="flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-white px-6 py-3.5 text-xs font-black tracking-widest text-slate-700 uppercase shadow-sm transition-all hover:bg-slate-50 active:scale-95 sm:w-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               <span className="flex items-center gap-2">
                 <span>{activeFilter?.emoji}</span> {activeFilter?.label}
@@ -196,15 +199,15 @@ const ManageDecks = () => {
                   onClick={() => setIsFilterOpen(false)}
                 ></div>
 
-                <div className="animate-in fade-in slide-in-from-top-2 absolute top-full right-0 z-40 mt-2 w-full overflow-hidden rounded-2xl border border-slate-100 bg-white py-2 shadow-xl duration-200 sm:w-45">
+                <div className="animate-in fade-in slide-in-from-top-2 absolute top-full right-0 z-40 mt-2 w-full overflow-hidden rounded-2xl border border-slate-100 bg-white py-2 shadow-xl duration-200 sm:w-45 dark:border-slate-700 dark:bg-slate-800">
                   {FILTERS.map((f) => (
                     <button
                       key={f.key}
                       onClick={() => handleFilterChange(f.key)}
                       className={`flex w-full items-center gap-3 px-6 py-3 text-xs font-black tracking-widest uppercase transition-all ${
                         filter === f.key
-                          ? 'bg-indigo-50 text-indigo-600'
-                          : 'text-slate-600 hover:bg-slate-50'
+                          ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400'
+                          : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700'
                       }`}
                     >
                       <span>{f.emoji}</span> {f.label}
@@ -217,11 +220,12 @@ const ManageDecks = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white px-4 pb-8 shadow-sm">
+      {/* --- TABLE DANH SÁCH --- */}
+      <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white px-4 pb-8 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
         <div className="relative z-10 overflow-x-auto">
           <table className="w-full border-separate border-spacing-y-3">
             <thead>
-              <tr className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
+              <tr className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase transition-colors duration-300 dark:text-slate-500">
                 <th className="px-6 py-6 text-left">Thông tin bộ thẻ</th>
                 <th className="px-6 py-6 text-left">Tác giả</th>
                 <th className="px-6 py-6 text-center">Số lượng</th>
@@ -233,40 +237,40 @@ const ManageDecks = () => {
               {currentDecks.map((deck) => (
                 <tr
                   key={deck.id}
-                  className="group rounded-2xl border border-transparent bg-white transition-all hover:border-slate-100 hover:bg-slate-50/50"
+                  className="group rounded-2xl border border-transparent bg-white transition-all hover:border-slate-100 hover:bg-slate-50/50 dark:bg-slate-900 dark:hover:border-slate-700 dark:hover:bg-slate-800/50"
                 >
-                  <td className="rounded-l-2xl border-y border-l border-transparent px-6 py-5 group-hover:border-slate-100">
+                  <td className="rounded-l-2xl border-y border-l border-transparent px-6 py-5 group-hover:border-slate-100 dark:group-hover:border-slate-700">
                     <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 font-black text-white">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 font-black text-white transition-colors duration-300 dark:bg-slate-700">
                         {deck.title?.charAt(0).toUpperCase() || '?'}
                       </div>
                       <div>
-                        <div className="line-clamp-1 text-sm font-black text-slate-900">
+                        <div className="line-clamp-1 text-sm font-black text-slate-900 transition-colors duration-300 dark:text-white">
                           {deck.title}
                         </div>
-                        <div className="text-[10px] font-bold tracking-tight text-slate-400">
+                        <div className="text-[10px] font-bold tracking-tight text-slate-400 transition-colors duration-300 dark:text-slate-500">
                           ID: #{deck.id}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="border-y border-transparent px-6 py-5 group-hover:border-slate-100">
-                    <span className="text-xs font-bold text-slate-500">
+                  <td className="border-y border-transparent px-6 py-5 group-hover:border-slate-100 dark:group-hover:border-slate-700">
+                    <span className="text-xs font-bold text-slate-500 transition-colors duration-300 dark:text-slate-400">
                       {deck.creator || 'Ẩn danh'}
                     </span>
                   </td>
-                  <td className="border-y border-transparent px-6 py-5 text-center group-hover:border-slate-100">
-                    <span className="rounded-lg bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-600">
+                  <td className="border-y border-transparent px-6 py-5 text-center group-hover:border-slate-100 dark:group-hover:border-slate-700">
+                    <span className="rounded-lg bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-600 transition-colors duration-300 dark:bg-indigo-500/10 dark:text-indigo-400">
                       {deck.cards_count} thẻ
                     </span>
                   </td>
-                  <td className="border-y border-transparent px-6 py-5 text-center group-hover:border-slate-100">
+                  <td className="border-y border-transparent px-6 py-5 text-center group-hover:border-slate-100 dark:group-hover:border-slate-700">
                     <button
                       onClick={() => handleToggleStatus(deck)}
                       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all ${
                         Number(deck.is_public) === 1
-                          ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
-                          : 'bg-amber-50 text-amber-600 hover:bg-amber-100'
+                          ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20'
+                          : 'bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20'
                       }`}
                     >
                       {Number(deck.is_public) === 1
@@ -274,17 +278,17 @@ const ManageDecks = () => {
                         : '🔒 Private'}
                     </button>
                   </td>
-                  <td className="rounded-r-2xl border-y border-r border-transparent px-6 py-5 text-right group-hover:border-slate-100">
+                  <td className="rounded-r-2xl border-y border-r border-transparent px-6 py-5 text-right group-hover:border-slate-100 dark:group-hover:border-slate-700">
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => handleViewDetails(deck.id)}
-                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 shadow-sm transition-all hover:bg-slate-900 hover:text-white active:scale-95"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 shadow-sm transition-all hover:bg-slate-900 hover:text-white active:scale-95 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
                       >
                         👁️
                       </button>
                       <button
                         onClick={() => handleDeleteDeck(deck.id)}
-                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-500 shadow-sm transition-all hover:bg-rose-600 hover:text-white active:scale-95"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-500 shadow-sm transition-all hover:bg-rose-600 hover:text-white active:scale-95 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-600 dark:hover:text-white"
                       >
                         🗑️
                       </button>
@@ -296,12 +300,13 @@ const ManageDecks = () => {
           </table>
         </div>
 
+        {/* --- PHÂN TRANG --- */}
         {filteredDecks.length > itemsPerPage && (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 mt-4">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 font-bold transition-all hover:bg-slate-50 disabled:opacity-20"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 font-bold transition-all hover:bg-slate-50 disabled:opacity-20 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               ←
             </button>
@@ -311,8 +316,8 @@ const ManageDecks = () => {
                 onClick={() => setCurrentPage(i + 1)}
                 className={`h-10 w-10 rounded-xl text-xs font-black transition-all ${
                   currentPage === i + 1
-                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
-                    : 'border border-slate-100 bg-white text-slate-400 hover:bg-slate-50'
+                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200 dark:bg-primary dark:text-white dark:shadow-none'
+                    : 'border border-slate-100 bg-white text-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700'
                 }`}
               >
                 {i + 1}
@@ -323,7 +328,7 @@ const ManageDecks = () => {
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
               }
               disabled={currentPage === totalPages}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 font-bold transition-all hover:bg-slate-50 disabled:opacity-20"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 font-bold transition-all hover:bg-slate-50 disabled:opacity-20 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               →
             </button>
@@ -333,18 +338,19 @@ const ManageDecks = () => {
         {filteredDecks.length === 0 && (
           <div className="py-24 text-center">
             <div className="mb-4 text-6xl opacity-20 grayscale">🔍</div>
-            <p className="text-xs font-black tracking-widest text-slate-400 uppercase">
+            <p className="text-xs font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-slate-500">
               Không tìm thấy dữ liệu
             </p>
-            <p className="mt-1 text-xs font-medium text-slate-300">
+            <p className="mt-1 text-xs font-medium text-slate-300 transition-colors dark:text-slate-600">
               Hãy thử thay đổi từ khóa hoặc bộ lọc xem sao!
             </p>
           </div>
         )}
       </div>
 
+      {/* --- STATS CARDS --- */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="group relative flex items-center justify-between overflow-hidden rounded-[2.5rem] bg-slate-900 p-8 text-white">
+        <div className="group relative flex items-center justify-between overflow-hidden rounded-[2.5rem] bg-slate-900 p-8 text-white transition-colors duration-300 dark:bg-slate-800">
           <div className="absolute top-0 right-0 h-32 w-32 rounded-full bg-indigo-500/10 blur-2xl"></div>
           <div className="relative z-10">
             <p className="text-[10px] font-black tracking-widest uppercase opacity-60">
@@ -358,12 +364,12 @@ const ManageDecks = () => {
             📈
           </div>
         </div>
-        <div className="group flex items-center justify-between rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm">
+        <div className="group flex items-center justify-between rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
           <div>
-            <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+            <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-slate-500">
               Tỉ lệ công khai
             </p>
-            <h4 className="mt-1 text-3xl font-black text-slate-900">
+            <h4 className="mt-1 text-3xl font-black text-slate-900 transition-colors dark:text-white">
               {stats.publicRate}%
             </h4>
           </div>
@@ -371,12 +377,12 @@ const ManageDecks = () => {
             🌍
           </div>
         </div>
-        <div className="group flex items-center justify-between rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm">
+        <div className="group flex items-center justify-between rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
           <div>
-            <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+            <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-slate-500">
               Hoạt động tuần này
             </p>
-            <h4 className="mt-1 text-3xl font-black text-slate-900">
+            <h4 className="mt-1 text-3xl font-black text-slate-900 transition-colors dark:text-white">
               +{stats.newThisWeek}
             </h4>
           </div>
@@ -386,66 +392,73 @@ const ManageDecks = () => {
         </div>
       </div>
 
+      {/* --- MODAL CHI TIẾT --- */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             onClick={() => setIsModalOpen(false)}
           ></div>
-          <div className="animate-in zoom-in-95 relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl duration-300">
-            <div className="flex items-center justify-between border-b border-slate-100 p-8">
+          <div className="animate-in zoom-in-95 relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl duration-300 dark:bg-slate-900 dark:border dark:border-slate-800 dark:shadow-none">
+            {/* Header Modal */}
+            <div className="flex items-center justify-between border-b border-slate-100 p-8 dark:border-slate-800">
               <div>
-                <h2 className="text-2xl font-black text-slate-900">
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                   Chi tiết bộ thẻ
                 </h2>
-                <p className="mt-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                <p className="mt-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                   ID: #{selectedDeck?.id}
                 </p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-500"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-500 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-rose-500/20 dark:hover:text-rose-400"
               >
                 ✕
               </button>
             </div>
 
+            {/* Content Modal */}
             <div className="max-h-[60vh] overflow-y-auto p-8">
               {modalLoading ? (
                 <div className="flex flex-col items-center py-10">
-                  <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"></div>
-                  <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                  <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600 dark:border-slate-700 dark:border-t-indigo-500"></div>
+                  <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase dark:text-slate-500">
                     Đang tải...
                   </p>
                 </div>
               ) : selectedDeck ? (
                 <div className="space-y-6">
-                  <div className="rounded-3xl border border-slate-100 bg-slate-50 p-6">
-                    <h3 className="mb-2 text-lg font-black text-slate-900">
+                  {/* Mô tả */}
+                  <div className="rounded-3xl border border-slate-100 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-950">
+                    <h3 className="mb-2 text-lg font-black text-slate-900 dark:text-white">
                       {selectedDeck.title}
                     </h3>
-                    <p className="text-sm leading-relaxed text-slate-500">
+                    <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                       {selectedDeck.description || 'Không có mô tả.'}
                     </p>
                   </div>
+
+                  {/* Danh sách thẻ */}
                   <div className="space-y-3">
-                    <p className="px-2 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                    <p className="px-2 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                       Danh sách thẻ ({selectedDeck.cards?.length})
                     </p>
                     {selectedDeck.cards?.map((card) => (
                       <div
                         key={card.id}
-                        className="grid grid-cols-1 gap-4 rounded-2xl border border-slate-100 bg-white p-5 md:grid-cols-2"
+                        className="grid grid-cols-1 gap-4 rounded-2xl border border-slate-100 bg-white p-5 md:grid-cols-2 dark:border-slate-800 dark:bg-slate-800/50"
                       >
+                        {/* Mặt trước */}
                         <div className="flex flex-col">
-                          <span className="text-[9px] font-black text-indigo-400 uppercase">
+                          <span className="text-[9px] font-black text-indigo-400 uppercase dark:text-indigo-500">
                             Mặt trước
                           </span>
-                          <p className="mt-1 text-sm font-bold text-slate-700">
+                          <p className="mt-1 text-sm font-bold text-slate-700 dark:text-slate-200">
                             {card.front_content}
                           </p>
                           {card.front_image_url && (
-                            <div className="mt-3 h-20 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                            <div className="mt-3 h-20 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
                               <img
                                 src={card.front_image_url}
                                 alt="Front"
@@ -458,15 +471,16 @@ const ManageDecks = () => {
                           )}
                         </div>
 
-                        <div className="flex flex-col border-slate-100 md:border-l md:pl-4">
-                          <span className="text-[9px] font-black text-emerald-400 uppercase">
+                        {/* Mặt sau */}
+                        <div className="flex flex-col border-slate-100 md:border-l md:pl-4 dark:border-slate-700">
+                          <span className="text-[9px] font-black text-emerald-400 uppercase dark:text-emerald-500">
                             Mặt sau
                           </span>
-                          <p className="mt-1 text-sm font-medium text-slate-600">
+                          <p className="mt-1 text-sm font-medium text-slate-600 dark:text-slate-300">
                             {card.back_content}
                           </p>
                           {card.back_image_url && (
-                            <div className="mt-3 h-20 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                            <div className="mt-3 h-20 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
                               <img
                                 src={card.back_image_url}
                                 alt="Back"
