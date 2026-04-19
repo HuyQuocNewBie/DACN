@@ -51,6 +51,7 @@ class Database
 
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $this->conn->exec("SET time_zone = '+07:00'");
         } catch (PDOException $exception) {
             header('Content-Type: application/json');
             http_response_code(500);
