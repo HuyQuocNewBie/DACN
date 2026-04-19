@@ -29,10 +29,14 @@ $num = $stmt->rowCount();
 if ($num > 0) {
     $cards_arr = array();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        // Sau khi update Model, $row sẽ chứa:
+        // 'front_image_url' và 'back_image_url'
         array_push($cards_arr, $row);
     }
-    http_response_code(200); echo json_encode($cards_arr);
+    http_response_code(200); 
+    echo json_encode($cards_arr);
 } else {
-    http_response_code(200); echo json_encode(array()); // Trả mảng rỗng nếu chưa có thẻ nào
+    http_response_code(200); 
+    echo json_encode(array()); 
 }
 ?>

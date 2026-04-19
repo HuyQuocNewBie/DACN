@@ -21,14 +21,27 @@ $data = json_decode(file_get_contents("php://input"));
 $id = isset($_GET['id']) ? $_GET['id'] : die(json_encode(["message"=>"Thiếu id"]));
 
 if (!empty($data->front_content) && !empty($data->back_content)) {
-    $query = "UPDATE cards SET front_content = :front_content, back_content = :back_content WHERE id = :id";
+    // Cập nhật Query: Thêm front_image_url và back_image_url
+    $query = "UPDATE cards 
+              SET front_content = :front_content, 
+                  front_image_url = :front_image_url,
+                  back_content = :back_content,
+                  back_image_url = :back_image_url
+              WHERE id = :id";
+              
     $stmt = $db->prepare($query);
     
     $front = htmlspecialchars(strip_tags($data->front_content));
     $back = htmlspecialchars(strip_tags($data->back_content));
     
+    // Làm sạch URL hoặc để null
+    $front_img = isset($data->front_image_url) ? htmlspecialchars(strip_tags($data->front_image_url)) : null;
+    $back_img = isset($data->back_image_url) ? htmlspecialchars(strip_tags($data->back_image_url)) : null;
+    
     $stmt->bindParam(":front_content", $front);
+    $stmt->bindParam(":front_image_url", $front_img);
     $stmt->bindParam(":back_content", $back);
+    $stmt->bindParam(":back_image_url", $back_img);
     $stmt->bindParam(":id", $id);
     
     if($stmt->execute()) {

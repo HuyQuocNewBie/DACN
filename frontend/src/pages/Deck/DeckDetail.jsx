@@ -28,7 +28,9 @@ const DeckDetail = () => {
 
   const [newCard, setNewCard] = useState({
     front_content: '',
+    front_image_url: '',
     back_content: '',
+    back_image_url: '',
   });
 
   const isComponentMounted = useRef(true);
@@ -124,7 +126,9 @@ const DeckDetail = () => {
       if (editingId) {
         await cardApi.update(editingId, {
           front_content: newCard.front_content,
+          front_image_url: newCard.front_image_url,
           back_content: newCard.back_content,
+          back_image_url: newCard.back_image_url,
         });
         toast.success('Đã cập nhật thẻ!');
       } else {
@@ -144,14 +148,16 @@ const DeckDetail = () => {
   const handleEditClick = (card) => {
     setNewCard({
       front_content: card.front_content,
+      front_image_url: card.front_image_url || '',
       back_content: card.back_content,
+      back_image_url: card.back_image_url || '',
     });
     setEditingId(card.id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCancelEdit = () => {
-    setNewCard({ front_content: '', back_content: '' });
+    setNewCard({ front_content: '', front_image_url: '', back_content: '', back_image_url: '' });
     setEditingId(null);
   };
 
@@ -362,32 +368,52 @@ const DeckDetail = () => {
             </div>
 
             <form onSubmit={handleAddCard} className="space-y-5">
-              <div className="space-y-2">
+              {/* NHÓM MẶT TRƯỚC */}
+              <div className="space-y-2 rounded-2xl bg-slate-50 p-4 border border-slate-100">
                 <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   Mặt trước (Câu hỏi)
                 </label>
                 <textarea
-                  rows="3"
+                  rows="2"
                   placeholder="Ví dụ: Hello có nghĩa là gì?"
-                  className="w-full resize-none rounded-2xl border border-slate-100 bg-slate-50 p-4 text-sm font-medium transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                   value={newCard.front_content}
                   onChange={(e) =>
                     setNewCard({ ...newCard, front_content: e.target.value })
                   }
                 />
+                <input
+                  type="text"
+                  placeholder="Link ảnh minh họa (tùy chọn)"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  value={newCard.front_image_url}
+                  onChange={(e) =>
+                    setNewCard({ ...newCard, front_image_url: e.target.value })
+                  }
+                />
               </div>
 
-              <div className="space-y-2">
+              {/* NHÓM MẶT SAU */}
+              <div className="space-y-2 rounded-2xl bg-indigo-50/50 p-4 border border-indigo-50">
                 <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   Mặt sau (Đáp án)
                 </label>
                 <textarea
-                  rows="3"
+                  rows="2"
                   placeholder="Ví dụ: Xin chào"
-                  className="w-full resize-none rounded-2xl border border-slate-100 bg-slate-50 p-4 text-sm font-medium transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                   value={newCard.back_content}
                   onChange={(e) =>
                     setNewCard({ ...newCard, back_content: e.target.value })
+                  }
+                />
+                <input
+                  type="text"
+                  placeholder="Link ảnh đáp án (tùy chọn)"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  value={newCard.back_image_url}
+                  onChange={(e) =>
+                    setNewCard({ ...newCard, back_image_url: e.target.value })
                   }
                 />
               </div>
@@ -461,14 +487,38 @@ const DeckDetail = () => {
                       className="group transition-colors hover:bg-slate-50/80"
                     >
                       <td className="px-6 py-5">
-                        <p className="text-sm leading-snug font-bold text-slate-700">
-                          {card.front_content}
-                        </p>
+                        <div className="flex flex-col gap-2">
+                          <p className="text-sm leading-snug font-bold text-slate-700">
+                            {card.front_content}
+                          </p>
+                          {card.front_image_url && (
+                            <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                              <img 
+                                src={card.front_image_url} 
+                                alt="Front" 
+                                className="h-full w-full object-cover"
+                                onError={(e) => e.target.style.display = 'none'}
+                              />
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-5">
-                        <p className="text-sm leading-snug font-medium text-slate-500 italic">
-                          {card.back_content}
-                        </p>
+                        <div className="flex flex-col gap-2">
+                          <p className="text-sm leading-snug font-medium text-slate-500 italic">
+                            {card.back_content}
+                          </p>
+                          {card.back_image_url && (
+                            <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                              <img 
+                                src={card.back_image_url} 
+                                alt="Back" 
+                                className="h-full w-full object-cover"
+                                onError={(e) => e.target.style.display = 'none'}
+                              />
+                            </div>
+                          )}
+                        </div>
                       </td>
 
                       <td className="px-6 py-5">

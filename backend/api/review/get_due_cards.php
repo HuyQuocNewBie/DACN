@@ -24,14 +24,16 @@ $db = (new Database())->getConnection();
 $deck_id = isset($_GET['deck_id']) ? $_GET['deck_id'] : null;
 
 if ($deck_id) {
-    $query = "SELECT id, front_content, back_content 
+    // CẬP NHẬT 1: Thêm front_image_url và back_image_url
+    $query = "SELECT id, front_content, front_image_url, back_content, back_image_url 
               FROM cards 
               WHERE deck_id = :deck_id AND next_review_date <= CURRENT_DATE
               ORDER BY next_review_date ASC, id ASC";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":deck_id", $deck_id);
 } else {
-    $query = "SELECT c.id, c.front_content, c.back_content 
+    // CẬP NHẬT 2: Thêm c.front_image_url và c.back_image_url (nhớ có tiền tố c. vì đang JOIN)
+    $query = "SELECT c.id, c.front_content, c.front_image_url, c.back_content, c.back_image_url 
               FROM cards c
               JOIN decks d ON c.deck_id = d.id
               WHERE d.user_id = :user_id AND c.next_review_date <= CURRENT_DATE
@@ -47,3 +49,4 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 }
 http_response_code(200);
 echo json_encode($cards_arr);
+?>

@@ -28,11 +28,14 @@ if (!empty($data->deck_id) && !empty($data->front_content) && !empty($data->back
     $card->deck_id = $data->deck_id;
     $card->front_content = $data->front_content;
     $card->back_content = $data->back_content;
-    $card->image_url = isset($data->image_url) ? $data->image_url : null;
+    
+    // Cập nhật ở đây: Nhận link ảnh cho từng mặt
+    $card->front_image_url = isset($data->front_image_url) ? $data->front_image_url : null;
+    $card->back_image_url = isset($data->back_image_url) ? $data->back_image_url : null;
     
     if ($card->create()) {
         http_response_code(201);
-        echo json_encode(["message" => "Đã tạo xong lá cờ nhớ mới."]);
+        echo json_encode(["message" => "Đã tạo xong thẻ nhớ mới."]);
     } else {
         http_response_code(503);
         echo json_encode(["message" => "Nghẽn mạng khi đúc thẻ."]);
