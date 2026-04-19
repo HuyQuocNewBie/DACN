@@ -53,13 +53,6 @@ const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
         </div>
 
         <div className="flex items-center gap-6">
-          <button className="hover:bg-primary/10 hover:text-primary group relative rounded-2xl bg-slate-50 p-2.5 text-slate-400 transition-all active:scale-95">
-            <span className="material-symbols-outlined text-[24px] leading-none">
-              notifications
-            </span>
-            <span className="absolute top-2.5 right-2.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-orange-500 group-hover:animate-ping"></span>
-          </button>
-
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setOpen(!open)}
