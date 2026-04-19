@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Loading from '../../components/common/Loading';
 import deckApi from '../../api/deck.api';
@@ -13,7 +12,6 @@ const ExplorePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  const navigate = useNavigate();
   const isInitialMount = useRef(true);
 
   const fetchPublicDecks = useCallback(async (isMounted) => {
@@ -65,7 +63,7 @@ const ExplorePage = () => {
     }
   }, [searchQuery]);
 
-  const handleDownload = async (deckId) => {
+const handleDownload = async (deckId) => {
     if (cloningId) return;
     setCloningId(deckId);
 
@@ -82,10 +80,20 @@ const ExplorePage = () => {
     );
 
     try {
-      await clonePromise;
-      setTimeout(() => navigate('/decks'), 1500);
-    } catch {
-      // toast.promise
+      const response = await clonePromise;
+
+      if (response && response.was_incremented) {
+        setAllDecks((prevDecks) =>
+          prevDecks.map((deck) =>
+            deck.id === deckId
+              ? { ...deck, clones_count: parseInt(deck.clones_count || 0) + 1 }
+              : deck
+          )
+        );
+      }
+
+    } catch (error) {
+      console.error(error);
     } finally {
       setCloningId(null);
     }

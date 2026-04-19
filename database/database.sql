@@ -22,6 +22,8 @@ CREATE TABLE decks (
     title VARCHAR(255) NOT NULL,
     description TEXT,
     is_public BOOLEAN DEFAULT FALSE,
+    clones_count INT DEFAULT 0,
+    parent_id INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

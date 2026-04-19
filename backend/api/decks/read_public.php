@@ -17,15 +17,18 @@ $deck = new Deck($db);
 $stmt = $deck->readPublic();
 $num = $stmt->rowCount();
 
+$decks_arr = array();
+
 if ($num > 0) {
-    $decks_arr = array();
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $row['id'] = (int)$row['id'];
+        $row['cards_count'] = (int)$row['cards_count'];
+        $row['clones_count'] = (int)($row['clones_count'] ?? 0);
+        
         array_push($decks_arr, $row);
     }
-    http_response_code(200);
-    echo json_encode($decks_arr);
-} else {
-    http_response_code(200);
-    echo json_encode(array());
 }
+
+http_response_code(200);
+echo json_encode($decks_arr);
 ?>
