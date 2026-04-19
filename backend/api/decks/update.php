@@ -30,7 +30,6 @@ if (!empty($data->id) && !empty($data->title)) {
     $deck->description = isset($data->description) ? $data->description : "";
     $deck->is_public = isset($data->is_public) ? (int)$data->is_public : 0;
     
-    // Bắt buộc map user_id để chốt quyền
     $deck->user_id = $user_data->id;
 
     if ($deck->update()) {

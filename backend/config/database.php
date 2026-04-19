@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Ho_Chi_Minh');
 class Database
 {
     private $servername;
@@ -12,7 +13,6 @@ class Database
     {
         $this->loadEnv(__DIR__ . '/../.env');
 
-        // Use $_ENV directly instead of getenv()
         $this->servername = $_ENV['DB_HOST'] ?? "localhost";
         $this->port = $_ENV['DB_PORT'] ?? "3306";
         $this->db_name = $_ENV['DB_NAME'] ?? "spaced_repetition";

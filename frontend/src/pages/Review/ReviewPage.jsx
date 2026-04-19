@@ -22,7 +22,6 @@ const ReviewPage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // FETCH DATA
   useEffect(() => {
     let mounted = true;
 
@@ -43,7 +42,6 @@ const ReviewPage = () => {
     return () => (mounted = false);
   }, [id]);
 
-  // HANDLE REVIEW
   const handleReview = useCallback(
     async (quality) => {
       const currentCard = cards[currentIndex];
@@ -58,7 +56,6 @@ const ReviewPage = () => {
           if (currentIndex < cards.length - 1) {
             setCurrentIndex((prev) => prev + 1);
           } else {
-            // Toast giữ style giống code gốc nhưng dùng className (không inline)
             toast.success('Tuyệt vời! Bạn đã hoàn thành mục tiêu hôm nay', {
               icon: '🎉',
               className:
@@ -75,7 +72,6 @@ const ReviewPage = () => {
     [cards, currentIndex, navigate]
   );
 
-  // KEYBOARD HANDLER
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (loading || cards.length === 0) return;
@@ -161,7 +157,6 @@ const ReviewPage = () => {
         onFlip={() => setIsFlipped(true)}
       />
 
-      {/* ACTION BUTTONS */}
       <div className="mt-10 min-h-20 w-full max-w-2xl px-4">
         {isFlipped ? (
           <div className="animate-in fade-in slide-in-from-bottom-4 grid grid-cols-2 gap-3 duration-300 md:grid-cols-4">

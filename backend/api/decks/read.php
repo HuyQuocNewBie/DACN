@@ -12,7 +12,6 @@ include_once '../../config/database.php';
 include_once '../../models/Deck.php';
 include_once '../../config/jwt_helper.php';
 
-// Bảo mật API (Bắt Authorization Token từ Frontend)
 $authHeader = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : '';
 $jwt = str_replace('Bearer ', '', $authHeader);
 $user_data = JWT::validate($jwt);
@@ -27,7 +26,6 @@ $database = new Database();
 $db = $database->getConnection();
 $deck = new Deck($db);
 
-// Chỉ Đọc bộ thẻ của ông chủ tài khoản đang đăng nhập
 $deck->user_id = $user_data->id;
 
 $stmt = $deck->readByUser();
@@ -52,7 +50,6 @@ if ($num > 0) {
     http_response_code(200);
     echo json_encode($decks_arr);
 } else {
-    // Không có gì thì trả mảng rỗng [] cho React map không bị Crash Array null
     http_response_code(200); 
     echo json_encode(array());
 }

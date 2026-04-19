@@ -26,7 +26,6 @@ $db = (new Database())->getConnection();
 $data = json_decode(file_get_contents("php://input"));
 
 if (!empty($data->card_id) && isset($data->quality)) {
-    // 1. Phải lấy ra trạng thái bộ não hiện tại đối với Thẻ đó để làm gốc tính toán
     $query = "SELECT repetitions, ease_factor, review_interval FROM cards WHERE id = :card_id LIMIT 0,1";
     $stmt = $db->prepare($query);
     $stmt->bindParam(":card_id", $data->card_id);
@@ -43,37 +42,27 @@ if (!empty($data->card_id) && isset($data->quality)) {
     $ease_factor = $row['ease_factor'];
     $review_interval = $row['review_interval'];
 
-    // Mức đánh giá của sinh viên (Ví dụ: 0=Quên, 3=Bình thường, 5=Dễ quá)
     $quality = $data->quality;
 
-    // ======================================================
-    //     TÍNH TOÁN SUPERMEMO-2 (SM-2) CORE ENGINE
-    // ======================================================
     if ($quality < 3) {
-        // Sinh viên trả lời Sai: Lưới nhớ bị đứt, lùi lại về vạch xuất phát
         $repetitions = 0;
         $review_interval = 1;
     } else {
-        // Trả lời Trúng: Chuỗi ghi nhớ tăng lên
         $repetitions += 1;
         if ($repetitions == 1) {
             $review_interval = 1;
         } else if ($repetitions == 2) {
             $review_interval = 6;
         } else {
-            // Càng đi xa (Rep > 2), khoảng cách ôn tập càng nở rộng theo hệ số cực nhân
             $review_interval = round($review_interval * $ease_factor);
         }
     }
 
-    // Biến thiên Rãnh Trí Nhớ (Ease Factor) - Tính bằng công thức chuẩn khoa học
     $ease_factor = $ease_factor + (0.1 - (5 - $quality) * (0.08 + (5 - $quality) * 0.02));
     if ($ease_factor < 1.3) $ease_factor = 1.3;
 
-    // Xác định tương lai: Ngày định mệnh tiếp theo thẻ này sẽ bị lôi ra truy bài lại 
     $next_review_date = date('Y-m-d', strtotime("+$review_interval days"));
 
-    // 2. Chích dữ liệu mới cập nhật trở về CSDL
     $card = new Card($db);
     $card->id = $data->card_id;
     $card->repetitions = $repetitions;
@@ -82,7 +71,6 @@ if (!empty($data->card_id) && isset($data->quality)) {
     $card->next_review_date = $next_review_date;
 
     if ($card->updateSM2Progress()) {
-        // ...existing code...
         $log_query = "INSERT INTO review_logs SET user_id=:u, card_id=:c, quality=:q";
         $log_stmt = $db->prepare($log_query);
         $log_stmt->bindParam(":u", $user_data->id);

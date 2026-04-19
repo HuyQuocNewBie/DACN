@@ -31,7 +31,6 @@ $num = $stmt->rowCount();
 if ($num > 0) {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    // Kiểm tra quyền: Public, chủ sở hữu, hoặc Admin
     if ($row['is_public'] == 1 || $row['user_id'] == $user_data->id || $user_data->role == 'admin') {
         $deck_arr = array(
             "id" =>  $row['id'],
@@ -39,7 +38,6 @@ if ($num > 0) {
             "description" => $row['description'],
             "is_public" => (bool)$row['is_public'],
             "cards_count" => $row['cards_count']
-            // Nếu sau này bạn thêm deck_image_url vào bảng decks, hãy thêm vào đây
         );
         http_response_code(200);
         echo json_encode($deck_arr);
