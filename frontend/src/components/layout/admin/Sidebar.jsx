@@ -4,86 +4,118 @@ const Sidebar = ({ menuItems, handleLogout, isOpen, toggleSidebar }) => {
   const location = useLocation();
 
   return (
-    <aside 
-      className={`fixed z-50 hidden h-screen flex-col bg-slate-900 text-white py-6 md:flex transition-all duration-300 dark:bg-black 
-      ${isOpen 
-        ? 'w-64 min-w-[16rem] max-w-[16rem] px-6' 
-        : 'w-24 min-w-[6rem] max-w-[6rem] px-4'
-      } 
-      /* Dùng border-r nhưng đảm bảo không làm lệch layout */
-      border-r border-transparent dark:border-slate-800`}
+    <aside
+      className={`fixed z-50 hidden h-screen flex-col py-6 transition-all duration-300 md:flex
+      bg-slate-900 text-white
+      dark:bg-slate-900 dark:text-white
+      border-r border-transparent dark:border-slate-800
+      ${isOpen ? 'w-64 px-6' : 'w-24 px-4'}`}
     >
-      
-      {/* Nút Toggle - Giữ nguyên logic */}
+      {/* Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="absolute -right-4 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 border-2 border-slate-700 text-white hover:bg-primary hover:border-primary transition-all z-50 shadow-lg dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-primary"
+        className="absolute top-1/2 -right-4 z-50 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border-2 shadow-lg transition-all
+        border-slate-700 bg-slate-800 text-white
+        dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300
+        hover:bg-primary hover:border-primary hover:text-white"
       >
         <span className="material-symbols-outlined text-[18px]">
           {isOpen ? 'chevron_left' : 'chevron_right'}
         </span>
       </button>
 
-      {/* Logo Box - Đảm bảo h-10 không đổi */}
-      <div className={`mb-10 flex items-center justify-center h-20 bg-white/5 rounded-4xl border border-white/10 relative overflow-hidden group transition-colors duration-300 dark:bg-slate-900/50 dark:border-slate-800 ${isOpen ? 'px-2' : 'px-0'}`}>
-        <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <Link to="/admin" className="flex items-center relative z-10">
+      {/* Logo */}
+      <div
+        className={`group relative mb-10 flex items-center justify-center overflow-hidden rounded-4xl py-4 transition-colors duration-300
+        bg-white/5 border border-white/10
+        dark:bg-slate-800/50 dark:border-slate-800
+        ${isOpen ? 'px-2' : 'px-0'}`}
+      >
+        <div className="absolute inset-0 bg-primary/20 opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:bg-primary/10"></div>
+
+        <Link to="/admin" className="relative z-10 flex items-center">
           <img
             src="/icons/Logo.png"
             alt="Logo"
-            className={`object-contain transition-all duration-300 ${isOpen ? 'h-10 w-auto hover:scale-110' : 'h-8 w-8'}`}
+            className={`object-contain transition-all duration-300 ${
+              isOpen ? 'h-10 w-auto hover:scale-110' : 'h-8 w-8'
+            }`}
           />
         </Link>
       </div>
 
-      {/* Navigation - Cố định kích thước item */}
-      <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar">
-        <p className={`text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 whitespace-nowrap transition-all duration-300 ${isOpen ? 'px-4 opacity-100' : 'text-center opacity-0 h-0 mb-0'}`}>
+      {/* Navigation */}
+      <nav className="flex-1 space-y-2">
+        <p
+          className={`mb-4 text-[10px] font-black tracking-[0.2em] uppercase transition-all duration-300
+          text-slate-500 dark:text-slate-500
+          ${isOpen ? 'px-4 opacity-100' : 'mb-0 h-0 text-center opacity-0'}`}
+        >
           Quản trị hệ thống
         </p>
-        
+
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
+
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`group flex items-center rounded-2xl py-4 transition-all duration-300 ${
-                isOpen ? 'gap-4 px-5' : 'justify-center px-0'
-              } ${
+              title={!isOpen ? item.label : ''}
+              className={`group flex items-center rounded-2xl py-4 transition-all duration-300
+              ${isOpen ? 'gap-4 px-5' : 'justify-center px-0'}
+              ${
                 isActive
-                  ? 'bg-primary text-white shadow-xl shadow-primary/20 translate-x-1'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white dark:hover:bg-slate-800'
+                  ? 'translate-x-2 bg-primary text-white shadow-xl shadow-primary/20 dark:bg-primary/20 dark:text-primary dark:shadow-none'
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white'
               }`}
             >
-              <span className={`material-symbols-outlined text-[22px] shrink-0 ${isActive ? 'text-white' : 'group-hover:text-primary'}`}>
+              <span
+                className={`material-symbols-outlined shrink-0 text-[22px] transition-transform duration-300 group-hover:scale-110 ${
+                  isActive ? 'text-white' : 'group-hover:text-primary'
+                }`}
+              >
                 {item.icon}
               </span>
-              {isOpen && (
-                <span className="text-sm tracking-tight font-bold whitespace-nowrap animate-in fade-in duration-300">
-                  {item.label}
-                </span>
-              )}
+
+              <span
+                className={`text-sm tracking-tight whitespace-nowrap transition-all duration-300
+                ${isActive ? 'font-black' : 'font-bold'}
+                ${isOpen ? 'w-auto opacity-100' : 'w-0 overflow-hidden opacity-0'}`}
+              >
+                {item.label}
+              </span>
             </Link>
           );
         })}
       </nav>
 
-      {/* Footer Sidebar */}
-      <div className="mt-auto space-y-3 pt-6 border-t border-white/5 dark:border-slate-800">
+      {/* Footer */}
+      <div className="mt-auto space-y-3 border-t pt-6 border-white/5 dark:border-slate-800">
         <Link
           to="/dashboard"
-          className={`flex w-full items-center rounded-xl bg-white/5 py-3 text-xs font-black uppercase tracking-widest text-slate-400 hover:bg-white/10 hover:text-white transition-all ${isOpen ? 'px-4 gap-3' : 'justify-center'}`}
+          title={!isOpen ? 'Trang User' : ''}
+          className={`flex w-full items-center rounded-xl py-3 text-xs font-black tracking-widest uppercase transition-all
+          bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white
+          dark:bg-white/5 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white
+          ${isOpen ? 'justify-center gap-2' : 'justify-center'}`}
         >
-          <span className="material-symbols-outlined text-sm shrink-0">home</span>
+          <span className="material-symbols-outlined shrink-0 text-sm">
+            home
+          </span>
           {isOpen && <span className="whitespace-nowrap">Trang User</span>}
         </Link>
-        
+
         <button
           onClick={handleLogout}
-          className={`flex w-full items-center rounded-xl bg-red-500/10 py-3 text-xs font-black uppercase tracking-widest text-red-400 transition-all hover:bg-red-500 hover:text-white ${isOpen ? 'px-4 gap-3' : 'justify-center'}`}
+          title={!isOpen ? 'Đăng xuất' : ''}
+          className={`flex w-full items-center rounded-xl py-3 text-xs font-black tracking-widest uppercase transition-all
+          bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white
+          ${isOpen ? 'justify-center gap-2' : 'justify-center'}`}
         >
-          <span className="material-symbols-outlined text-sm shrink-0">logout</span>
+          <span className="material-symbols-outlined shrink-0 text-sm">
+            logout
+          </span>
           {isOpen && <span className="whitespace-nowrap">Đăng xuất</span>}
         </button>
       </div>

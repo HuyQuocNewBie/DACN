@@ -18,13 +18,15 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 transition-colors duration-300 dark:bg-slate-950">
+      
       <Sidebar 
         isOpen={isSidebarOpen} 
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
       />
 
       <div className={`flex min-h-screen flex-1 flex-col transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-24'}`}>
+        
         <Header title={getTitle()} isSidebarOpen={isSidebarOpen} />
 
         <main className="mt-20 flex-1 p-8">
@@ -34,6 +36,7 @@ const MainLayout = () => {
         </main>
 
         <Footer />
+        
       </div>
     </div>
   );

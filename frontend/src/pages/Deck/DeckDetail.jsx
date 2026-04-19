@@ -135,7 +135,7 @@ const DeckDetail = () => {
         await cardApi.create({ ...newCard, deck_id: id });
         toast.success('Đã thêm thẻ mới thành công!');
       }
-      setNewCard({ front_content: '', back_content: '' });
+      setNewCard({ front_content: '', front_image_url: '', back_content: '', back_image_url: '' });
       setEditingId(null);
       fetchData();
     } catch {
@@ -216,7 +216,7 @@ const DeckDetail = () => {
             icon: '🎉',
             style: {
               borderRadius: '16px',
-              background: '#ffffff',
+              background: '#ffffff', // Có thể để nguyên hoặc sửa sau nếu Toast thư viện chưa hỗ trợ Dark Mode tự động
               color: '#1e293b',
               border: '1px solid #e2e8f0',
               padding: '16px',
@@ -240,16 +240,16 @@ const DeckDetail = () => {
       <div className="animate-in fade-in space-y-8 duration-500">
         <button
           onClick={() => navigate('/decks')}
-          className="flex w-fit items-center gap-2 text-xs font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
+          className="flex w-fit items-center gap-2 text-xs font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400"
         >
           <span>←</span> Quay lại kho thẻ
         </button>
 
-        <div className="rounded-3xl border border-rose-100 bg-rose-50 p-8 shadow-sm">
-          <h2 className="text-2xl font-bold text-rose-700">
+        <div className="rounded-3xl border border-rose-100 bg-rose-50 p-8 shadow-sm transition-colors duration-300 dark:border-rose-500/20 dark:bg-rose-500/10">
+          <h2 className="text-2xl font-bold text-rose-700 dark:text-rose-400">
             Không tìm thấy bộ thẻ
           </h2>
-          <p className="mt-3 text-slate-600">
+          <p className="mt-3 text-slate-600 dark:text-slate-300">
             Không thể tải bộ thẻ này. Vui lòng kiểm tra lại liên kết hoặc quay
             lại danh sách bộ thẻ.
           </p>
@@ -261,32 +261,34 @@ const DeckDetail = () => {
   return (
     <div className="animate-in fade-in space-y-8 duration-500">
       <div className="flex flex-col gap-4">
+        {/* Nút quay lại */}
         <button
           onClick={() => navigate('/decks')}
-          className="flex w-fit items-center gap-2 text-xs font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
+          className="flex w-fit items-center gap-2 text-xs font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400"
         >
           <span>←</span> Quay lại kho thẻ
         </button>
 
-        <div className="relative flex flex-col gap-6 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm lg:flex-row lg:items-end lg:justify-between">
+        {/* --- KHU VỰC THÔNG TIN BỘ THẺ --- */}
+        <div className="relative flex flex-col gap-6 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 lg:flex-row lg:items-end lg:justify-between dark:border-slate-800 dark:bg-slate-900">
           <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
-            <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl"></div>
+            <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl dark:bg-indigo-500/10"></div>
           </div>
 
           <div className="relative z-10 space-y-2">
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">
+              <h1 className="text-3xl font-black tracking-tight text-slate-900 transition-colors duration-300 md:text-4xl dark:text-white">
                 {deck?.title}
               </h1>
-              <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-black tracking-wider text-indigo-600 uppercase">
+              <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-black tracking-wider text-indigo-600 uppercase transition-colors duration-300 dark:bg-indigo-500/10 dark:text-indigo-400">
                 {Array.isArray(cards) ? cards.length : deck?.cards_count || 0}{' '}
                 thẻ
               </span>
 
-              <div className="ml-4 flex gap-1 border-l border-slate-100 pl-4">
+              <div className="ml-4 flex gap-1 border-l border-slate-100 pl-4 transition-colors duration-300 dark:border-slate-700">
                 <button
                   onClick={() => setIsEditDeckOpen(true)}
-                  className="rounded-xl p-2 text-slate-400 transition-all hover:bg-indigo-50 hover:text-indigo-600"
+                  className="rounded-xl p-2 text-slate-400 transition-all hover:bg-indigo-50 hover:text-indigo-600 dark:text-slate-500 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-400"
                   title="Sửa tên bộ thẻ"
                 >
                   <svg
@@ -300,7 +302,7 @@ const DeckDetail = () => {
                 </button>
                 <button
                   onClick={handleDeleteDeck}
-                  className="rounded-xl p-2 text-slate-400 transition-all hover:bg-red-50 hover:text-red-500"
+                  className="rounded-xl p-2 text-slate-400 transition-all hover:bg-red-50 hover:text-red-500 dark:text-slate-500 dark:hover:bg-rose-500/20 dark:hover:text-rose-400"
                   title="Xóa bộ thẻ"
                 >
                   <svg
@@ -318,14 +320,14 @@ const DeckDetail = () => {
                 </button>
               </div>
             </div>
-            <p className="max-w-2xl leading-relaxed font-medium text-slate-500">
+            <p className="max-w-2xl leading-relaxed font-medium text-slate-500 transition-colors duration-300 dark:text-slate-400">
               {deck?.description || 'Bộ thẻ này chưa có mô tả.'}
             </p>
           </div>
           <button
             onClick={handleStartReview}
             disabled={cards.length === 0 || checkingReview}
-            className="relative z-10 flex cursor-pointer items-center justify-center gap-3 rounded-2xl bg-indigo-600 px-10 py-4 font-black text-white shadow-xl shadow-indigo-200 transition-all hover:scale-[1.02] hover:bg-indigo-700 active:scale-95 disabled:opacity-50 disabled:grayscale"
+            className="relative z-10 flex cursor-pointer items-center justify-center gap-3 rounded-2xl bg-indigo-600 px-10 py-4 font-black text-white shadow-xl shadow-indigo-200 transition-all hover:scale-[1.02] hover:bg-indigo-700 active:scale-95 disabled:opacity-50 disabled:grayscale dark:shadow-none dark:hover:bg-indigo-500"
           >
             {checkingReview ? (
               <span className="flex items-center gap-2">
@@ -343,10 +345,11 @@ const DeckDetail = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        {/* --- CỘT TRÁI (FORM THÊM THẺ) --- */}
         <div className="lg:col-span-1">
-          <div className="sticky top-8 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+          <div className="sticky top-8 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
             <div className="mb-6 flex items-center gap-3">
-              <div className="rounded-xl bg-indigo-50 p-2 text-indigo-600">
+              <div className="rounded-xl bg-indigo-50 p-2 text-indigo-600 transition-colors duration-300 dark:bg-indigo-500/10 dark:text-indigo-400">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
@@ -362,21 +365,21 @@ const DeckDetail = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-slate-800">
+              <h3 className="text-lg font-bold text-slate-800 transition-colors duration-300 dark:text-slate-200">
                 {editingId ? 'Cập nhật thẻ' : 'Thêm thẻ nhanh'}
               </h3>
             </div>
 
             <form onSubmit={handleAddCard} className="space-y-5">
               {/* NHÓM MẶT TRƯỚC */}
-              <div className="space-y-2 rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+              <div className="space-y-2 rounded-2xl bg-slate-50 p-4 border border-slate-100 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950">
+                <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-slate-500">
                   Mặt trước (Câu hỏi)
                 </label>
                 <textarea
                   rows="2"
                   placeholder="Ví dụ: Hello có nghĩa là gì?"
-                  className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium text-slate-700 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-indigo-500"
                   value={newCard.front_content}
                   onChange={(e) =>
                     setNewCard({ ...newCard, front_content: e.target.value })
@@ -385,7 +388,7 @@ const DeckDetail = () => {
                 <input
                   type="text"
                   placeholder="Link ảnh minh họa (tùy chọn)"
-                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-700 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-indigo-500"
                   value={newCard.front_image_url}
                   onChange={(e) =>
                     setNewCard({ ...newCard, front_image_url: e.target.value })
@@ -394,14 +397,14 @@ const DeckDetail = () => {
               </div>
 
               {/* NHÓM MẶT SAU */}
-              <div className="space-y-2 rounded-2xl bg-indigo-50/50 p-4 border border-indigo-50">
-                <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+              <div className="space-y-2 rounded-2xl bg-indigo-50/50 p-4 border border-indigo-50 transition-colors duration-300 dark:border-indigo-500/20 dark:bg-indigo-900/10">
+                <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-slate-500">
                   Mặt sau (Đáp án)
                 </label>
                 <textarea
                   rows="2"
                   placeholder="Ví dụ: Xin chào"
-                  className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium text-slate-700 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-indigo-500"
                   value={newCard.back_content}
                   onChange={(e) =>
                     setNewCard({ ...newCard, back_content: e.target.value })
@@ -410,7 +413,7 @@ const DeckDetail = () => {
                 <input
                   type="text"
                   placeholder="Link ảnh đáp án (tùy chọn)"
-                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-700 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-indigo-500"
                   value={newCard.back_image_url}
                   onChange={(e) =>
                     setNewCard({ ...newCard, back_image_url: e.target.value })
@@ -422,7 +425,7 @@ const DeckDetail = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 rounded-2xl bg-slate-900 py-4 text-sm font-black tracking-widest text-white uppercase shadow-lg transition-all hover:bg-indigo-600 active:scale-95 disabled:opacity-50"
+                  className="flex-1 rounded-2xl bg-slate-900 py-4 text-sm font-black tracking-widest text-white uppercase shadow-lg transition-all hover:bg-indigo-600 active:scale-95 disabled:opacity-50 dark:bg-indigo-600 dark:hover:bg-indigo-500"
                 >
                   {submitting
                     ? 'Đang lưu...'
@@ -434,7 +437,7 @@ const DeckDetail = () => {
                   <button
                     type="button"
                     onClick={handleCancelEdit}
-                    className="rounded-2xl bg-slate-100 px-6 py-4 text-sm font-black tracking-widest text-slate-500 uppercase transition-all hover:bg-slate-200 active:scale-95"
+                    className="rounded-2xl bg-slate-100 px-6 py-4 text-sm font-black tracking-widest text-slate-500 uppercase transition-all hover:bg-slate-200 active:scale-95 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
                   >
                     Hủy
                   </button>
@@ -444,18 +447,19 @@ const DeckDetail = () => {
           </div>
         </div>
 
+        {/* --- CỘT PHẢI (DANH SÁCH THẺ) --- */}
         <div className="space-y-4 lg:col-span-2">
-          <div className="flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm">
-            <div className="flex flex-col justify-between gap-4 border-b border-slate-50 p-6 md:flex-row md:items-center">
-              <h3 className="flex items-center gap-2 font-bold text-slate-800">
+          <div className="flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex flex-col justify-between gap-4 border-b border-slate-50 p-6 md:flex-row md:items-center transition-colors duration-300 dark:border-slate-800">
+              <h3 className="flex items-center gap-2 font-bold text-slate-800 transition-colors duration-300 dark:text-slate-200">
                 Danh sách thẻ
-                <span className="font-normal text-slate-300">
+                <span className="font-normal text-slate-300 transition-colors dark:text-slate-500">
                   ({filteredCards.length})
                 </span>
               </h3>
 
               <div className="group relative">
-                <span className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600">
+                <span className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-600 dark:text-slate-500 dark:group-focus-within:text-indigo-400">
                   🔍
                 </span>
                 <input
@@ -463,7 +467,7 @@ const DeckDetail = () => {
                   placeholder="Tìm kiếm nội dung..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-slate-100 bg-slate-50 py-2.5 pr-4 pl-11 text-sm transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 md:w-64"
+                  className="w-full rounded-xl border border-slate-100 bg-slate-50 py-2.5 pr-4 pl-11 text-sm text-slate-700 transition-all outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 md:w-64 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -471,7 +475,7 @@ const DeckDetail = () => {
             <div className="flex-1 overflow-x-auto">
               <table className="w-full table-fixed">
                 <thead>
-                  <tr className="bg-slate-50/50 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                  <tr className="bg-slate-50/50 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors duration-300 dark:bg-slate-800/50 dark:text-slate-500">
                     <th className="w-[30%] px-6 py-4 text-left">Mặt trước</th>
                     <th className="w-[30%] px-6 py-4 text-left">Mặt sau</th>
                     <th className="w-[20%] px-6 py-4 text-left">
@@ -480,19 +484,19 @@ const DeckDetail = () => {
                     <th className="w-[20%] px-6 py-4 text-right">Thao tác</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-slate-50 transition-colors duration-300 dark:divide-slate-800/50">
                   {paginatedCards.map((card) => (
                     <tr
                       key={card.id}
-                      className="group transition-colors hover:bg-slate-50/80"
+                      className="group transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/30"
                     >
                       <td className="px-6 py-5">
                         <div className="flex flex-col gap-2">
-                          <p className="text-sm leading-snug font-bold text-slate-700">
+                          <p className="text-sm leading-snug font-bold text-slate-700 transition-colors dark:text-slate-300">
                             {card.front_content}
                           </p>
                           {card.front_image_url && (
-                            <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                            <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800">
                               <img 
                                 src={card.front_image_url} 
                                 alt="Front" 
@@ -505,11 +509,11 @@ const DeckDetail = () => {
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex flex-col gap-2">
-                          <p className="text-sm leading-snug font-medium text-slate-500 italic">
+                          <p className="text-sm leading-snug font-medium text-slate-500 italic transition-colors dark:text-slate-400">
                             {card.back_content}
                           </p>
                           {card.back_image_url && (
-                            <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                            <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800">
                               <img 
                                 src={card.back_image_url} 
                                 alt="Back" 
@@ -524,17 +528,17 @@ const DeckDetail = () => {
                       <td className="px-6 py-5">
                         <div className="flex flex-col">
                           <span
-                            className={`text-xs font-bold ${
+                            className={`text-xs font-bold transition-colors ${
                               new Date(card.next_review_date) <= new Date()
-                                ? 'text-rose-500'
-                                : 'text-emerald-500'
+                                ? 'text-rose-500 dark:text-rose-400'
+                                : 'text-emerald-500 dark:text-emerald-400'
                             }`}
                           >
                             {new Date(card.next_review_date).toLocaleDateString(
                               'vi-VN'
                             )}
                           </span>
-                          <span className="text-[10px] text-slate-400">
+                          <span className="text-[10px] text-slate-400 transition-colors dark:text-slate-500">
                             {card.review_interval > 0
                               ? `Khoảng cách: ${card.review_interval} ngày`
                               : 'Thẻ mới'}
@@ -546,7 +550,7 @@ const DeckDetail = () => {
                         <div className="flex justify-end gap-1 transition-opacity group-hover:opacity-100">
                           <button
                             onClick={() => handleEditClick(card)}
-                            className="rounded-lg p-2 text-slate-400 transition-all hover:bg-indigo-50 hover:text-indigo-600"
+                            className="rounded-lg p-2 text-slate-400 transition-all hover:bg-indigo-50 hover:text-indigo-600 dark:text-slate-500 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-400"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -559,7 +563,7 @@ const DeckDetail = () => {
                           </button>
                           <button
                             onClick={() => handleDeleteCard(card.id)}
-                            className="rounded-lg p-2 text-slate-400 transition-all hover:bg-red-50 hover:text-red-500"
+                            className="rounded-lg p-2 text-slate-400 transition-all hover:bg-red-50 hover:text-red-500 dark:text-slate-500 dark:hover:bg-rose-500/20 dark:hover:text-rose-400"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -584,38 +588,37 @@ const DeckDetail = () => {
 
             {cardsError ? (
               <div className="space-y-3 py-20 text-center">
-                <div className="text-4xl text-rose-400">⚠️</div>
-                <p className="text-sm font-medium text-rose-500">
-                  Không thể tải nội dung thẻ. Vui lòng thử lại hoặc kiểm tra kết
-                  nối API.
+                <div className="text-4xl text-rose-400 dark:text-rose-500">⚠️</div>
+                <p className="text-sm font-medium text-rose-500 dark:text-rose-400">
+                  Không thể tải nội dung thẻ. Vui lòng thử lại hoặc kiểm tra kết nối API.
                 </p>
               </div>
             ) : filteredCards.length === 0 ? (
               <div className="space-y-3 py-20 text-center">
                 <div className="text-4xl opacity-20 grayscale">📭</div>
-                <p className="text-sm font-medium text-slate-400 italic">
+                <p className="text-sm font-medium text-slate-400 italic dark:text-slate-500">
                   Không tìm thấy nội dung yêu cầu
                 </p>
               </div>
             ) : null}
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-slate-50 bg-slate-50/30 p-6">
-                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+              <div className="flex items-center justify-between border-t border-slate-50 bg-slate-50/30 p-6 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-800/30">
+                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                   Trang {currentPage} / {totalPages}
                 </p>
                 <div className="flex gap-2">
                   <button
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((prev) => prev - 1)}
-                    className="rounded-xl border border-slate-100 bg-white p-3 transition-all hover:bg-slate-50 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="rounded-xl border border-slate-100 bg-white p-3 transition-all hover:bg-slate-50 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                   >
                     ←
                   </button>
                   <button
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage((prev) => prev + 1)}
-                    className="rounded-xl border border-slate-100 bg-white p-3 transition-all hover:bg-slate-50 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="rounded-xl border border-slate-100 bg-white p-3 transition-all hover:bg-slate-50 active:scale-90 disabled:cursor-not-allowed disabled:opacity-30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                   >
                     →
                   </button>
@@ -626,25 +629,26 @@ const DeckDetail = () => {
         </div>
       </div>
 
+      {/* --- MODAL EDIT BỘ THẺ --- */}
       {isEditDeckOpen && (
-        <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300">
+        <div className="animate-in fade-in fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300 dark:bg-slate-900/60">
           <div
             className="absolute inset-0"
             onClick={() => !submitting && setIsEditDeckOpen(false)}
           />
-          <div className="animate-in zoom-in-95 relative w-full max-w-xl overflow-hidden rounded-[3rem] border border-white bg-white shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] duration-300">
-            <div className="h-3 w-full bg-indigo-600"></div>
+          <div className="animate-in zoom-in-95 relative w-full max-w-xl overflow-hidden rounded-[3rem] border border-white bg-white shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] duration-300 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
+            <div className="h-3 w-full bg-indigo-600 dark:bg-indigo-500"></div>
 
             <div className="p-10 md:p-12">
               <div className="mb-10 flex items-center justify-between">
                 <div>
-                  <h2 className="text-3xl font-black tracking-tight text-slate-900">
+                  <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
                     Cập nhật bộ thẻ
                   </h2>
                 </div>
                 <button
                   onClick={() => setIsEditDeckOpen(false)}
-                  className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 transition-all hover:bg-red-50 hover:text-red-400 active:scale-90"
+                  className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 transition-all hover:bg-red-50 hover:text-red-400 active:scale-90 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-rose-500/20 dark:hover:text-rose-400"
                 >
                   ✕
                 </button>
@@ -652,12 +656,12 @@ const DeckDetail = () => {
 
               <form onSubmit={handleUpdateDeck} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                  <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                     Tên bộ thẻ học
                   </label>
                   <input
                     autoFocus
-                    className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/10"
+                    className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 font-bold text-slate-700 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:focus:border-indigo-500"
                     value={editDeckData.title}
                     onChange={(e) =>
                       setEditDeckData({
@@ -669,12 +673,12 @@ const DeckDetail = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                  <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                     Mô tả bộ thẻ
                   </label>
                   <textarea
                     rows="3"
-                    className="w-full resize-none rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 font-medium text-slate-600 outline-none focus:ring-4 focus:ring-indigo-500/10"
+                    className="w-full resize-none rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 font-medium text-slate-600 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-950 dark:text-white dark:focus:border-indigo-500"
                     value={editDeckData.description}
                     onChange={(e) =>
                       setEditDeckData({
@@ -686,7 +690,7 @@ const DeckDetail = () => {
                 </div>
 
                 <div
-                  className="group flex cursor-pointer items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-all hover:border-emerald-100 hover:bg-emerald-50"
+                  className="group flex cursor-pointer items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-all hover:border-emerald-100 hover:bg-emerald-50 dark:border-slate-800 dark:bg-slate-950/50 dark:hover:border-emerald-500/20 dark:hover:bg-emerald-500/10"
                   onClick={() =>
                     setEditDeckData({
                       ...editDeckData,
@@ -695,14 +699,18 @@ const DeckDetail = () => {
                   }
                 >
                   <div
-                    className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-all ${editDeckData.is_public ? 'border-emerald-500 bg-emerald-500' : 'border-slate-200 bg-white'}`}
+                    className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-all ${
+                      editDeckData.is_public 
+                        ? 'border-emerald-500 bg-emerald-500' 
+                        : 'border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900'
+                    }`}
                   >
                     {editDeckData.is_public && (
                       <span className="text-xs font-bold text-white">✓</span>
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-700 group-hover:text-emerald-700">
+                    <p className="text-sm font-bold text-slate-700 group-hover:text-emerald-700 dark:text-slate-200 dark:group-hover:text-emerald-400">
                       Công khai bộ thẻ
                     </p>
                   </div>
@@ -712,7 +720,7 @@ const DeckDetail = () => {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 rounded-2xl bg-slate-900 py-5 text-xs font-black tracking-[0.2em] text-white uppercase shadow-xl transition-all hover:bg-indigo-600 disabled:opacity-50"
+                    className="flex-1 rounded-2xl bg-slate-900 py-5 text-xs font-black tracking-[0.2em] text-white uppercase shadow-xl transition-all hover:bg-indigo-600 disabled:opacity-50 dark:bg-indigo-600 dark:shadow-none dark:hover:bg-indigo-500"
                   >
                     {submitting ? 'Đang xử lý...' : 'Lưu cập nhật'}
                   </button>
