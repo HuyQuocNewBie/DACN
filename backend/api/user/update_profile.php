@@ -42,6 +42,33 @@ if (!$username && !$password) {
     exit();
 }
 
+// ==========================================
+// VALIDATE MẬT KHẨU MỚI (NẾU CÓ ĐỔI)
+// ==========================================
+if ($password) {
+    if (preg_match('/\s/', $password)) {
+        http_response_code(400); 
+        echo json_encode(["message" => "Mật khẩu không được có khoảng trắng."]); 
+        exit();
+    }
+    
+    if (strlen($password) < 8 || strlen($password) > 64) {
+        http_response_code(400); 
+        echo json_encode(["message" => "Mật khẩu phải từ 8 đến 64 ký tự."]); 
+        exit();
+    }
+    
+    $hasLetter = preg_match('/[a-zA-Z]/', $password);
+    $hasNumberOrSpecial = preg_match('/[0-9\W_]/', $password);
+
+    if (!$hasLetter || !$hasNumberOrSpecial) {
+        http_response_code(400); 
+        echo json_encode(["message" => "Mật khẩu phải bao gồm chữ cái và ít nhất một số hoặc ký tự đặc biệt."]); 
+        exit();
+    }
+}
+// ==========================================
+
 try {
     // Check if username is provided and not taken by another user
     if ($username) {
@@ -63,7 +90,8 @@ try {
     }
     if ($password) {
         $updateFields[] = "password_hash = ?";
-        $params[] = password_hash($password, PASSWORD_DEFAULT);
+        // Mã hóa mật khẩu khi lưu
+        $params[] = password_hash($password, PASSWORD_BCRYPT); 
     }
     $params[] = $uid;
 
@@ -72,8 +100,9 @@ try {
     $stmt->execute($params);
 
     http_response_code(200);
-    echo json_encode(['message' => 'Profile updated successfully']);
+    echo json_encode(['message' => 'Cập nhật thông tin thành công!']);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['message' => 'Internal server error']);
 }
+?>
