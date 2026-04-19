@@ -113,7 +113,7 @@ const ReviewPage = () => {
 
   if (cards.length === 0)
     return (
-      <div className="flex h-[60vh] flex-col items-center justify-center text-center animate-in fade-in duration-500">
+      <div className="animate-in fade-in flex h-[60vh] flex-col items-center justify-center text-center duration-500">
         <div className="mb-6 text-6xl">🏆</div>
         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
           Không còn thẻ nào cần ôn!
@@ -134,15 +134,14 @@ const ReviewPage = () => {
   const progressPercent = ((currentIndex + 1) / cards.length) * 100;
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col items-center py-4 animate-in fade-in duration-500">
-      
+    <div className="animate-in fade-in mx-auto flex max-w-4xl flex-col items-center py-4 duration-500">
       {/* PROGRESS */}
       <div className="mb-10 w-full max-w-2xl px-4">
         <div className="mb-3 flex items-center justify-between text-sm font-bold">
           <span className="text-[10px] tracking-widest text-slate-400 uppercase dark:text-slate-500">
             Tiến độ ôn tập
           </span>
-          <span className="text-primary bg-primary/10 rounded-md px-2 py-0.5 font-mono dark:bg-primary/20">
+          <span className="text-primary bg-primary/10 dark:bg-primary/20 rounded-md px-2 py-0.5 font-mono">
             {currentIndex + 1} / {cards.length}
           </span>
         </div>
@@ -166,7 +165,6 @@ const ReviewPage = () => {
       <div className="mt-10 min-h-20 w-full max-w-2xl px-4">
         {isFlipped ? (
           <div className="animate-in fade-in slide-in-from-bottom-4 grid grid-cols-2 gap-3 duration-300 md:grid-cols-4">
-            
             {/* AGAIN */}
             <button
               onClick={() => handleReview(QUALITY.AGAIN)}
@@ -235,7 +233,7 @@ const ReviewPage = () => {
           <div className="flex justify-center">
             <button
               onClick={() => setIsFlipped(true)}
-              className="hover:bg-primary flex items-center gap-3 rounded-2xl bg-slate-900 px-12 py-4 text-sm font-black tracking-widest text-white uppercase shadow-xl transition-all active:scale-95 dark:bg-slate-800 dark:hover:bg-primary"
+              className="hover:bg-primary dark:hover:bg-primary flex items-center gap-3 rounded-2xl bg-slate-900 px-12 py-4 text-sm font-black tracking-widest text-white uppercase shadow-xl transition-all active:scale-95 dark:bg-slate-800"
             >
               Hiển thị đáp án
               <span className="hidden rounded bg-white/20 px-2 py-0.5 font-mono text-[10px] sm:inline-block dark:bg-white/10">

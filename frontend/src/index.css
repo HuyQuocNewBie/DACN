@@ -1,46 +1,42 @@
 @import "tailwindcss";
 
-/* 1. ĐỊNH NGHĨA BIẾN THẾ DARK CHO V4 */
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Giữ nguyên các định nghĩa font/utility của bạn */
   --font-headline: 'Manrope', sans-serif;
   --font-body: 'Inter', sans-serif;
   
-  /* Gán màu cho các class thông qua biến CSS */
   --color-primary: var(--primary);
   --color-surface: var(--surface);
   --color-on-surface: var(--on-surface);
   --color-surface-container: var(--surface-container);
   --color-outline-variant: var(--outline-variant);
-  /* Thêm các màu khác tương tự nếu cần... */
 }
 
-/* 2. THIẾT LẬP GIÁ TRỊ BIẾN CHO TỪNG CHẾ ĐỘ */
 :root {
   --primary: #0058be;
-  --surface: #f8f9fa; /* Trắng xám ở mode sáng */
-  --on-surface: #191c1d; /* Chữ đen */
-  --surface-container: #ffffff; /* Nền card trắng */
+  --surface: #f8f9fa;
+  --on-surface: #191c1d;
+  --surface-container: #ffffff;
   --outline-variant: #c2c6d6;
 }
 
-/* Khi có class .dark ở thẻ HTML, các biến trên sẽ đổi giá trị */
 .dark {
   --primary: #adc6ff;
-  --surface: #020617; /* Nền slate-950 */
-  --on-surface: #f8fafc; /* Chữ trắng slate-50 */
-  --surface-container: #0f172a; /* Nền card slate-900 */
-  --outline-variant: #1e293b; /* Border slate-800 */
+  --surface: #020617;
+  --on-surface: #f8fafc;
+  --surface-container: #0f172a;
+  --outline-variant: #1e293b;
   
-  color-scheme: dark; /* Báo cho trình duyệt biết đây là mode tối */
+  color-scheme: dark;
 }
 
-/* 3. ÁP DỤNG MẶC ĐỊNH */
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
+
   body {
-    /* Sử dụng biến surface đã khai báo ở trên */
     @apply bg-surface text-on-surface font-body antialiased transition-colors duration-300;
     margin: 0;
   }
