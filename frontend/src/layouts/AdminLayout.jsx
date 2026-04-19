@@ -23,7 +23,8 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen flex">
+    /* Thêm transition-colors và dark:bg-slate-950 ở đây */
+    <div className="flex min-h-screen bg-slate-50 transition-colors duration-300 dark:bg-slate-950">
       <Sidebar 
         menuItems={menuItems} 
         handleLogout={handleLogout} 
@@ -31,10 +32,12 @@ const AdminLayout = () => {
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
       />
 
+      {/* Main content area */}
       <main className={`flex min-h-screen flex-1 flex-col transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-24'}`}>
         <Header handleLogout={handleLogout} />
 
-        <div className="flex-1 p-8">
+        {/* Nền của phần content cũng cần được xử lý màu sắc khi dark mode */}
+        <div className="flex-1 p-8 transition-colors duration-300">
           <div className="mx-auto w-full max-w-7xl">
             <Outlet />
           </div>

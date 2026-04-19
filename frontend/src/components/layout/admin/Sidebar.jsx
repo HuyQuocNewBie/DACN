@@ -4,18 +4,20 @@ const Sidebar = ({ menuItems, handleLogout, isOpen, toggleSidebar }) => {
   const location = useLocation();
 
   return (
-    <aside className={`fixed z-50 hidden h-screen flex-col bg-slate-900 text-white py-6 md:flex transition-all duration-300 ${isOpen ? 'w-64 px-6' : 'w-24 px-4'}`}>
+    <aside className={`fixed z-50 hidden h-screen flex-col bg-slate-900 text-white py-6 md:flex transition-all duration-300 dark:bg-black dark:border-r dark:border-slate-800 ${isOpen ? 'w-64 px-6' : 'w-24 px-4'}`}>
       
+      {/* Nút Toggle */}
       <button
         onClick={toggleSidebar}
-        className="absolute -right-4 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 border-2 border-slate-700 text-white hover:bg-primary hover:border-primary transition-all z-50 shadow-lg"
+        className="absolute -right-4 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 border-2 border-slate-700 text-white hover:bg-primary hover:border-primary transition-all z-50 shadow-lg dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-primary"
       >
         <span className="material-symbols-outlined text-[18px]">
           {isOpen ? 'chevron_left' : 'chevron_right'}
         </span>
       </button>
 
-      <div className={`mb-10 flex items-center justify-center py-4 bg-white/5 rounded-4xl border border-white/10 relative overflow-hidden group ${isOpen ? 'px-2' : 'px-0'}`}>
+      {/* Logo */}
+      <div className={`mb-10 flex items-center justify-center py-4 bg-white/5 rounded-4xl border border-white/10 relative overflow-hidden group transition-colors duration-300 dark:bg-slate-900/50 dark:border-slate-800 ${isOpen ? 'px-2' : 'px-0'}`}>
         <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         <Link to="/admin" className="flex items-center relative z-10">
           <img
@@ -26,8 +28,9 @@ const Sidebar = ({ menuItems, handleLogout, isOpen, toggleSidebar }) => {
         </Link>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 space-y-2">
-        <p className={`text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 whitespace-nowrap transition-all duration-300 ${isOpen ? 'px-4 opacity-100' : 'text-center opacity-0 h-0 mb-0'}`}>
+        <p className={`text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 whitespace-nowrap transition-all duration-300 dark:text-slate-500 ${isOpen ? 'px-4 opacity-100' : 'text-center opacity-0 h-0 mb-0'}`}>
           Quản trị hệ thống
         </p>
         
@@ -43,10 +46,10 @@ const Sidebar = ({ menuItems, handleLogout, isOpen, toggleSidebar }) => {
               } ${
                 isActive
                   ? 'bg-primary text-white shadow-xl shadow-primary/20 translate-x-2'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white dark:hover:bg-slate-800'
               }`}
             >
-              <span className={`material-symbols-outlined text-[22px] shrink-0 ${isActive ? 'text-white' : 'group-hover:text-primary'}`}>
+              <span className={`material-symbols-outlined text-[22px] shrink-0 transition-colors ${isActive ? 'text-white' : 'group-hover:text-primary'}`}>
                 {item.icon}
               </span>
               <span className={`text-sm tracking-tight whitespace-nowrap transition-all duration-300 ${isActive ? 'font-black' : 'font-bold'} ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>
@@ -57,15 +60,17 @@ const Sidebar = ({ menuItems, handleLogout, isOpen, toggleSidebar }) => {
         })}
       </nav>
 
-      <div className="mt-auto space-y-3 pt-6 border-t border-white/5">
+      {/* Footer Sidebar (Actions) */}
+      <div className="mt-auto space-y-3 pt-6 border-t border-white/5 transition-colors duration-300 dark:border-slate-800">
         <Link
           to="/dashboard"
           title={!isOpen ? 'Trang User' : ''}
-          className={`flex w-full items-center rounded-xl bg-white/5 py-3 text-xs font-black uppercase tracking-widest text-slate-400 hover:bg-white/10 hover:text-white transition-all ${isOpen ? 'justify-center gap-2' : 'justify-center'}`}
+          className={`flex w-full items-center rounded-xl bg-white/5 py-3 text-xs font-black uppercase tracking-widest text-slate-400 hover:bg-white/10 hover:text-white transition-all dark:hover:bg-slate-800 ${isOpen ? 'justify-center gap-2' : 'justify-center'}`}
         >
           <span className="material-symbols-outlined text-sm shrink-0">home</span>
           {isOpen && <span className="whitespace-nowrap">Trang User</span>}
         </Link>
+        
         <button
           onClick={handleLogout}
           title={!isOpen ? 'Đăng xuất' : ''}
