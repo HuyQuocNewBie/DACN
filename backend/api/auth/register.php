@@ -31,9 +31,12 @@ if (!empty($data->username) && !empty($data->email) && !empty($data->password)) 
     if (!str_ends_with($email, "@gmail.com")) {
         http_response_code(400); echo json_encode(["message" => "Email đăng ký bắt buộc phải là @gmail.com."]); exit();
     }
+    
     $localPart = explode('@', $email)[0];
-    if (strlen($localPart) < 5 || strlen($localPart) > 15) {
-        http_response_code(400); echo json_encode(["message" => "Tên Gmail phải từ 5 đến 15 ký tự."]); exit();
+    
+    // ĐÃ SỬA: Tăng giới hạn tên email (trước @) lên 64 ký tự
+    if (strlen($localPart) < 5 || strlen($localPart) > 64) {
+        http_response_code(400); echo json_encode(["message" => "Tên Gmail phải từ 5 đến 64 ký tự."]); exit();
     }
 
     // --- CẬP NHẬT LOGIC MẬT KHẨU TẠI ĐÂY ---
@@ -41,9 +44,9 @@ if (!empty($data->username) && !empty($data->email) && !empty($data->password)) 
         http_response_code(400); echo json_encode(["message" => "Mật khẩu không được có khoảng trắng."]); exit();
     }
     
-    // Độ dài 8-32
-    if (strlen($password) < 8 || strlen($password) > 32) {
-        http_response_code(400); echo json_encode(["message" => "Mật khẩu phải từ 8 đến 32 ký tự."]); exit();
+    // ĐÃ SỬA: Tăng giới hạn độ dài mật khẩu lên 64 ký tự
+    if (strlen($password) < 8 || strlen($password) > 64) {
+        http_response_code(400); echo json_encode(["message" => "Mật khẩu phải từ 8 đến 64 ký tự."]); exit();
     }
     
     // Kiểm tra: Có chữ cái VÀ (Số hoặc ký tự đặc biệt)

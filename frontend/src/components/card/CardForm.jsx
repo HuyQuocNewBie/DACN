@@ -40,7 +40,7 @@ const CardForm = ({ initialData, onSubmit, onCancel }) => {
         <div className="flex flex-col gap-1">
           <label className="text-sm font-semibold text-slate-700">Nội dung mặt sau</label>
           <textarea 
-            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[100px]"
+            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-25"
             value={formData.back_content}
             onChange={(e) => setFormData({...formData, back_content: e.target.value})}
             required

@@ -3,7 +3,7 @@ const Flashcard = ({ card, isFlipped, onFlip }) => {
     <div className="perspective-1000 w-full max-w-2xl px-4 group">
       <div
         onClick={() => !isFlipped && onFlip()}
-        className={`relative min-h-[400px] w-full cursor-pointer transition-all duration-800 preserve-3d shadow-2xl rounded-[2.5rem] ${
+        className={`relative min-h-100 w-full cursor-pointer transition-all duration-800 preserve-3d shadow-2xl rounded-[2.5rem] ${
           isFlipped ? 'rotate-y-180' : 'hover:scale-[1.02] hover:-translate-y-2'
         }`}
         style={{ transformStyle: 'preserve-3d' }}
@@ -34,7 +34,7 @@ const Flashcard = ({ card, isFlipped, onFlip }) => {
                 />
               </div>
             )}
-            <h2 className="text-2xl md:text-3xl font-black text-slate-800 leading-tight break-words">
+            <h2 className="text-2xl md:text-3xl font-black text-slate-800 leading-tight wrap-break-word">
               {card.front_content}
             </h2>
           </div>
@@ -51,7 +51,7 @@ const Flashcard = ({ card, isFlipped, onFlip }) => {
           className="absolute inset-0 flex rotate-y-180 flex-col items-center justify-center rounded-[2.5rem] bg-slate-900 p-8 text-center text-white shadow-inner overflow-hidden"
           style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
         >
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-linear-to-r from-transparent via-primary to-transparent"></div>
           
           <div className="absolute top-10">
             <span className="px-4 py-1.5 rounded-full border border-slate-700 bg-slate-800/50 text-[10px] font-bold uppercase tracking-[0.4em] text-blue-400">
@@ -71,7 +71,7 @@ const Flashcard = ({ card, isFlipped, onFlip }) => {
                 />
               </div>
             )}
-            <p className="text-lg md:text-xl leading-relaxed font-medium bg-gradient-to-br from-white to-slate-400 bg-clip-text text-transparent break-words">
+            <p className="text-lg md:text-xl leading-relaxed font-medium bg-linear-to-br from-white to-slate-400 bg-clip-text text-transparent wrap-break-word">
               {card.back_content}
             </p>
           </div>

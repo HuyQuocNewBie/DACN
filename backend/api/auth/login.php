@@ -25,16 +25,18 @@ if (!empty($data->email) && !empty($data->password)) {
     $email = $data->email;
     $password = $data->password;
 
+    // Chỉ check tính hợp lệ cơ bản của Email
     if (preg_match('/\s/', $email) || !str_ends_with($email, "@gmail.com")) {
         http_response_code(400);
         echo json_encode(["message" => "Email không hợp lệ."]);
         exit();
     }
-    $localPart = explode('@', $email)[0];
-    // Ghi chú: Đã lột bỏ Check độ dài LocalPart và Regex chữ hoa/số của Mật khẩu để tương thích Acc Cũ.
+    
+    // ĐÃ SỬA: Xóa biến $localPart dư thừa
+    // ĐÃ SỬA: Đổi lại câu thông báo lỗi cho chuẩn với logic check khoảng trắng
     if (preg_match('/\s/', $password)) {
         http_response_code(400);
-        echo json_encode(["message" => "Độ dài mật khẩu (10-12) sai hoặc chứa khoảng trắng."]);
+        echo json_encode(["message" => "Mật khẩu không được chứa khoảng trắng."]);
         exit();
     }
 
@@ -80,3 +82,4 @@ if (!empty($data->email) && !empty($data->password)) {
     http_response_code(400); // Bad request
     echo json_encode(array("message" => "Xin vui lòng điền đủ Email và Mật khẩu."));
 }
+?>
