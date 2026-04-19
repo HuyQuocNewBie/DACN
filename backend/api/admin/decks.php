@@ -54,14 +54,14 @@ if ($method === 'GET') {
                 exit();
             }
 
-            // Lấy cards
+            // Lấy cards (CẬP NHẬT: Thêm front_image_url và back_image_url)
             $stmtCards = $db->prepare("
-    SELECT id, front_content, back_content 
-    FROM cards 
-    WHERE deck_id = ?
-");
-$stmtCards->execute([$id]);
-$deck['cards'] = $stmtCards->fetchAll(PDO::FETCH_ASSOC);
+                SELECT id, front_content, front_image_url, back_content, back_image_url 
+                FROM cards 
+                WHERE deck_id = ?
+            ");
+            $stmtCards->execute([$id]);
+            $deck['cards'] = $stmtCards->fetchAll(PDO::FETCH_ASSOC);
 
             // Cast kiểu dữ liệu
             $deck['id'] = (int)$deck['id'];

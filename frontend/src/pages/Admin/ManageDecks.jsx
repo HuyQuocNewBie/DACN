@@ -435,21 +435,42 @@ const ManageDecks = () => {
                         key={card.id}
                         className="grid grid-cols-1 gap-4 rounded-2xl border border-slate-100 bg-white p-5 md:grid-cols-2"
                       >
-                        <div>
+                        <div className="flex flex-col">
                           <span className="text-[9px] font-black text-indigo-400 uppercase">
                             Mặt trước
                           </span>
                           <p className="mt-1 text-sm font-bold text-slate-700">
                             {card.front_content}
                           </p>
+                          {card.front_image_url && (
+                            <div className="mt-3 h-20 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                              <img 
+                                src={card.front_image_url} 
+                                alt="Front" 
+                                className="h-full w-full object-cover"
+                                onError={(e) => e.target.style.display = 'none'}
+                              />
+                            </div>
+                          )}
                         </div>
-                        <div className="border-slate-100 md:border-l md:pl-4">
+                        
+                        <div className="flex flex-col border-slate-100 md:border-l md:pl-4">
                           <span className="text-[9px] font-black text-emerald-400 uppercase">
                             Mặt sau
                           </span>
                           <p className="mt-1 text-sm font-medium text-slate-600">
                             {card.back_content}
                           </p>
+                          {card.back_image_url && (
+                            <div className="mt-3 h-20 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                              <img 
+                                src={card.back_image_url} 
+                                alt="Back" 
+                                className="h-full w-full object-cover"
+                                onError={(e) => e.target.style.display = 'none'}
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
