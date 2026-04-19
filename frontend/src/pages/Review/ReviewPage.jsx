@@ -22,6 +22,8 @@ const ReviewPage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const [isFinished, setIsFinished] = useState(false);
+
   useEffect(() => {
     let mounted = true;
 
@@ -44,6 +46,8 @@ const ReviewPage = () => {
 
   const handleReview = useCallback(
     async (quality) => {
+      if (isFinished) return;
+
       const currentCard = cards[currentIndex];
       if (!currentCard) return;
 
@@ -56,6 +60,8 @@ const ReviewPage = () => {
           if (currentIndex < cards.length - 1) {
             setCurrentIndex((prev) => prev + 1);
           } else {
+            setIsFinished(true);
+
             toast.success('Tuyệt vời! Bạn đã hoàn thành mục tiêu hôm nay', {
               icon: '🎉',
               className:
@@ -69,12 +75,12 @@ const ReviewPage = () => {
         toast.error('Lỗi khi lưu tiến trình học');
       }
     },
-    [cards, currentIndex, navigate]
+    [cards, currentIndex, navigate, isFinished]
   );
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (loading || cards.length === 0) return;
+      if (loading || cards.length === 0 || isFinished) return;
 
       if (e.code === 'Space') {
         e.preventDefault();
@@ -103,7 +109,7 @@ const ReviewPage = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFlipped, loading, cards.length, handleReview]);
+  }, [isFlipped, loading, cards.length, isFinished, handleReview]);
 
   if (loading) return <Loading />;
 
@@ -127,18 +133,19 @@ const ReviewPage = () => {
     );
 
   const currentCard = cards[currentIndex];
-  const progressPercent = ((currentIndex + 1) / cards.length) * 100;
+  const progressPercent = isFinished
+    ? 100
+    : ((currentIndex + 1) / cards.length) * 100;
 
   return (
     <div className="animate-in fade-in mx-auto flex max-w-4xl flex-col items-center py-4 duration-500">
-      {/* PROGRESS */}
       <div className="mb-10 w-full max-w-2xl px-4">
         <div className="mb-3 flex items-center justify-between text-sm font-bold">
           <span className="text-[10px] tracking-widest text-slate-400 uppercase dark:text-slate-500">
             Tiến độ ôn tập
           </span>
           <span className="text-primary bg-primary/10 dark:bg-primary/20 rounded-md px-2 py-0.5 font-mono">
-            {currentIndex + 1} / {cards.length}
+            {isFinished ? cards.length : currentIndex + 1} / {cards.length}
           </span>
         </div>
 
@@ -154,11 +161,19 @@ const ReviewPage = () => {
       <Flashcard
         card={currentCard}
         isFlipped={isFlipped}
-        onFlip={() => setIsFlipped(true)}
+        onFlip={() => {
+          if (!isFinished) setIsFlipped(true);
+        }}
       />
 
       <div className="mt-10 min-h-20 w-full max-w-2xl px-4">
-        {isFlipped ? (
+        {isFinished ? (
+          <div className="flex justify-center">
+            <div className="animate-pulse text-sm font-bold text-slate-500 dark:text-slate-400">
+              Đang chuyển về Dashboard...
+            </div>
+          </div>
+        ) : isFlipped ? (
           <div className="animate-in fade-in slide-in-from-bottom-4 grid grid-cols-2 gap-3 duration-300 md:grid-cols-4">
             {/* AGAIN */}
             <button
