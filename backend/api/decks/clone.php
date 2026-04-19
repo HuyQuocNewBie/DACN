@@ -36,6 +36,7 @@ $db = (new Database())->getConnection();
 try {
     $db->beginTransaction();
 
+    // 1. Kiểm tra bộ thẻ gốc có tồn tại và đang public không
     $stmt = $db->prepare("SELECT title, description FROM decks WHERE id = :id AND is_public = 1");
     $stmt->bindParam(':id', $original_deck_id);
     $stmt->execute();
@@ -48,6 +49,7 @@ try {
     $title = $row['title'];
     $description = $row['description'];
 
+    // 2. Tạo bộ thẻ mới cho user (mặc định is_public = 0)
     $insertDeck = $db->prepare("INSERT INTO decks (user_id, title, description, is_public, created_at) VALUES (:user_id, :title, :description, 0, CURRENT_TIMESTAMP)");
     $insertDeck->bindParam(':user_id', $user_id);
     $insertDeck->bindParam(':title', $title);
@@ -59,12 +61,13 @@ try {
 
     $new_deck_id = $db->lastInsertId();
 
+    // 3. Copy các thẻ từ bộ cũ sang bộ mới (CẬP NHẬT: THÊM 2 CỘT ẢNH)
     $insertCards = $db->prepare("
-    INSERT INTO cards (deck_id, front_content, back_content, repetitions, ease_factor, review_interval, next_review_date, created_at)
-    SELECT :new_deck_id, front_content, back_content, 0, 2.5, 0, CURRENT_DATE, CURRENT_TIMESTAMP
-    FROM cards
-    WHERE deck_id = :old_deck_id
-");
+        INSERT INTO cards (deck_id, front_content, front_image_url, back_content, back_image_url, repetitions, ease_factor, review_interval, next_review_date, created_at)
+        SELECT :new_deck_id, front_content, front_image_url, back_content, back_image_url, 0, 2.5, 0, CURRENT_DATE, CURRENT_TIMESTAMP
+        FROM cards
+        WHERE deck_id = :old_deck_id
+    ");
     $insertCards->bindParam(':new_deck_id', $new_deck_id);
     $insertCards->bindParam(':old_deck_id', $original_deck_id);
     $insertCards->execute();
