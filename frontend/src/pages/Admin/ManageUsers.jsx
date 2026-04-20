@@ -9,7 +9,7 @@ const ManageUsers = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -86,7 +86,6 @@ const ManageUsers = () => {
 
   return (
     <div className="animate-in fade-in space-y-8 duration-500">
-      {/* Header & Search */}
       <div className="relative flex flex-col justify-between gap-6 rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 lg:flex-row lg:items-center dark:border-slate-800 dark:bg-slate-900">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl dark:bg-indigo-500/10"></div>
@@ -115,7 +114,6 @@ const ManageUsers = () => {
         </div>
       </div>
 
-      {/* Table Section */}
       <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white pb-8 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -208,9 +206,8 @@ const ManageUsers = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         {filtered.length > itemsPerPage && (
-          <div className="mt-8 flex items-center justify-center gap-2">
+          <div className="mt-4 flex items-center justify-center gap-2">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
@@ -253,9 +250,7 @@ const ManageUsers = () => {
         )}
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {/* Card 1: Vốn đã có màu nền tối (slate-900), tôi đổi nó thành slate-800 khi dark mode để tránh chìm vào nền trang (slate-950) */}
         <div className="group relative flex items-center justify-between overflow-hidden rounded-[2.5rem] bg-slate-900 p-8 text-white shadow-sm transition-colors duration-300 dark:bg-slate-800">
           <div className="absolute top-0 right-0 h-32 w-32 rounded-full bg-blue-500/10 blur-2xl"></div>
           <div className="relative z-10">
@@ -269,7 +264,6 @@ const ManageUsers = () => {
           </div>
         </div>
 
-        {/* Card 2 */}
         <div className="group flex items-center justify-between rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
           <div>
             <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors duration-300 dark:text-slate-500">
@@ -284,7 +278,6 @@ const ManageUsers = () => {
           </div>
         </div>
 
-        {/* Card 3 */}
         <div className="group flex items-center justify-between rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
           <div>
             <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors duration-300 dark:text-slate-500">

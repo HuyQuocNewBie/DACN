@@ -23,7 +23,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 4;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -279,7 +279,7 @@ const AdminDashboard = () => {
           </div>
 
           {logs.length > itemsPerPage && (
-            <div className="mt-10 flex items-center justify-center gap-2">
+            <div className="mt-4 flex items-center justify-center gap-2">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
