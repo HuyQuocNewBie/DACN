@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 
-// 1. IMPORT HOOK useTheme
 import { useTheme } from '../../../context/ThemeContext';
 
 const getDisplayName = (user) =>
@@ -14,7 +13,6 @@ const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 2. GỌI HOOK LẤY TRẠNG THÁI VÀ HÀM TOGGLE
   const { isDarkMode, toggleTheme } = useTheme();
 
   const [open, setOpen] = useState(false);
@@ -60,7 +58,6 @@ const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
 
         <div className="flex items-center gap-6">
           
-          {/* 3. ĐỔI SỰ KIỆN CLICK SANG HÀM toggleTheme */}
           <button
             onClick={toggleTheme}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-900 focus:outline-none active:scale-95 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-50"
@@ -70,7 +67,6 @@ const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
               {isDarkMode ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
-          {/* ---------------------------- */}
 
           <div className="relative" ref={dropdownRef}>
             <button
