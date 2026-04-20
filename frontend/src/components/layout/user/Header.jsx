@@ -49,21 +49,27 @@ const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
 
   return (
     <>
-      <header className={`fixed top-0 right-0 left-0 z-40 flex h-20 items-center justify-between border-b border-slate-100 bg-white/80 px-8 backdrop-blur-xl transition-all duration-300 dark:border-slate-800 dark:bg-slate-900/80 ${isSidebarOpen ? 'md:left-64' : 'md:left-24'}`}>
+      <header
+        className={`fixed top-0 right-0 left-0 z-40 flex h-20 items-center justify-between border-b border-slate-100 bg-white/80 px-8 backdrop-blur-xl transition-all duration-300 dark:border-slate-800 dark:bg-slate-900/80 ${isSidebarOpen ? 'md:left-64' : 'md:left-24'}`}
+      >
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-black tracking-tight text-slate-900 md:text-2xl dark:text-white">
+            <p className="text-primary mb-1 text-[10px] leading-none font-black tracking-widest uppercase">
+              Hệ thống
+            </p>
             {title}
           </h2>
         </div>
 
         <div className="flex items-center gap-6">
-          
           <button
             onClick={toggleTheme}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-900 focus:outline-none active:scale-95 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-50"
-            title={isDarkMode ? "Bật chế độ sáng" : "Bật chế độ tối"}
+            title={isDarkMode ? 'Bật chế độ sáng' : 'Bật chế độ tối'}
           >
-            <span className={`material-symbols-outlined text-xl transition-transform duration-500 ${isDarkMode ? 'rotate-360' : 'rotate-0'}`}>
+            <span
+              className={`material-symbols-outlined text-xl transition-transform duration-500 ${isDarkMode ? 'rotate-360' : 'rotate-0'}`}
+            >
               {isDarkMode ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
@@ -126,7 +132,7 @@ const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
                       navigate('/profile');
                       setOpen(false);
                     }}
-                    className="hover:text-primary group flex w-full items-center gap-4 rounded-[1.25rem] px-4 py-3 text-sm font-bold text-slate-600 transition-all hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-primary"
+                    className="hover:text-primary group dark:hover:text-primary flex w-full items-center gap-4 rounded-[1.25rem] px-4 py-3 text-sm font-bold text-slate-600 transition-all hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700"
                   >
                     <span className="material-symbols-outlined text-xl transition-transform group-hover:scale-110">
                       person
