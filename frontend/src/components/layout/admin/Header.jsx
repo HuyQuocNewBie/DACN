@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../../hooks/useAuth'; 
 import { toast } from 'react-hot-toast';
 
-// 1. IMPORT HOOK useTheme
 import { useTheme } from '../../../context/ThemeContext';
 
 const getDisplayName = (user) =>
@@ -14,7 +13,6 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // 2. GỌI HOOK LẤY TRẠNG THÁI VÀ HÀM TOGGLE TỪ CONTEXT
   const { isDarkMode, toggleTheme } = useTheme();
   
   const [open, setOpen] = useState(false);
@@ -54,24 +52,22 @@ const Header = () => {
 
         <div className="flex items-center gap-6">
           
-          {/* 3. NÚT TOGGLE DARK MODE GỌI HÀM TỪ CONTEXT */}
           <button
             onClick={toggleTheme}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-900 focus:outline-none active:scale-95 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-50"
             title={isDarkMode ? "Bật chế độ sáng" : "Bật chế độ tối"}
           >
-            <span className={`material-symbols-outlined text-xl transition-transform duration-500 ${isDarkMode ? 'rotate-[360deg]' : 'rotate-0'}`}>
+            <span className={`material-symbols-outlined text-xl transition-transform duration-500 ${isDarkMode ? 'rotate-360' : 'rotate-0'}`}>
               {isDarkMode ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
-          {/* ---------------------------- */}
 
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setOpen(!open)}
               className="group flex items-center gap-3 rounded-[1.25rem] bg-slate-50 p-1.5 pr-4 transition-all hover:bg-slate-100 focus:outline-none active:scale-95 dark:bg-slate-800 dark:hover:bg-slate-700"
             >
-              <div className="group-hover:bg-primary group-hover:shadow-primary/30 flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-primary/10 text-sm font-black text-primary shadow-lg shadow-slate-200 transition-all dark:shadow-none">
+              <div className="group-hover:bg-primary/10 flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-sm font-black text-slate-600 transition-all dark:bg-slate-700 dark:text-slate-300">
                 {user?.avatar ? (
                   <img
                     src={user.avatar}
@@ -159,7 +155,7 @@ const Header = () => {
       </header>
 
       {isLogoutModalOpen && (
-        <div className="animate-in fade-in fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300 dark:bg-slate-900/60">
+        <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300 dark:bg-slate-900/60">
           <div
             className="absolute inset-0"
             onClick={() => setIsLogoutModalOpen(false)}

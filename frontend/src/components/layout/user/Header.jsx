@@ -66,7 +66,7 @@ const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
             className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-900 focus:outline-none active:scale-95 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-50"
             title={isDarkMode ? "Bật chế độ sáng" : "Bật chế độ tối"}
           >
-            <span className={`material-symbols-outlined text-xl transition-transform duration-500 ${isDarkMode ? 'rotate-[360deg]' : 'rotate-0'}`}>
+            <span className={`material-symbols-outlined text-xl transition-transform duration-500 ${isDarkMode ? 'rotate-360' : 'rotate-0'}`}>
               {isDarkMode ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
@@ -176,7 +176,7 @@ const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
       </header>
 
       {showLogoutModal && (
-        <div className="animate-in fade-in fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300 dark:bg-slate-900/60">
+        <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300 dark:bg-slate-900/60">
           <div
             className="absolute inset-0 cursor-pointer"
             onClick={() => setShowLogoutModal(false)}

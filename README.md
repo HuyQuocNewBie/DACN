@@ -2,6 +2,7 @@
 ```
 DACN
 ├─ backend
+│  ├─ .htaccess
 │  ├─ api
 │  │  ├─ admin
 │  │  │  ├─ decks.php
@@ -42,6 +43,7 @@ DACN
 │  │  ├─ email_config.php
 │  │  ├─ jwt_helper.php
 │  │  └─ test.php
+│  ├─ Dockerfile
 │  ├─ models
 │  │  ├─ Card.php
 │  │  ├─ Deck.php
@@ -49,7 +51,8 @@ DACN
 │  │  └─ User.php
 │  └─ uploads
 ├─ database
-│  └─ database.sql
+│  ├─ database.sql
+│  └─ spaced_repetition_db.sql
 ├─ frontend
 │  ├─ .prettierrc
 │  ├─ eslint.config.js
@@ -136,6 +139,8 @@ DACN
 │  │     ├─ errorHandler.js
 │  │     ├─ formatDate.js
 │  │     └─ validate.js
+│  ├─ tailwind.config.js
+│  ├─ vercel.json
 │  └─ vite.config.js
 ├─ package-lock.json
 ├─ package.json
