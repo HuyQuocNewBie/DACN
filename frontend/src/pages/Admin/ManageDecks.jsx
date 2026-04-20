@@ -146,7 +146,6 @@ const ManageDecks = () => {
 
   return (
     <div className="animate-in fade-in space-y-8 duration-500">
-      {/* --- HEADER & SEARCH --- */}
       <div className="relative flex flex-col justify-between gap-8 rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 md:p-10 xl:flex-row xl:items-center dark:border-slate-800 dark:bg-slate-900">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl dark:bg-indigo-500/10"></div>
@@ -162,7 +161,6 @@ const ManageDecks = () => {
         </div>
 
         <div className="relative z-20 flex w-full flex-col items-center gap-4 sm:flex-row xl:w-auto">
-          {/* Ô Tìm kiếm */}
           <div className="relative w-full sm:w-72">
             <span className="absolute top-1/2 left-4 -translate-y-1/2 opacity-40 dark:text-slate-400">
               🔍
@@ -176,7 +174,6 @@ const ManageDecks = () => {
             />
           </div>
 
-          {/* Bộ lọc Dropdown */}
           <div className="relative w-full sm:w-auto">
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -220,7 +217,6 @@ const ManageDecks = () => {
         </div>
       </div>
 
-      {/* --- TABLE DANH SÁCH --- */}
       <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white px-4 pb-8 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
         <div className="relative z-10 overflow-x-auto">
           <table className="w-full border-separate border-spacing-y-3">
@@ -300,9 +296,8 @@ const ManageDecks = () => {
           </table>
         </div>
 
-        {/* --- PHÂN TRANG --- */}
         {filteredDecks.length > itemsPerPage && (
-          <div className="flex items-center justify-center gap-2 mt-4">
+          <div className="mt-4 flex items-center justify-center gap-2">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
@@ -316,7 +311,7 @@ const ManageDecks = () => {
                 onClick={() => setCurrentPage(i + 1)}
                 className={`h-10 w-10 rounded-xl text-xs font-black transition-all ${
                   currentPage === i + 1
-                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200 dark:bg-primary dark:text-white dark:shadow-none'
+                    ? 'dark:bg-primary bg-slate-900 text-white shadow-lg shadow-slate-200 dark:text-white dark:shadow-none'
                     : 'border border-slate-100 bg-white text-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700'
                 }`}
               >
@@ -348,7 +343,6 @@ const ManageDecks = () => {
         )}
       </div>
 
-      {/* --- STATS CARDS --- */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="group relative flex items-center justify-between overflow-hidden rounded-[2.5rem] bg-slate-900 p-8 text-white transition-colors duration-300 dark:bg-slate-800">
           <div className="absolute top-0 right-0 h-32 w-32 rounded-full bg-indigo-500/10 blur-2xl"></div>
@@ -392,15 +386,13 @@ const ManageDecks = () => {
         </div>
       </div>
 
-      {/* --- MODAL CHI TIẾT --- */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             onClick={() => setIsModalOpen(false)}
           ></div>
-          <div className="animate-in zoom-in-95 relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl duration-300 dark:bg-slate-900 dark:border dark:border-slate-800 dark:shadow-none">
-            {/* Header Modal */}
+          <div className="animate-in zoom-in-95 relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl duration-300 dark:border dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
             <div className="flex items-center justify-between border-b border-slate-100 p-8 dark:border-slate-800">
               <div>
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white">
@@ -418,7 +410,6 @@ const ManageDecks = () => {
               </button>
             </div>
 
-            {/* Content Modal */}
             <div className="max-h-[60vh] overflow-y-auto p-8">
               {modalLoading ? (
                 <div className="flex flex-col items-center py-10">
@@ -429,7 +420,6 @@ const ManageDecks = () => {
                 </div>
               ) : selectedDeck ? (
                 <div className="space-y-6">
-                  {/* Mô tả */}
                   <div className="rounded-3xl border border-slate-100 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-950">
                     <h3 className="mb-2 text-lg font-black text-slate-900 dark:text-white">
                       {selectedDeck.title}
@@ -439,7 +429,6 @@ const ManageDecks = () => {
                     </p>
                   </div>
 
-                  {/* Danh sách thẻ */}
                   <div className="space-y-3">
                     <p className="px-2 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                       Danh sách thẻ ({selectedDeck.cards?.length})
@@ -449,7 +438,6 @@ const ManageDecks = () => {
                         key={card.id}
                         className="grid grid-cols-1 gap-4 rounded-2xl border border-slate-100 bg-white p-5 md:grid-cols-2 dark:border-slate-800 dark:bg-slate-800/50"
                       >
-                        {/* Mặt trước */}
                         <div className="flex flex-col">
                           <span className="text-[9px] font-black text-indigo-400 uppercase dark:text-indigo-500">
                             Mặt trước
@@ -471,7 +459,6 @@ const ManageDecks = () => {
                           )}
                         </div>
 
-                        {/* Mặt sau */}
                         <div className="flex flex-col border-slate-100 md:border-l md:pl-4 dark:border-slate-700">
                           <span className="text-[9px] font-black text-emerald-400 uppercase dark:text-emerald-500">
                             Mặt sau
