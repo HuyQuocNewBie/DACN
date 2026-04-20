@@ -406,7 +406,7 @@ const LandingPage = () => {
                   {authMode === 'login' ? 'Chào trở lại!' : 'Chào bạn mới!'}
                 </h2>
                 <p className="font-medium text-slate-400">
-                  Bắt đầu hành trình học tập cùng Memo.Space
+                  Bắt đầu hành trình học tập cùng MemoSpace
                 </p>
               </div>
 

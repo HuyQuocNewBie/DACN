@@ -33,7 +33,7 @@ function getEmailConfig()
         'username' => $_ENV['GMAIL_EMAIL'] ?? '',
         'password' => $_ENV['GMAIL_APP_PASSWORD'] ?? '',
         'from_email' => $_ENV['GMAIL_EMAIL'] ?? '',
-        'from_name' => $_ENV['GMAIL_FROM_NAME'] ?? 'Memo.Space',
+        'from_name' => $_ENV['GMAIL_FROM_NAME'] ?? 'MemoSpace',
     ];
 }
 
@@ -262,7 +262,7 @@ function sendEmail($toEmail, $toName, $subject, $body)
                 <tr>
                     <td class="footer">
                         <p class="footer-text">Bạn nhận được email này từ hệ thống nhắc nhở của chúng tôi</p>
-                        <p class="footer-text">© ' . date("Y") . ' Memo.Space</p>
+                        <p class="footer-text">© ' . date("Y") . ' MemoSpace</p>
                     </td>
                 </tr>
             </table>
