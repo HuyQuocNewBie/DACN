@@ -124,7 +124,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // --- Đã thêm class dark: vào thẳng mảng cấu hình ---
   const statCards = [
     {
       label: 'Tổng người dùng',
@@ -163,8 +162,7 @@ const AdminDashboard = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="animate-in fade-in space-y-10 pb-10 duration-500">
-      {/* Header Section */}
+    <div className="animate-in fade-in space-y-10 duration-500">
       <header className="relative flex flex-col justify-between gap-6 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 md:flex-row md:items-end md:p-10 dark:border-slate-800 dark:bg-slate-900">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl dark:bg-indigo-500/10"></div>
@@ -189,7 +187,6 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      {/* Stats Cards Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {statCards.map((item, index) => (
           <div
@@ -218,11 +215,8 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Logs and Chart Section */}
-      <div className="grid grid-cols-1 gap-8 items-start lg:grid-cols-12">
-        
-        {/* Nhật ký hệ thống */}
-        <div className="flex flex-col rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm transition-colors duration-300 lg:col-span-8 h-fit dark:border-slate-800 dark:bg-slate-900">
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+        <div className="flex h-fit flex-col rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm transition-colors duration-300 lg:col-span-8 dark:border-slate-800 dark:bg-slate-900">
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h3 className="text-xl font-black tracking-tight text-slate-900 transition-colors duration-300 dark:text-white">
@@ -284,7 +278,6 @@ const AdminDashboard = () => {
             )}
           </div>
 
-          {/* Phân trang */}
           {logs.length > itemsPerPage && (
             <div className="mt-10 flex items-center justify-center gap-2">
               <button
@@ -312,7 +305,9 @@ const AdminDashboard = () => {
               </div>
 
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 bg-white font-black transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
               >
@@ -322,8 +317,7 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        {/* Cấu trúc dữ liệu (Pie Chart) */}
-        <div className="flex flex-col rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm transition-colors duration-300 lg:col-span-4 h-fit sticky top-8 dark:border-slate-800 dark:bg-slate-900">
+        <div className="sticky top-8 flex h-fit flex-col rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm transition-colors duration-300 lg:col-span-4 dark:border-slate-800 dark:bg-slate-900">
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h3 className="text-xl font-black tracking-tight text-slate-900 transition-colors duration-300 dark:text-white">
@@ -343,9 +337,21 @@ const AdminDashboard = () => {
               <PieChart>
                 <Pie
                   data={[
-                    { name: 'Người dùng', value: stats.totalUsers, color: '#4F46E5' },
-                    { name: 'Bộ thẻ', value: stats.totalDecks, color: '#10B981' },
-                    { name: 'Thẻ học', value: stats.totalCards, color: '#F59E0B' },
+                    {
+                      name: 'Người dùng',
+                      value: stats.totalUsers,
+                      color: '#4F46E5',
+                    },
+                    {
+                      name: 'Bộ thẻ',
+                      value: stats.totalDecks,
+                      color: '#10B981',
+                    },
+                    {
+                      name: 'Thẻ học',
+                      value: stats.totalCards,
+                      color: '#F59E0B',
+                    },
                   ]}
                   innerRadius={60}
                   outerRadius={80}
@@ -353,15 +359,14 @@ const AdminDashboard = () => {
                   dataKey="value"
                   stroke="none"
                 >
-                  {[
-                    '#4F46E5', // Indigo
-                    '#10B981', // Emerald
-                    '#F59E0B', // Amber
-                  ].map((color, index) => (
-                    <Cell key={`cell-${index}`} fill={color} className="outline-none" />
+                  {['#4F46E5', '#10B981', '#F59E0B'].map((color, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={color}
+                      className="outline-none"
+                    />
                   ))}
                 </Pie>
-                {/* Tooltip của Recharts tự động thích ứng khá tốt, để nguyên style */}
                 <Tooltip
                   contentStyle={{
                     borderRadius: '16px',
@@ -376,8 +381,7 @@ const AdminDashboard = () => {
                   align="center"
                   iconType="circle"
                   formatter={(value) => (
-                    // Thêm class dark: cho phần text của Legend
-                    <span className="text-[10px] font-black uppercase text-slate-500 ml-1 transition-colors dark:text-slate-400">
+                    <span className="ml-1 text-[10px] font-black text-slate-500 uppercase transition-colors dark:text-slate-400">
                       {value}
                     </span>
                   )}
@@ -390,7 +394,7 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 transition-all hover:bg-slate-100 dark:bg-slate-800/50 dark:hover:bg-slate-800">
               <div className="flex items-center gap-3">
                 <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></div>
-                <span className="text-xs font-black uppercase text-slate-600 transition-colors dark:text-slate-300">
+                <span className="text-xs font-black text-slate-600 uppercase transition-colors dark:text-slate-300">
                   Server Status
                 </span>
               </div>
