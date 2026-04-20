@@ -73,7 +73,6 @@ const Dashboard = () => {
 
   return (
     <div className="animate-in fade-in space-y-8 duration-500">
-      {/* --- HEADER --- */}
       <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 transition-colors duration-300 md:text-4xl dark:text-white">
@@ -98,7 +97,6 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="space-y-8 lg:col-span-8">
           
-          {/* --- TOP STATS CARDS --- */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div
               onClick={() => navigate('/decks')}
@@ -168,7 +166,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* --- HERO CARD (Sẵn sàng bứt phá) --- */}
           {stats?.due_today > 0 && (
             <div className="relative flex flex-col items-center justify-between gap-8 overflow-hidden rounded-[2.5rem] bg-slate-900 p-8 text-white shadow-2xl shadow-slate-200 transition-colors duration-300 md:flex-row dark:bg-slate-800 dark:shadow-none">
               <div className="absolute top-0 right-0 -mt-32 -mr-32 h-64 w-64 rounded-full bg-indigo-500/20 blur-[100px]"></div>
@@ -206,7 +203,6 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* --- RECENT ACTIVITIES --- */}
           <div className="flex flex-col rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
             <div className="mb-10 flex items-center justify-between">
               <div>
@@ -222,7 +218,6 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Timeline Wrapper */}
             <div className="relative flex-1 space-y-6 before:absolute before:top-2 before:bottom-2 before:left-2.75 before:w-0.5 before:bg-slate-50 dark:before:bg-slate-800">
               {paginatedActivities.length > 0 ? (
                 paginatedActivities.map((activity, index) => (
@@ -230,10 +225,8 @@ const Dashboard = () => {
                     key={index}
                     className="group relative flex items-start gap-4"
                   >
-                    {/* Timeline Dot */}
                     <div className="z-10 h-6 w-6 shrink-0 rounded-full border-[6px] border-slate-100 bg-white shadow-sm transition-colors group-hover:border-indigo-600 dark:border-slate-800 dark:bg-slate-900 dark:group-hover:border-indigo-500"></div>
 
-                    {/* Content Box */}
                     <div className="-mt-1.5 flex flex-1 items-start justify-between rounded-2xl p-4 transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-800/50">
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
@@ -287,9 +280,8 @@ const Dashboard = () => {
               )}
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-5 flex items-center justify-between border-t border-slate-50 pt-5 transition-colors duration-300 dark:border-slate-800">
+              <div className="mt-5 flex items-center justify-between border-t border-slate-50 transition-colors duration-300 dark:border-slate-800">
                 <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                   Trang {currentPage} / {totalPages}
                 </p>
@@ -314,10 +306,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* --- RIGHT COLUMN --- */}
         <div className="space-y-8 lg:col-span-4">
           
-          {/* --- 7 DAYS PROGRESS --- */}
           <div className="flex h-40 flex-col justify-between rounded-4xl border border-slate-100 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between">
               <h3 className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
@@ -358,7 +348,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* --- DAILY GOALS --- */}
           <div className="flex h-40 flex-col justify-center rounded-4xl border border-slate-100 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
             <div className="mb-4 flex items-center gap-2">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-600 dark:bg-indigo-500"></span>
@@ -406,7 +395,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* --- PIE CHART --- */}
           <div className="flex min-h-100 flex-col rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
             <div className="mb-6 flex items-center justify-between">
               <h3 className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
