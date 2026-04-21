@@ -173,6 +173,10 @@ const Profile = () => {
                       src={avatarPreview}
                       alt="Avatar"
                       className="h-full w-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'U')}&background=random`;
+                      }}
                     />
                   ) : (
                     username?.charAt(0)?.toUpperCase() || 'U'
