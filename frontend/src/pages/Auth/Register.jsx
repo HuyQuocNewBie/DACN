@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { validateEmail, validatePassword } from '../../utils/validate';
+import axiosClient from '../../api/axiosClient';
 
 const Register = ({ onSwitch }) => {
   const [formData, setFormData] = useState({
@@ -45,20 +46,11 @@ const Register = ({ onSwitch }) => {
 
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/register.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validatedData),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        toast.success('Đăng ký thành công!');
-        if (onSwitch) onSwitch();
-      } else {
-        toast.error(data.message || 'Lỗi đăng ký');
-      }
-    } catch {
-      toast.error('Lỗi kết nối server!');
+      const data = await axiosClient.post('/auth/register.php', validatedData);
+      toast.success('Đăng ký thành công!');
+      if (onSwitch) onSwitch();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Lỗi kết nối server!');
     } finally {
       setLoading(false);
     }

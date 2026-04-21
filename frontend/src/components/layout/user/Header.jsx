@@ -85,6 +85,10 @@ const Header = ({ title = 'Bảng điều khiển', isSidebarOpen = true }) => {
                     src={user.avatar}
                     alt={getDisplayName(user)}
                     className="h-full w-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(getDisplayName(user))}&background=random`;
+                    }}
                   />
                 ) : (
                   getDisplayName(user).charAt(0).toUpperCase()
