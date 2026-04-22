@@ -29,7 +29,7 @@ if (!empty($data->email) && !empty($data->password)) {
         echo json_encode(["message" => "Email không hợp lệ."]);
         exit();
     }
-
+    
     if (preg_match('/\s/', $password)) {
         http_response_code(400);
         echo json_encode(["message" => "Mật khẩu không được chứa khoảng trắng."]);
@@ -61,13 +61,12 @@ if (!empty($data->email) && !empty($data->password)) {
         echo json_encode(
             array(
                 "message" => "Đăng nhập thành công.",
-                "token" => $token,
-                "role" => $user->role,
-                "username" => $user->username,
-                "avatar" => $user->avatar
-                    ? (strpos($user->avatar, 'http') === 0
-                        ? $user->avatar
-                        : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/' . ltrim($user->avatar, '/'))
+                "token"   => $token,
+                "role"    => $user->role,
+                "username"=> $user->username,
+                // Nếu avatar đã là URL đầy đủ (Cloudinary) thì trả về thẳng, không ghép domain
+                "avatar"  => $user->avatar
+                    ? (str_starts_with($user->avatar, 'http') ? $user->avatar : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/' . ltrim($user->avatar, '/'))
                     : null
             )
         );
