@@ -32,9 +32,11 @@ try {
 
     if ($user) {
         if (!empty($user['avatar'])) {
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-            $host = $_SERVER['HTTP_HOST'];
-            $user['avatar'] = $protocol . '://' . $host . '/' . ltrim($user['avatar'], '/');
+            if (strpos($user['avatar'], 'http') !== 0) {
+                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                $host = $_SERVER['HTTP_HOST'];
+                $user['avatar'] = $protocol . '://' . $host . '/' . ltrim($user['avatar'], '/');
+            }
         }
         http_response_code(200);
         echo json_encode($user);

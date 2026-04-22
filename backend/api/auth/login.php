@@ -29,7 +29,7 @@ if (!empty($data->email) && !empty($data->password)) {
         echo json_encode(["message" => "Email không hợp lệ."]);
         exit();
     }
-    
+
     if (preg_match('/\s/', $password)) {
         http_response_code(400);
         echo json_encode(["message" => "Mật khẩu không được chứa khoảng trắng."]);
@@ -64,7 +64,11 @@ if (!empty($data->email) && !empty($data->password)) {
                 "token" => $token,
                 "role" => $user->role,
                 "username" => $user->username,
-                "avatar" => $user->avatar ? (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/' . ltrim($user->avatar, '/') : null
+                "avatar" => $user->avatar
+                    ? (strpos($user->avatar, 'http') === 0
+                        ? $user->avatar
+                        : (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/' . ltrim($user->avatar, '/'))
+                    : null
             )
         );
     } else {
