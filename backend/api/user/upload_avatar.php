@@ -50,49 +50,60 @@ if ($file['size'] > $max_size) {
     exit();
 }
 
+// ====== CLOUDINARY CONFIG ======
+$cloud_name = getenv('CLOUDINARY_CLOUD_NAME') ?: 'dtos8dxdw';
+$api_key    = getenv('CLOUDINARY_API_KEY')    ?: '632292521579181';
+$api_secret = getenv('CLOUDINARY_API_SECRET') ?: 'IVQKHZS7EJECsEW7xVCXYRFQixo';
+// ================================
+
 try {
-    $db = (new Database())->getConnection();
+    // Tạo chữ ký (signature) để upload lên Cloudinary
+    $timestamp  = time();
+    $public_id  = 'avatars/user_' . $user_data->id . '_' . $timestamp;
+    $params_to_sign = "public_id={$public_id}&timestamp={$timestamp}";
+    $signature  = sha1($params_to_sign . $api_secret);
 
-    $stmt_get = $db->prepare("SELECT avatar FROM users WHERE id = ?");
-    $stmt_get->execute([$user_data->id]);
-    $old_user_data = $stmt_get->fetch(PDO::FETCH_ASSOC);
+    // Gửi file lên Cloudinary qua cURL
+    $upload_url = "https://api.cloudinary.com/v1_1/{$cloud_name}/image/upload";
 
-    if ($old_user_data && !empty($old_user_data['avatar'])) {
-        $old_avatar_path = '../../' . $old_user_data['avatar']; 
+    $post_data = [
+        'file'       => new CURLFile($file['tmp_name'], $file['type'], $file['name']),
+        'api_key'    => $api_key,
+        'timestamp'  => $timestamp,
+        'public_id'  => $public_id,
+        'signature'  => $signature,
+    ];
 
-        if (file_exists($old_avatar_path) && is_file($old_avatar_path)) {
-            unlink($old_avatar_path);
-        }
-    }
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $upload_url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
 
-    $uploads_dir = '../../uploads/avatars';
-    if (!is_dir($uploads_dir)) {
-        mkdir($uploads_dir, 0755, true);
-    }
-
-    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $filename = 'avatar_' . $user_data->id . '_' . time() . '.' . $extension;
-    $filepath = $uploads_dir . '/' . $filename;
-
-    if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+    if ($http_code !== 200) {
         http_response_code(500);
-        echo json_encode(['message' => 'Failed to save file']);
+        echo json_encode(['message' => 'Cloudinary upload failed', 'detail' => $response]);
         exit();
     }
 
-    $stmt = $db->prepare("UPDATE users SET avatar = ? WHERE id = ?");
-    $avatar_path = 'uploads/avatars/' . $filename;
-    $stmt->execute([$avatar_path, $user_data->id]);
+    $cloudinary_data = json_decode($response, true);
+    $avatar_url = $cloudinary_data['secure_url'];
 
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    $avatar_url = $protocol . '://' . $host . '/' . $avatar_path;
+    // Lưu URL Cloudinary vào DB
+    $db = (new Database())->getConnection();
+    $stmt = $db->prepare("UPDATE users SET avatar = ? WHERE id = ?");
+    $stmt->execute([$avatar_url, $user_data->id]);
 
     http_response_code(200);
     echo json_encode([
         'message' => 'Avatar uploaded successfully',
-        'avatar' => $avatar_url
+        'avatar'  => $avatar_url
     ]);
+
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['message' => 'Server error: ' . $e->getMessage()]);

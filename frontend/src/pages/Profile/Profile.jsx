@@ -107,15 +107,21 @@ const Profile = () => {
     try {
       let updatedUser = { ...user, username };
 
+      // Upload ảnh trước, chờ Cloudinary trả URL thật rồi mới tiếp tục
       if (selectedAvatarFile) {
         const response = await userApi.uploadAvatar(selectedAvatarFile);
-        updatedUser.avatar = response.avatar;
+        const cloudinaryUrl = response.data?.avatar || response.avatar;
+        updatedUser.avatar = cloudinaryUrl;
+        setAvatarPreview(cloudinaryUrl);
       }
 
       await userApi.updateProfile(updateData);
 
-      toast.success('Cập nhật thông tin thành công!');
+      // Cập nhật user trong Context + localStorage cùng lúc
       setUser(updatedUser);
+      localStorage.setItem('sr_user', JSON.stringify(updatedUser));
+
+      toast.success('Cập nhật thông tin thành công!');
 
       setSelectedAvatarFile(null);
       setPassword('');
