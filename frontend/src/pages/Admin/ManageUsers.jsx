@@ -19,8 +19,9 @@ const ManageUsers = () => {
         setUsers(
           data.map((user) => ({
             ...user,
-            name: user.username || user.name || 'Người dùng',
-            avatar: user.username ? user.username.charAt(0).toUpperCase() : 'U',
+            name:       user.username || user.name || 'Người dùng',
+            avatarUrl:  user.avatar || null,
+            avatarChar: user.username ? user.username.charAt(0).toUpperCase() : 'U',
           }))
         );
       } catch {
@@ -135,8 +136,21 @@ const ManageUsers = () => {
                 >
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-4">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 font-black text-white shadow-sm transition-transform group-hover:scale-110 dark:bg-slate-700">
-                        {user.avatar}
+                      <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-slate-900 font-black text-white shadow-sm transition-transform group-hover:scale-110 dark:bg-slate-700">
+                        {user.avatarUrl ? (
+                          <img
+                            src={user.avatarUrl}
+                            alt={user.name}
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.style.display = 'none';
+                              e.target.parentNode.innerHTML = user.avatarChar;
+                            }}
+                          />
+                        ) : (
+                          user.avatarChar
+                        )}
                       </div>
                       <div>
                         <div className="text-sm font-black text-slate-900 transition-colors duration-300 dark:text-white">
