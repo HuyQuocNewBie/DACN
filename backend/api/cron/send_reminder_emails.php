@@ -2,11 +2,20 @@
 
 /**
  * Cron Job: Gửi email nhắc nhở ôn tập hàng ngày
- * Chạy: mỗi ngày vào lúc 7h sáng
- * Cấu hình cron: 0 7 * * * php /path/to/backend/api/cron/send_reminder_emails.php
+ * Gọi qua HTTP GET: /api/cron/send_reminder_emails.php?secret=YOUR_SECRET
  */
 
 header("Content-Type: application/json; charset=UTF-8");
+
+// ===== BẢO VỆ BẰNG SECRET KEY =====
+$cronSecret = getenv('CRON_SECRET') ?: 'memorize_cron_2026';
+$providedSecret = $_GET['secret'] ?? '';
+if ($providedSecret !== $cronSecret) {
+    http_response_code(403);
+    echo json_encode(["status" => "error", "message" => "Forbidden"]);
+    exit;
+}
+// ====================================
 
 include_once '../../config/database.php';
 include_once '../../config/email_config.php';
@@ -20,35 +29,36 @@ if (empty($config['username']) || empty($config['password'])) {
 }
 
 try {
-    $query = "SELECT DISTINCT u.id, u.email, u.username, 
+    // Lấy tất cả user có thẻ cần ôn hôm nay
+    $query = "SELECT DISTINCT u.id, u.email, u.username,
               COUNT(c.id) as due_count,
               GROUP_CONCAT(DISTINCT d.title SEPARATOR ', ') as deck_names
               FROM users u
               JOIN decks d ON d.user_id = u.id
               JOIN cards c ON c.deck_id = d.id
-              WHERE c.next_review_date <= CURDATE() 
+              WHERE c.next_review_date <= CURDATE()
               AND u.status = 'active'
-              AND u.role = 'learner'
-              GROUP BY u.id, u.email, u.username";
+              AND u.role = 'user'
+              GROUP BY u.id, u.email, u.username
+              HAVING due_count > 0";
 
     $stmt = $db->prepare($query);
     $stmt->execute();
 
-    $sentCount = 0;
+    $sentCount   = 0;
     $failedCount = 0;
-    $results = [];
+    $results     = [];
 
-    $reviewUrl = $_ENV['APP_URL'] ?? "http://localhost:5173/review";
+    $reviewUrl = (getenv('APP_URL') ?: 'https://memorize-virid.vercel.app') . '/dashboard';
 
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $userEmail = $row['email'];
-        $userName = $row['username'];
-        $dueCount = $row['due_count'];
+        $userName  = $row['username'] ?: explode('@', $userEmail)[0];
+        $dueCount  = $row['due_count'];
         $deckNames = $row['deck_names'];
 
-        $subject = "🔔 Bạn có $dueCount thẻ cần ôn tập hôm nay!";
-
-        $body = getReminderEmailBody($userName, $dueCount, $deckNames, $reviewUrl);
+        $subject = "🔔 Bạn có {$dueCount} thẻ cần ôn tập hôm nay!";
+        $body    = getReminderEmailBody($userName, $dueCount, $deckNames, $reviewUrl);
 
         $result = sendEmail($userEmail, $userName, $subject, $body);
 
@@ -59,14 +69,20 @@ try {
             $failedCount++;
             $results[] = ["email" => $userEmail, "status" => "failed"];
         }
+
+        // Nghỉ 1 giây giữa mỗi lần gửi để tránh spam Gmail
+        sleep(1);
     }
 
     echo json_encode([
-        "status" => "success",
-        "total" => $stmt->rowCount(),
-        "sent" => $sentCount,
-        "failed" => $failedCount
+        "status"  => "success",
+        "date"    => date('Y-m-d H:i:s'),
+        "total"   => count($results),
+        "sent"    => $sentCount,
+        "failed"  => $failedCount,
+        "details" => $results
     ]);
+
 } catch (Exception $e) {
     echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }
