@@ -1,6 +1,11 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { FaFacebookF, FaArrowUp } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
+import { useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
+import { toast } from 'react-hot-toast';
+import { useAuth } from '../../hooks/useAuth';
+import authApi from '../../api/auth.api';
 import Login from '../Auth/Login';
 import Register from '../Auth/Register';
 
@@ -69,8 +74,37 @@ const TestimonialCard = ({ name, role, quote, avatar }) => (
 const LandingPage = () => {
   const [authMode, setAuthMode] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
 
   const closeAuth = useCallback(() => setAuthMode(null), []);
+
+  // ===== GOOGLE LOGIN =====
+  const handleGoogleSuccess = async (tokenResponse) => {
+    try {
+      const res = await authApi.googleLogin(tokenResponse.access_token);
+      const loggedUser = {
+        role:     res.role,
+        username: res.username,
+        email:    res.email,
+        avatar:   res.avatar || null,
+      };
+      setUser(loggedUser);
+      localStorage.setItem('sr_user', JSON.stringify(loggedUser));
+      toast.success(`Xin chào, ${res.username}! 👋`);
+      closeAuth();
+      if (res.role === 'admin') navigate('/admin');
+      else navigate('/dashboard');
+    } catch {
+      toast.error('Đăng nhập Google thất bại!');
+    }
+  };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError:   () => toast.error('Đăng nhập Google thất bại!'),
+  });
+  // ========================
 
   useEffect(() => {
     const handleScroll = () => {
@@ -450,7 +484,9 @@ const LandingPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <button className="flex items-center justify-center gap-3 rounded-2xl border border-slate-100 py-4 text-sm font-bold transition-all hover:bg-slate-50">
+                <button
+                  onClick={() => googleLogin()}
+                  className="flex items-center justify-center gap-3 rounded-2xl border border-slate-100 py-4 text-sm font-bold transition-all hover:bg-slate-50">
                   <FcGoogle className="text-xl" /> Google
                 </button>
                 <button className="flex items-center justify-center gap-3 rounded-2xl border border-slate-100 py-4 text-sm font-bold transition-all hover:bg-slate-50">
