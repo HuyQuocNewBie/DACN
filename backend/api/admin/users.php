@@ -44,7 +44,7 @@ try {
     $hasCreatedAt = hasColumn($db, 'users', 'created_at');
     $createdAtExpr = $hasCreatedAt ? 'created_at AS createdAt' : "'' AS createdAt";
 
-    $stmt = $db->prepare("SELECT id, username, email, role, IFNULL(status, 'active') AS status, $createdAtExpr FROM users ORDER BY id DESC");
+    $stmt = $db->prepare("SELECT id, username, email, role, avatar, IFNULL(status, 'active') AS status, $createdAtExpr FROM users ORDER BY id DESC");
     $stmt->execute();
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
