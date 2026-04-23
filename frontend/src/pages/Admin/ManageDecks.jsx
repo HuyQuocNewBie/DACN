@@ -236,14 +236,20 @@ const ManageDecks = () => {
                   key={deck.id}
                   className="group rounded-2xl border border-transparent bg-white transition-all hover:border-slate-100 hover:bg-slate-50/50 dark:bg-slate-900 dark:hover:border-slate-700 dark:hover:bg-slate-800/50"
                 >
-                  <td className="rounded-l-2xl border-y border-l border-transparent px-6 py-5 group-hover:border-slate-100 dark:group-hover:border-slate-700">
+                  <td className="max-w-75 rounded-l-2xl border-y border-l border-transparent px-6 py-5 group-hover:border-slate-100 dark:group-hover:border-slate-700">
                     <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 font-black text-white transition-colors duration-300 dark:bg-slate-700">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-900 font-black text-white transition-colors duration-300 dark:bg-slate-700">
                         {deck.title?.charAt(0).toUpperCase() || '?'}
                       </div>
-                      <div>
-                        <div className="line-clamp-1 text-sm font-black text-slate-900 transition-colors duration-300 dark:text-white">
-                          {deck.title}
+
+                      <div className="min-w-0 flex-1">
+                        <div
+                          className="line-clamp-1 text-sm font-black wrap-break-word text-slate-900 transition-colors duration-300 dark:text-white"
+                          title={deck.title}
+                        >
+                          {deck.title && deck.title.length > 20
+                            ? deck.title.substring(0, 20) + '...'
+                            : deck.title}
                         </div>
                         <div className="text-[10px] font-bold tracking-tight text-slate-400 transition-colors duration-300 dark:text-slate-500">
                           ID: #{deck.id}
@@ -422,10 +428,10 @@ const ManageDecks = () => {
               ) : selectedDeck ? (
                 <div className="space-y-6">
                   <div className="rounded-3xl border border-slate-100 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-950">
-                    <h3 className="mb-2 text-lg font-black text-slate-900 dark:text-white">
+                    <h3 className="mb-2 text-lg font-black wrap-break-word text-slate-900 dark:text-white">
                       {selectedDeck.title}
                     </h3>
-                    <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                    <p className="line-clamp-5 overflow-y-auto text-sm leading-relaxed wrap-break-word text-slate-500 dark:text-slate-400">
                       {selectedDeck.description || 'Không có mô tả.'}
                     </p>
                   </div>
@@ -443,11 +449,14 @@ const ManageDecks = () => {
                           <span className="text-[9px] font-black text-indigo-400 uppercase dark:text-indigo-500">
                             Mặt trước
                           </span>
-                          <p className="mt-1 text-sm font-bold text-slate-700 dark:text-slate-200">
+                          <p
+                            className="mt-1 line-clamp-3 text-sm font-bold wrap-break-word text-slate-700 dark:text-slate-200"
+                            title={card.front_content}
+                          >
                             {card.front_content}
                           </p>
                           {card.front_image_url && (
-                            <div className="mt-3 h-20 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
+                            <div className="mt-3 h-20 w-32 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
                               <img
                                 src={card.front_image_url}
                                 alt="Front"
@@ -464,11 +473,14 @@ const ManageDecks = () => {
                           <span className="text-[9px] font-black text-emerald-400 uppercase dark:text-emerald-500">
                             Mặt sau
                           </span>
-                          <p className="mt-1 text-sm font-medium text-slate-600 dark:text-slate-300">
+                          <p
+                            className="mt-1 line-clamp-3 text-sm font-medium wrap-break-word text-slate-600 dark:text-slate-300"
+                            title={card.back_content}
+                          >
                             {card.back_content}
                           </p>
                           {card.back_image_url && (
-                            <div className="mt-3 h-20 w-32 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
+                            <div className="mt-3 h-20 w-32 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
                               <img
                                 src={card.back_image_url}
                                 alt="Back"

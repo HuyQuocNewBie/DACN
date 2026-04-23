@@ -283,17 +283,23 @@ const DeckDetail = () => {
             <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl dark:bg-indigo-500/10"></div>
           </div>
 
-          <div className="relative z-10 space-y-2">
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 transition-colors duration-300 md:text-4xl dark:text-white">
-                {deck?.title}
+          <div className="relative z-10 min-w-0 flex-1 space-y-2 pr-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1
+                className="text-3xl font-black tracking-tight text-slate-900 transition-colors duration-300 md:text-4xl dark:text-white"
+                title={deck?.title}
+              >
+                {deck?.title && deck.title.length > 20
+                  ? deck.title.substring(0, 20) + '...'
+                  : deck?.title}
               </h1>
-              <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-black tracking-wider text-indigo-600 uppercase transition-colors duration-300 dark:bg-indigo-500/10 dark:text-indigo-400">
+
+              <span className="shrink-0 rounded-full bg-indigo-50 px-3 py-1 text-xs font-black tracking-wider text-indigo-600 uppercase transition-colors duration-300 dark:bg-indigo-500/10 dark:text-indigo-400">
                 {Array.isArray(cards) ? cards.length : deck?.cards_count || 0}{' '}
                 thẻ
               </span>
 
-              <div className="ml-4 flex gap-1 border-l border-slate-100 pl-4 transition-colors duration-300 dark:border-slate-700">
+              <div className="ml-4 flex shrink-0 gap-1 border-l border-slate-100 pl-4 transition-colors duration-300 dark:border-slate-700">
                 <button
                   onClick={() => setIsEditDeckOpen(true)}
                   className="rounded-xl p-2 text-slate-400 transition-all hover:bg-indigo-50 hover:text-indigo-600 dark:text-slate-500 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-400"
@@ -328,8 +334,13 @@ const DeckDetail = () => {
                 </button>
               </div>
             </div>
-            <p className="max-w-2xl leading-relaxed font-medium text-slate-500 transition-colors duration-300 dark:text-slate-400">
-              {deck?.description || 'Bộ thẻ này chưa có mô tả.'}
+            <p
+              className="max-w-2xl leading-relaxed font-medium text-slate-500 transition-colors duration-300 dark:text-slate-400"
+              title={deck?.description || 'Bộ thẻ này chưa có mô tả.'}
+            >
+              {deck?.description && deck.description.length > 50
+                ? deck.description.substring(0, 50) + '...'
+                : deck?.description || 'Bộ thẻ này chưa có mô tả.'}
             </p>
           </div>
           <button
@@ -498,20 +509,17 @@ const DeckDetail = () => {
                       <td className="px-6 py-5 align-top">
                         <div className="flex flex-col gap-2">
                           <p
-                            className="line-clamp-3 text-sm leading-snug font-bold text-slate-700 dark:text-slate-300"
+                            className="line-clamp-2 text-sm leading-relaxed font-bold wrap-break-word text-slate-700 dark:text-slate-300"
                             title={card.front_content}
                           >
                             {card.front_content}
                           </p>
                           {card.front_image_url && (
-                            <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800">
+                            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
                               <img
                                 src={card.front_image_url}
                                 alt="Front"
                                 className="h-full w-full object-cover"
-                                onError={(e) =>
-                                  (e.target.style.display = 'none')
-                                }
                               />
                             </div>
                           )}
@@ -520,20 +528,17 @@ const DeckDetail = () => {
                       <td className="px-6 py-5 align-top">
                         <div className="flex flex-col gap-2">
                           <p
-                            className="line-clamp-3 text-sm leading-snug font-medium text-slate-500 italic dark:text-slate-400"
+                            className="line-clamp-2 text-sm leading-relaxed font-medium wrap-break-word text-slate-500 italic dark:text-slate-400"
                             title={card.back_content}
                           >
                             {card.back_content}
                           </p>
                           {card.back_image_url && (
-                            <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800">
+                            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
                               <img
                                 src={card.back_image_url}
                                 alt="Back"
                                 className="h-full w-full object-cover"
-                                onError={(e) =>
-                                  (e.target.style.display = 'none')
-                                }
                               />
                             </div>
                           )}

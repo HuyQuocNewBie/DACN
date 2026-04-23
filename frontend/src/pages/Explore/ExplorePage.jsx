@@ -91,7 +91,6 @@ const ExplorePage = () => {
           )
         );
       }
-
     } catch (error) {
       console.error(error);
     } finally {
@@ -105,7 +104,6 @@ const ExplorePage = () => {
 
   return (
     <div className="animate-in fade-in space-y-10 duration-500">
-      
       {/* --- HEADER & SEARCH --- */}
       <div className="relative flex flex-col justify-between gap-8 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 md:p-10 lg:flex-row lg:items-center dark:border-slate-800 dark:bg-slate-900">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
@@ -137,37 +135,50 @@ const ExplorePage = () => {
 
       {/* --- GRID DECKS --- */}
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-        {paginatedDecks.map((deck) => (
+{paginatedDecks.map((deck) => (
           <div
             key={deck.id}
-            className="group relative flex h-full flex-col overflow-hidden rounded-4xl border border-slate-100 bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary/50 dark:hover:shadow-primary/20"
+            className="group hover:shadow-primary/10 dark:hover:border-primary/50 dark:hover:shadow-primary/20 relative flex h-full flex-col overflow-hidden rounded-4xl border border-slate-100 bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-900"
           >
             {/* Decoration Blur */}
-            <div className="absolute top-0 right-0 -mt-16 -mr-16 h-32 w-32 rounded-full bg-slate-100 blur-2xl transition-colors duration-500 group-hover:bg-primary/10 dark:bg-slate-800 dark:group-hover:bg-primary/20"></div>
+            <div className="group-hover:bg-primary/10 dark:group-hover:bg-primary/20 absolute top-0 right-0 -mt-16 -mr-16 h-32 w-32 rounded-full bg-slate-100 blur-2xl transition-colors duration-500 dark:bg-slate-800"></div>
 
-            <div className="relative z-10 flex-1">
-              <div className="mb-6 flex items-start justify-between">
-                <span className="rounded-xl border-2 border-emerald-100 bg-emerald-50 px-3 py-1.5 text-[10px] font-black tracking-[0.15em] text-emerald-500 uppercase transition-colors duration-300 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
-                  Cộng Đồng
+            {/* Thêm min-w-0 vào thẻ div này */}
+            <div className="relative z-10 min-w-0 flex-1">
+              <div className="mb-6 flex items-start justify-between gap-2">
+                
+                {/* TÊN TÁC GIẢ (Gộp chung lên đầu, thay thế chữ Cộng Đồng) */}
+                <span
+                  className="flex max-w-[60%] items-center gap-1.5 rounded-xl border-2 border-emerald-100 bg-emerald-50 px-3 py-1.5 text-[10px] font-black tracking-widest text-emerald-600 uppercase transition-colors duration-300 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
+                  title={`Tác giả: ${deck.author_name || 'Ẩn danh'}`}
+                >
+                  <span className="shrink-0 text-xs">👤</span>
+                  <span className="truncate">{deck.author_name || 'Ẩn danh'}</span>
                 </span>
-                <span className="rounded-xl bg-primary/10 px-3 py-1.5 text-[10px] font-black tracking-widest text-primary uppercase transition-colors duration-300 dark:bg-primary/20 dark:text-primary">
+
+                <span className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary shrink-0 rounded-xl px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-colors duration-300">
                   {deck.cards_count || 0} Thẻ
                 </span>
               </div>
 
-              <h3 className="mb-3 line-clamp-2 text-2xl leading-tight font-black text-slate-900 transition-colors duration-300 group-hover:text-primary dark:text-white dark:group-hover:text-primary">
+              {/* TIÊU ĐỀ: Cắt 1 dòng, break-all và hiện tooltip */}
+              <h3
+                className="group-hover:text-primary dark:group-hover:text-primary mb-3 line-clamp-1 text-2xl leading-tight font-black break-all text-slate-900 transition-colors duration-300 dark:text-white"
+                title={deck.title}
+              >
                 {deck.title}
               </h3>
 
-              <p className="flex items-center gap-2 text-sm font-medium text-slate-400 italic transition-colors duration-300 dark:text-slate-500">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-[10px] transition-colors duration-300 dark:bg-slate-800">
-                  👤
-                </span>
-                {deck.author_name || 'Ẩn danh'}
+              {/* MÔ TẢ: Cắt 3 dòng, break-all và hiện tooltip (đã xóa mb-4 để sát phần Divider) */}
+              <p
+                className="line-clamp-3 text-sm leading-relaxed font-medium break-all text-slate-400 italic transition-colors duration-300"
+                title={deck.description || 'Chưa có mô tả cho nội dung này.'}
+              >
+                {deck.description || 'Chưa có mô tả cho nội dung này.'}
               </p>
             </div>
 
-            <div className="relative z-10 mt-8 flex items-center justify-between border-t border-slate-50 pt-6 transition-colors duration-300 dark:border-slate-800">
+            <div className="relative z-10 mt-6 flex items-center justify-between border-t border-slate-50 transition-colors duration-300 dark:border-slate-800">
               <div className="flex flex-col">
                 <span className="text-xl font-black text-slate-800 transition-colors duration-300 dark:text-slate-200">
                   {deck.clones_count || 0}
@@ -180,7 +191,7 @@ const ExplorePage = () => {
               <button
                 onClick={() => handleDownload(deck.id)}
                 disabled={cloningId !== null}
-                className="rounded-2xl bg-slate-900 px-6 py-3 text-xs font-black tracking-widest text-white uppercase shadow-xl shadow-slate-200 transition-all hover:bg-primary hover:shadow-primary/30 active:scale-95 disabled:opacity-50 dark:bg-slate-800 dark:shadow-none dark:hover:bg-primary dark:hover:shadow-none"
+                className="hover:bg-primary hover:shadow-primary/30 dark:hover:bg-primary rounded-2xl bg-slate-900 px-6 py-3 text-xs font-black tracking-widest text-white uppercase shadow-xl shadow-slate-200 transition-all active:scale-95 disabled:opacity-50 dark:bg-slate-800 dark:shadow-none dark:hover:shadow-none"
               >
                 {cloningId === deck.id ? 'Đang sao chép' : 'Tải về'}
               </button>
@@ -207,7 +218,7 @@ const ExplorePage = () => {
                 onClick={() => setCurrentPage(i + 1)}
                 className={`h-12 w-12 rounded-2xl text-xs font-black transition-all ${
                   currentPage === i + 1
-                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200 dark:bg-primary dark:text-white dark:shadow-none'
+                    ? 'dark:bg-primary bg-slate-900 text-white shadow-lg shadow-slate-200 dark:text-white dark:shadow-none'
                     : 'border border-slate-100 bg-white text-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800'
                 }`}
               >
@@ -238,7 +249,7 @@ const ExplorePage = () => {
           </p>
           <button
             onClick={() => setSearchQuery('')}
-            className="mt-6 font-medium text-primary hover:underline dark:text-primary"
+            className="text-primary dark:text-primary mt-6 font-medium hover:underline"
           >
             Xóa bộ lọc
           </button>

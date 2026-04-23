@@ -142,7 +142,7 @@ const DeckList = () => {
           >
             <div className="absolute top-0 right-0 -mt-16 -mr-16 h-32 w-32 rounded-full bg-slate-100 blur-2xl transition-colors duration-500 group-hover:bg-indigo-500/10 dark:bg-slate-800 dark:group-hover:bg-indigo-500/20"></div>
 
-            <div className="relative z-10 flex-1">
+            <div className="relative z-10 min-w-0 flex-1">
               <div className="mb-6 flex items-start justify-between">
                 <span
                   className={`rounded-xl border-2 px-3 py-1.5 text-[10px] font-black tracking-[0.15em] uppercase transition-colors duration-300 ${
@@ -158,16 +158,22 @@ const DeckList = () => {
                 </span>
               </div>
 
-              <h3 className="mb-3 line-clamp-1 text-2xl leading-tight font-black text-slate-900 transition-colors duration-300 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
+              <h3
+                className="mb-3 line-clamp-1 text-2xl leading-tight font-black break-all text-slate-900 transition-colors duration-300 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400"
+                title={deck.title}
+              >
                 {deck.title}
               </h3>
 
-              <p className="line-clamp-2 text-sm leading-relaxed font-medium text-slate-400 italic transition-colors duration-300">
+              <p
+                className="line-clamp-3 text-sm leading-relaxed font-medium break-all text-slate-400 italic transition-colors duration-300"
+                title={deck.description || 'Chưa có mô tả cho nội dung này.'}
+              >
                 {deck.description || 'Chưa có mô tả cho nội dung này.'}
               </p>
             </div>
 
-            <div className="relative z-10 mt-8 flex items-center justify-between border-t border-slate-50 pt-6 transition-colors duration-300 dark:border-slate-800">
+            <div className="relative z-10 mt-6 flex items-center justify-between border-t border-slate-50 transition-colors duration-300 dark:border-slate-800">
               <Link
                 to={`/decks/${deck.id}`}
                 className="flex items-center gap-2 text-xs font-black tracking-widest text-slate-900 uppercase transition-colors hover:text-indigo-600 dark:text-slate-200 dark:hover:text-indigo-400"
@@ -200,7 +206,7 @@ const DeckList = () => {
                 onClick={() => setCurrentPage(i + 1)}
                 className={`h-12 w-12 rounded-2xl text-xs font-black transition-all ${
                   currentPage === i + 1
-                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200 dark:bg-primary dark:text-white dark:shadow-none'
+                    ? 'dark:bg-primary bg-slate-900 text-white shadow-lg shadow-slate-200 dark:text-white dark:shadow-none'
                     : 'border border-slate-100 bg-white text-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800'
                 }`}
               >
@@ -257,7 +263,6 @@ const DeckList = () => {
                 </button>
               </div>
               <form onSubmit={handleCreateDeck} className="space-y-6">
-                
                 <div className="space-y-2">
                   <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                     Tên bộ thẻ học
@@ -296,8 +301,8 @@ const DeckList = () => {
                 >
                   <div
                     className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-all ${
-                      newDeck.is_public 
-                        ? 'border-emerald-500 bg-emerald-500' 
+                      newDeck.is_public
+                        ? 'border-emerald-500 bg-emerald-500'
                         : 'border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900'
                     }`}
                   >
