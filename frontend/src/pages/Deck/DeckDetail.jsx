@@ -135,7 +135,12 @@ const DeckDetail = () => {
         await cardApi.create({ ...newCard, deck_id: id });
         toast.success('Đã thêm thẻ mới thành công!');
       }
-      setNewCard({ front_content: '', front_image_url: '', back_content: '', back_image_url: '' });
+      setNewCard({
+        front_content: '',
+        front_image_url: '',
+        back_content: '',
+        back_image_url: '',
+      });
       setEditingId(null);
       fetchData();
     } catch {
@@ -157,7 +162,12 @@ const DeckDetail = () => {
   };
 
   const handleCancelEdit = () => {
-    setNewCard({ front_content: '', front_image_url: '', back_content: '', back_image_url: '' });
+    setNewCard({
+      front_content: '',
+      front_image_url: '',
+      back_content: '',
+      back_image_url: '',
+    });
     setEditingId(null);
   };
 
@@ -368,7 +378,7 @@ const DeckDetail = () => {
             </div>
 
             <form onSubmit={handleAddCard} className="space-y-5">
-              <div className="space-y-2 rounded-2xl bg-slate-50 p-4 border border-slate-100 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950">
+              <div className="space-y-2 rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950">
                 <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-slate-500">
                   Mặt trước (Câu hỏi)
                 </label>
@@ -393,7 +403,7 @@ const DeckDetail = () => {
               </div>
 
               {/* NHÓM MẶT SAU */}
-              <div className="space-y-2 rounded-2xl bg-indigo-50/50 p-4 border border-indigo-50 transition-colors duration-300 dark:border-indigo-500/20 dark:bg-indigo-900/10">
+              <div className="space-y-2 rounded-2xl border border-indigo-50 bg-indigo-50/50 p-4 transition-colors duration-300 dark:border-indigo-500/20 dark:bg-indigo-900/10">
                 <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-slate-500">
                   Mặt sau (Đáp án)
                 </label>
@@ -445,7 +455,7 @@ const DeckDetail = () => {
 
         <div className="space-y-4 lg:col-span-2">
           <div className="flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex flex-col justify-between gap-4 border-b border-slate-50 p-6 md:flex-row md:items-center transition-colors duration-300 dark:border-slate-800">
+            <div className="flex flex-col justify-between gap-4 border-b border-slate-50 p-6 transition-colors duration-300 md:flex-row md:items-center dark:border-slate-800">
               <h3 className="flex items-center gap-2 font-bold text-slate-800 transition-colors duration-300 dark:text-slate-200">
                 Danh sách thẻ
                 <span className="font-normal text-slate-300 transition-colors dark:text-slate-500">
@@ -485,35 +495,45 @@ const DeckDetail = () => {
                       key={card.id}
                       className="group transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/30"
                     >
-                      <td className="px-6 py-5">
+                      <td className="px-6 py-5 align-top">
                         <div className="flex flex-col gap-2">
-                          <p className="text-sm leading-snug font-bold text-slate-700 transition-colors dark:text-slate-300">
+                          <p
+                            className="line-clamp-3 text-sm leading-snug font-bold text-slate-700 dark:text-slate-300"
+                            title={card.front_content}
+                          >
                             {card.front_content}
                           </p>
                           {card.front_image_url && (
                             <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800">
-                              <img 
-                                src={card.front_image_url} 
-                                alt="Front" 
+                              <img
+                                src={card.front_image_url}
+                                alt="Front"
                                 className="h-full w-full object-cover"
-                                onError={(e) => e.target.style.display = 'none'}
+                                onError={(e) =>
+                                  (e.target.style.display = 'none')
+                                }
                               />
                             </div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5">
+                      <td className="px-6 py-5 align-top">
                         <div className="flex flex-col gap-2">
-                          <p className="text-sm leading-snug font-medium text-slate-500 italic transition-colors dark:text-slate-400">
+                          <p
+                            className="line-clamp-3 text-sm leading-snug font-medium text-slate-500 italic dark:text-slate-400"
+                            title={card.back_content}
+                          >
                             {card.back_content}
                           </p>
                           {card.back_image_url && (
                             <div className="h-12 w-12 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-800">
-                              <img 
-                                src={card.back_image_url} 
-                                alt="Back" 
+                              <img
+                                src={card.back_image_url}
+                                alt="Back"
                                 className="h-full w-full object-cover"
-                                onError={(e) => e.target.style.display = 'none'}
+                                onError={(e) =>
+                                  (e.target.style.display = 'none')
+                                }
                               />
                             </div>
                           )}
@@ -583,9 +603,12 @@ const DeckDetail = () => {
 
             {cardsError ? (
               <div className="space-y-3 py-20 text-center">
-                <div className="text-4xl text-rose-400 dark:text-rose-500">⚠️</div>
+                <div className="text-4xl text-rose-400 dark:text-rose-500">
+                  ⚠️
+                </div>
                 <p className="text-sm font-medium text-rose-500 dark:text-rose-400">
-                  Không thể tải nội dung thẻ. Vui lòng thử lại hoặc kiểm tra kết nối API.
+                  Không thể tải nội dung thẻ. Vui lòng thử lại hoặc kiểm tra kết
+                  nối API.
                 </p>
               </div>
             ) : filteredCards.length === 0 ? (
@@ -694,8 +717,8 @@ const DeckDetail = () => {
                 >
                   <div
                     className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-all ${
-                      editDeckData.is_public 
-                        ? 'border-emerald-500 bg-emerald-500' 
+                      editDeckData.is_public
+                        ? 'border-emerald-500 bg-emerald-500'
                         : 'border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-900'
                     }`}
                   >
