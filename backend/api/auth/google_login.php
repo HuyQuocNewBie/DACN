@@ -67,27 +67,24 @@ try {
         $user_id       = $user['id'];
         $username      = $user['username'];
         $role          = $user['role'];
-        // Nếu user chưa có avatar trong DB, cập nhật avatar Google
         $avatar_url = $user['avatar'] ?: $google_avatar;
         if (!$user['avatar'] && $google_avatar) {
             $stmt2 = $db->prepare("UPDATE users SET avatar = ? WHERE id = ?");
             $stmt2->execute([$google_avatar, $user_id]);
         }
     } else {
-        // User chưa tồn tại → tạo tài khoản mới (không có mật khẩu)
         $username = $name;
-        $role     = 'user';
+        $role     = 'learner';
         $avatar_url = $google_avatar;
 
         $stmt = $db->prepare(
             "INSERT INTO users (email, username, password_hash, role, avatar, created_at)
-             VALUES (?, ?, '', 'user', ?, NOW())"
+             VALUES (?, ?, '', 'learner', ?, NOW())"
         );
         $stmt->execute([$email, $username, $google_avatar]);
         $user_id = $db->lastInsertId();
     }
 
-    // Tạo JWT token
     $payload = [
         "id"    => (int)$user_id,
         "email" => $email,
@@ -107,7 +104,7 @@ try {
         "avatar"   => $avatar_url
     ]);
 
-} catch (Throwable $e) { // Sửa Exception thành Throwable
+} catch (Throwable $e) {
     http_response_code(500);
     echo json_encode([
         "message" => "Lỗi server: " . $e->getMessage(),

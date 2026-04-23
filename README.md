@@ -11,6 +11,7 @@ DACN
 │  │  │  ├─ users.php
 │  │  │  └─ user_status.php
 │  │  ├─ auth
+│  │  │  ├─ google_login.php
 │  │  │  ├─ login.php
 │  │  │  └─ register.php
 │  │  ├─ cards
@@ -61,6 +62,7 @@ DACN
 │  ├─ package.json
 │  ├─ postcss.config.js
 │  ├─ public
+│  │  ├─ favicon.png
 │  │  └─ icons
 │  │     └─ Logo.png
 │  ├─ README.md
