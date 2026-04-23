@@ -46,7 +46,7 @@ const Register = ({ onSwitch }) => {
 
     setLoading(true);
     try {
-      await axiosClient.post('/auth/register.php', validatedData);
+      const data = await axiosClient.post('/auth/register.php', validatedData);
       toast.success('Đăng ký thành công!');
       if (onSwitch) onSwitch();
     } catch (error) {
@@ -56,11 +56,10 @@ const Register = ({ onSwitch }) => {
     }
   };
 
-  // Tách class để code sạch hơn và dễ quản lý dark mode
   const inputClass =
-    'w-full px-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:ring-4 focus:ring-primary/10 focus:bg-white transition-all text-sm dark:bg-slate-800/50 dark:border-slate-800 dark:text-white dark:focus:bg-slate-800 dark:placeholder-slate-600';
+    'w-full px-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:ring-4 focus:ring-primary/10 focus:bg-white transition-all text-sm';
   const labelClass =
-    'block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1 dark:text-slate-500';
+    'block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -88,7 +87,7 @@ const Register = ({ onSwitch }) => {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 dark:text-slate-500 dark:hover:text-slate-300"
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400"
           >
             {showPassword ? (
               <MdVisibilityOff size={20} />
@@ -113,7 +112,7 @@ const Register = ({ onSwitch }) => {
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 dark:text-slate-500 dark:hover:text-slate-300"
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400"
           >
             {showConfirmPassword ? (
               <MdVisibilityOff size={20} />
@@ -127,7 +126,7 @@ const Register = ({ onSwitch }) => {
       <div className="space-y-4 pt-2">
         <button
           disabled={loading}
-          className="dark:bg-primary w-full rounded-xl bg-slate-900 py-4 text-[11px] font-black text-white uppercase shadow-xl transition-all hover:bg-slate-800 active:scale-95 disabled:opacity-50 dark:shadow-none dark:hover:brightness-110"
+          className="w-full rounded-xl bg-slate-900 py-4 text-[11px] font-black text-white uppercase shadow-xl"
         >
           {loading ? 'Đang xử lý...' : 'Tạo tài khoản học viên'}
         </button>

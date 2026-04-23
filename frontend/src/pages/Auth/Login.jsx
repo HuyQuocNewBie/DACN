@@ -15,19 +15,22 @@ const Login = ({ onSwitch }) => {
 
   const handleGoogleSuccess = async (tokenResponse) => {
     try {
+      // Dùng access token để lấy thông tin user từ Google
       const googleRes = await fetch(
         `https://www.googleapis.com/oauth2/v3/userinfo`,
         { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
       );
       const googleUser = await googleRes.json();
 
+      // Tạo credential object giả để gửi email/name lên backend
+      // Backend sẽ verify bằng email từ Google userinfo
       const res = await authApi.googleLogin(tokenResponse.access_token);
 
       const loggedUser = {
-        role: res.role,
+        role:     res.role,
         username: res.username,
-        email: res.email,
-        avatar: res.avatar || googleUser.picture || null,
+        email:    res.email,
+        avatar:   res.avatar || googleUser.picture || null,
       };
       setUser(loggedUser);
       localStorage.setItem('sr_user', JSON.stringify(loggedUser));
@@ -35,14 +38,14 @@ const Login = ({ onSwitch }) => {
       toast.success(`Xin chào, ${res.username}! 👋`);
       if (res.role === 'admin') navigate('/admin');
       else navigate('/dashboard');
-    } catch {
+    } catch (err) {
       toast.error('Đăng nhập Google thất bại!');
     }
   };
 
   const googleLogin = useGoogleLogin({
     onSuccess: handleGoogleSuccess,
-    onError: () => toast.error('Đăng nhập Google thất bại!'),
+    onError:   () => toast.error('Đăng nhập Google thất bại!'),
   });
 
   const validateForm = () => {
@@ -96,40 +99,38 @@ const Login = ({ onSwitch }) => {
     }
   };
 
-  // Tách class để tái sử dụng và quản lý Dark Mode (Giống bên Register)
-  const inputClass =
-    'w-full px-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:ring-4 focus:ring-primary/10 focus:bg-white transition-all text-sm dark:bg-slate-800/50 dark:border-slate-800 dark:text-white dark:focus:bg-slate-800 dark:placeholder-slate-600';
-  const labelClass =
-    'block text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1 dark:text-slate-500';
-
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-1.5">
-        <label className={labelClass}>Email học viên</label>
+        <label className="ml-1 block text-[10px] font-black tracking-[0.15em] text-slate-400 uppercase">
+          Email học viên
+        </label>
         <input
           type="email"
           value={email}
           placeholder="name@gmail.com"
-          className={inputClass}
+          className="ring-primary/10 w-full rounded-xl border border-slate-100 bg-slate-50 px-4 py-3.5 text-sm transition-all outline-none focus:bg-white focus:ring-4"
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className={labelClass}>Mật khẩu</label>
+        <label className="ml-1 block text-[10px] font-black tracking-[0.15em] text-slate-400 uppercase">
+          Mật khẩu
+        </label>
         <div className="relative">
           <input
             type={showPassword ? 'text' : 'password'}
             value={password}
             placeholder="••••••••"
-            className={inputClass}
+            className="ring-primary/10 w-full rounded-xl border border-slate-100 bg-slate-50 px-4 py-3.5 text-sm transition-all outline-none focus:bg-white focus:ring-4"
             onChange={(e) => setPassword(e.target.value)}
           />
 
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
           >
             {showPassword ? (
               <MdVisibilityOff size={20} />
@@ -146,14 +147,14 @@ const Login = ({ onSwitch }) => {
             <input
               type="checkbox"
               id="remember"
-              className="dark:accent-primary h-4 w-4 rounded border-slate-300 accent-slate-900 dark:border-slate-600 dark:bg-slate-700"
+              className="h-4 w-4 rounded border-slate-300 accent-slate-900"
             />
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+            <span className="text-xs font-bold text-slate-500">
               Ghi nhớ tôi
             </span>
           </label>
 
-          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+          <p className="text-xs font-bold text-slate-500">
             Chưa có tài khoản?{' '}
             <button
               type="button"
@@ -167,7 +168,7 @@ const Login = ({ onSwitch }) => {
 
         <button
           type="submit"
-          className="dark:bg-primary w-full rounded-xl bg-slate-900 py-4 text-[11px] font-black tracking-[0.2em] text-white uppercase shadow-lg shadow-slate-200 transition-all hover:bg-slate-800 active:scale-[0.98] dark:shadow-none dark:hover:brightness-110"
+          className="w-full rounded-xl bg-slate-900 py-4 text-[11px] font-black tracking-[0.2em] text-white uppercase shadow-lg shadow-slate-200 transition-all hover:bg-slate-800 active:scale-[0.98]"
         >
           Xác nhận đăng nhập
         </button>
