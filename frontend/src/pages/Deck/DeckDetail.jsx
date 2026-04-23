@@ -194,11 +194,12 @@ const DeckDetail = () => {
     if (!Array.isArray(cards)) return [];
 
     const query = searchQuery.toLowerCase();
-    return cards.filter((card) => {
+    const filtered = cards.filter((card) => {
       const front = String(card.front_content || '').toLowerCase();
       const back = String(card.back_content || '').toLowerCase();
       return front.includes(query) || back.includes(query);
     });
+    return [...filtered].reverse();
   }, [cards, searchQuery]);
 
   const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
