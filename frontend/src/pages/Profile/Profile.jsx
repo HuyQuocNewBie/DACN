@@ -107,7 +107,6 @@ const Profile = () => {
     try {
       let updatedUser = { ...user, username };
 
-      // Upload ảnh trước, chờ Cloudinary trả URL thật rồi mới tiếp tục
       if (selectedAvatarFile) {
         const response = await userApi.uploadAvatar(selectedAvatarFile);
         const cloudinaryUrl = response.data?.avatar || response.avatar;
@@ -117,7 +116,6 @@ const Profile = () => {
 
       await userApi.updateProfile(updateData);
 
-      // Cập nhật user trong Context + localStorage cùng lúc
       setUser(updatedUser);
       localStorage.setItem('sr_user', JSON.stringify(updatedUser));
 
@@ -140,7 +138,6 @@ const Profile = () => {
     }
   };
 
-  // Nâng cấp inputClass và labelClass để hỗ trợ Dark Mode
   const inputClass =
     'w-full rounded-xl border border-slate-200 p-3.5 transition-colors duration-300 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-slate-900 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-primary';
   const labelClass =
@@ -148,8 +145,6 @@ const Profile = () => {
 
   return (
     <div className="animate-in fade-in space-y-8 duration-500">
-      
-      {/* --- HEADER --- */}
       <div className="relative flex flex-col justify-between gap-6 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-6 shadow-sm transition-colors duration-300 md:flex-row md:items-center md:p-8 dark:border-slate-800 dark:bg-slate-900">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl dark:bg-indigo-500/10"></div>
@@ -169,11 +164,10 @@ const Profile = () => {
         {/* --- CỘT TRÁI (THÔNG TIN CHÍNH) --- */}
         <div className="space-y-8 lg:col-span-2">
           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-colors duration-300 md:p-8 dark:border-slate-800 dark:bg-slate-900">
-            
             {/* User Info Header */}
             <div className="flex flex-col gap-6 border-b border-slate-50 pb-8 transition-colors duration-300 md:flex-row md:items-center dark:border-slate-800">
               <div className="group relative">
-                <div className="bg-primary/10 text-primary border-primary/20 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2 text-4xl font-bold shadow-inner transition-colors duration-300 dark:bg-primary/20">
+                <div className="bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2 text-4xl font-bold shadow-inner transition-colors duration-300">
                   {avatarPreview ? (
                     <img
                       src={avatarPreview}
@@ -223,13 +217,12 @@ const Profile = () => {
                 type="button"
                 onClick={handleAvatarClick}
                 disabled={loading}
-                className="hover:bg-primary rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-200 transition-all active:scale-95 disabled:opacity-50 dark:bg-primary dark:shadow-none dark:hover:bg-primary/90"
+                className="hover:bg-primary dark:bg-primary dark:hover:bg-primary/90 rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-200 transition-all active:scale-95 disabled:opacity-50 dark:shadow-none"
               >
                 Chỉnh sửa ảnh
               </button>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleUpdate} className="mt-8 space-y-6">
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
@@ -254,8 +247,8 @@ const Profile = () => {
 
               <div
                 className={`rounded-xl border transition-all duration-300 ${
-                  showPasswordFields 
-                    ? 'border-primary/20 bg-primary/5 p-5 dark:border-primary/20 dark:bg-primary/10' 
+                  showPasswordFields
+                    ? 'border-primary/20 bg-primary/5 dark:border-primary/20 dark:bg-primary/10 p-5'
                     : 'border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30'
                 }`}
               >
@@ -268,7 +261,7 @@ const Profile = () => {
                     <span>🔒</span> Thay đổi mật khẩu truy cập?
                   </button>
                 ) : (
-                  <div className="space-y-4 animate-in fade-in duration-300">
+                  <div className="animate-in fade-in space-y-4 duration-300">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-bold text-slate-700 transition-colors dark:text-slate-200">
                         Đổi mật khẩu mới
@@ -354,7 +347,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* --- CỘT PHẢI (THỐNG KÊ & KHÁM PHÁ) --- */}
         <div className="space-y-6">
           <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
             <h3 className="mb-6 flex items-center gap-2 font-bold text-slate-800 transition-colors duration-300 dark:text-slate-200">

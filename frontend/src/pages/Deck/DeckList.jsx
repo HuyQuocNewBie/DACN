@@ -89,7 +89,6 @@ const DeckList = () => {
 
   return (
     <div className="animate-in fade-in space-y-10 duration-500">
-      {/* --- HEADER & SEARCH --- */}
       <div className="relative flex flex-col justify-between gap-8 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 md:p-10 lg:flex-row lg:items-center dark:border-slate-800 dark:bg-slate-900">
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl dark:bg-indigo-500/10"></div>
@@ -119,7 +118,6 @@ const DeckList = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-        {/* --- NÚT TẠO BỘ THẺ MỚI --- */}
         {currentPage === 1 && (
           <button
             onClick={() => setIsModalOpen(true)}
@@ -137,7 +135,6 @@ const DeckList = () => {
           </button>
         )}
 
-        {/* --- DANH SÁCH BỘ THẺ --- */}
         {paginatedDecks.map((deck) => (
           <div
             key={deck.id}
@@ -186,7 +183,6 @@ const DeckList = () => {
         ))}
       </div>
 
-      {/* --- PAGINATION --- */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-4">
           <button
@@ -223,7 +219,6 @@ const DeckList = () => {
         </div>
       )}
 
-      {/* --- EMPTY STATE --- */}
       {!loading && filteredDecks.length === 0 && (
         <div className="flex flex-col items-center rounded-[2.5rem] border border-dashed border-slate-200 bg-white py-24 text-center transition-colors duration-300 dark:border-slate-700 dark:bg-slate-900">
           <div className="mb-6 text-6xl opacity-20 grayscale">🗂️</div>
@@ -236,9 +231,8 @@ const DeckList = () => {
         </div>
       )}
 
-      {/* --- MODAL TẠO BỘ THẺ --- */}
       {isModalOpen && (
-        <div className="animate-in fade-in fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300 dark:bg-slate-900/60">
+        <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300 dark:bg-slate-900/60">
           <div
             className="absolute inset-0"
             onClick={() => !submitting && setIsModalOpen(false)}
@@ -264,7 +258,6 @@ const DeckList = () => {
               </div>
               <form onSubmit={handleCreateDeck} className="space-y-6">
                 
-                {/* Input Tên bộ thẻ */}
                 <div className="space-y-2">
                   <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                     Tên bộ thẻ học
@@ -280,7 +273,6 @@ const DeckList = () => {
                   />
                 </div>
 
-                {/* Textarea Mô tả */}
                 <div className="space-y-2">
                   <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                     Mô tả bộ thẻ
@@ -296,7 +288,6 @@ const DeckList = () => {
                   />
                 </div>
 
-                {/* Toggle Trạng thái Công khai/Riêng tư */}
                 <div
                   className="group flex cursor-pointer items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-all hover:border-emerald-100 hover:bg-emerald-50 dark:border-slate-800 dark:bg-slate-950/50 dark:hover:border-emerald-500/20 dark:hover:bg-emerald-500/10"
                   onClick={() =>
@@ -324,7 +315,6 @@ const DeckList = () => {
                   </div>
                 </div>
 
-                {/* Nút Submit */}
                 <div className="flex gap-4 pt-6">
                   <button
                     type="submit"

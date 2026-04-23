@@ -180,7 +180,7 @@ const AdminDashboard = () => {
         <div className="relative z-10 flex gap-3">
           <button
             onClick={handleExportExcel}
-            className="rounded-2xl bg-slate-900 px-6 py-3 text-xs font-black tracking-widest text-white uppercase shadow-xl shadow-slate-200 transition-all hover:bg-indigo-600 active:scale-95 dark:bg-indigo-600 dark:shadow-none dark:hover:bg-indigo-500"
+            className="rounded-2xl bg-slate-900 px-7 py-3 text-xs font-black tracking-[0.15em] text-white uppercase shadow-xl shadow-slate-200 transition-all hover:-translate-y-0.5 hover:bg-indigo-600 active:scale-95 dark:bg-indigo-600 dark:shadow-none dark:hover:bg-indigo-500"
           >
             Xuất báo cáo
           </button>

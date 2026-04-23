@@ -15,15 +15,12 @@ const Login = ({ onSwitch }) => {
 
   const handleGoogleSuccess = async (tokenResponse) => {
     try {
-      // Dùng access token để lấy thông tin user từ Google
       const googleRes = await fetch(
         `https://www.googleapis.com/oauth2/v3/userinfo`,
         { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
       );
       const googleUser = await googleRes.json();
 
-      // Tạo credential object giả để gửi email/name lên backend
-      // Backend sẽ verify bằng email từ Google userinfo
       const res = await authApi.googleLogin(tokenResponse.access_token);
 
       const loggedUser = {
@@ -38,7 +35,7 @@ const Login = ({ onSwitch }) => {
       toast.success(`Xin chào, ${res.username}! 👋`);
       if (res.role === 'admin') navigate('/admin');
       else navigate('/dashboard');
-    } catch (err) {
+    } catch {
       toast.error('Đăng nhập Google thất bại!');
     }
   };

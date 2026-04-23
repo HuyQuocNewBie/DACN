@@ -216,7 +216,7 @@ const DeckDetail = () => {
             icon: '🎉',
             style: {
               borderRadius: '16px',
-              background: '#ffffff', // Có thể để nguyên hoặc sửa sau nếu Toast thư viện chưa hỗ trợ Dark Mode tự động
+              background: '#ffffff',
               color: '#1e293b',
               border: '1px solid #e2e8f0',
               padding: '16px',
@@ -261,7 +261,6 @@ const DeckDetail = () => {
   return (
     <div className="animate-in fade-in space-y-8 duration-500">
       <div className="flex flex-col gap-4">
-        {/* Nút quay lại */}
         <button
           onClick={() => navigate('/decks')}
           className="flex w-fit items-center gap-2 text-xs font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400"
@@ -269,7 +268,6 @@ const DeckDetail = () => {
           <span>←</span> Quay lại kho thẻ
         </button>
 
-        {/* --- KHU VỰC THÔNG TIN BỘ THẺ --- */}
         <div className="relative flex flex-col gap-6 overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-sm transition-colors duration-300 lg:flex-row lg:items-end lg:justify-between dark:border-slate-800 dark:bg-slate-900">
           <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[2.5rem]">
             <div className="absolute top-0 right-0 -mt-20 -mr-20 h-48 w-48 rounded-full bg-indigo-50 blur-3xl dark:bg-indigo-500/10"></div>
@@ -345,7 +343,6 @@ const DeckDetail = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* --- CỘT TRÁI (FORM THÊM THẺ) --- */}
         <div className="lg:col-span-1">
           <div className="sticky top-8 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
             <div className="mb-6 flex items-center gap-3">
@@ -371,7 +368,6 @@ const DeckDetail = () => {
             </div>
 
             <form onSubmit={handleAddCard} className="space-y-5">
-              {/* NHÓM MẶT TRƯỚC */}
               <div className="space-y-2 rounded-2xl bg-slate-50 p-4 border border-slate-100 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950">
                 <label className="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase transition-colors dark:text-slate-500">
                   Mặt trước (Câu hỏi)
@@ -447,7 +443,6 @@ const DeckDetail = () => {
           </div>
         </div>
 
-        {/* --- CỘT PHẢI (DANH SÁCH THẺ) --- */}
         <div className="space-y-4 lg:col-span-2">
           <div className="flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
             <div className="flex flex-col justify-between gap-4 border-b border-slate-50 p-6 md:flex-row md:items-center transition-colors duration-300 dark:border-slate-800">
@@ -629,9 +624,8 @@ const DeckDetail = () => {
         </div>
       </div>
 
-      {/* --- MODAL EDIT BỘ THẺ --- */}
       {isEditDeckOpen && (
-        <div className="animate-in fade-in fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300 dark:bg-slate-900/60">
+        <div className="animate-in fade-in fixed inset-0 z-100 flex items-center justify-center bg-slate-900/40 p-6 backdrop-blur-md duration-300 dark:bg-slate-900/60">
           <div
             className="absolute inset-0"
             onClick={() => !submitting && setIsEditDeckOpen(false)}
