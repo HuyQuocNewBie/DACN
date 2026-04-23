@@ -119,7 +119,7 @@ const ManageUsers = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-50/50 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase transition-colors duration-300 dark:bg-slate-950/50 dark:text-slate-500">
+              <tr className="bg-slate-50/50 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase transition-colors duration-300 dark:bg-slate-800/50 dark:text-slate-500">
                 <th className="px-8 py-5 text-left">Thành viên</th>
                 <th className="px-6 py-5 text-center">Vai trò</th>
                 <th className="px-6 py-5 text-center">Ngày gia nhập</th>

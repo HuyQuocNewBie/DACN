@@ -217,18 +217,19 @@ const ManageDecks = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white px-4 pb-8 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
-        <div className="relative z-10 overflow-x-auto">
-          <table className="w-full border-separate border-spacing-y-3">
+      <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white pb-8 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase transition-colors duration-300 dark:text-slate-500">
-                <th className="px-6 py-6 text-left">Thông tin bộ thẻ</th>
-                <th className="px-6 py-6 text-left">Tác giả</th>
-                <th className="px-6 py-6 text-center">Số lượng</th>
-                <th className="px-6 py-6 text-center">Trạng thái</th>
-                <th className="px-6 py-6 text-right">Hành động</th>
+              <tr className="bg-slate-50/50 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase transition-colors duration-300 dark:bg-slate-800/50 dark:text-slate-500">
+                <th className="px-8 py-5 text-left">Thông tin bộ thẻ</th>
+                <th className="px-6 py-5 text-left">Tác giả</th>
+                <th className="px-6 py-5 text-center">Số lượng</th>
+                <th className="px-6 py-5 text-center">Trạng thái</th>
+                <th className="px-8 py-5 text-right">Hành động</th>
               </tr>
             </thead>
+
             <tbody>
               {currentDecks.map((deck) => (
                 <tr
