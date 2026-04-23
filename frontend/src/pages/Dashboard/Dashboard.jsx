@@ -203,7 +203,7 @@ const Dashboard = () => {
             </div>
           )}
 
-          <div className="flex flex-col rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex flex-col rounded-[2.5rem] border border-slate-100 bg-white p-9 shadow-sm transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900">
             <div className="mb-10 flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-black tracking-tight text-slate-900 transition-colors duration-300 dark:text-white">
@@ -281,7 +281,7 @@ const Dashboard = () => {
             </div>
 
             {totalPages > 1 && (
-              <div className="mt-5 flex items-center justify-between border-t border-slate-50 transition-colors duration-300 dark:border-slate-800">
+              <div className="mt-5 flex items-center justify-between border-t border-slate-50 transition-colors duration-300 dark:border-slate-800 pt-2">
                 <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
                   Trang {currentPage} / {totalPages}
                 </p>

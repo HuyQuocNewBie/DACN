@@ -216,14 +216,14 @@ const AdminDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
-        <div className="flex h-fit flex-col rounded-[2.5rem] border border-slate-100 bg-white p-10 shadow-sm transition-colors duration-300 lg:col-span-8 dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex h-fit flex-col rounded-[2.5rem] border border-slate-100 bg-white p-9 shadow-sm transition-colors duration-300 lg:col-span-8 dark:border-slate-800 dark:bg-slate-900">
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h3 className="text-xl font-black tracking-tight text-slate-900 transition-colors duration-300 dark:text-white">
                 Nhật ký hệ thống
               </h3>
               <p className="mt-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
-                Real-time Monitoring
+                Giám sát thời gian thực
               </p>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 transition-colors duration-300 dark:bg-emerald-500/10">
@@ -324,7 +324,7 @@ const AdminDashboard = () => {
                 Cấu trúc dữ liệu
               </h3>
               <p className="mt-1 text-[10px] font-black tracking-widest text-slate-400 uppercase dark:text-slate-500">
-                Data Distribution
+                Phân bổ dữ liệu
               </p>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 transition-colors duration-300 dark:bg-indigo-500/10">
