@@ -107,8 +107,12 @@ try {
         "avatar"   => $avatar_url
     ]);
 
-} catch (Exception $e) {
+} catch (Throwable $e) { // Sửa Exception thành Throwable
     http_response_code(500);
-    echo json_encode(["message" => "Lỗi server: " . $e->getMessage()]);
+    echo json_encode([
+        "message" => "Lỗi server: " . $e->getMessage(),
+        "file" => $e->getFile(),
+        "line" => $e->getLine()
+    ]);
 }
 ?>
