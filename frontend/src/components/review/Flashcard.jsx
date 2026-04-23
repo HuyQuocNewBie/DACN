@@ -33,7 +33,11 @@ const Flashcard = ({ card, isFlipped, onFlip }) => {
                 />
               </div>
             )}
-            <h2 className="text-2xl leading-tight font-black wrap-break-word text-slate-800 md:text-3xl">
+            
+            <h2 
+              className="line-clamp-5 break-all w-full text-2xl leading-tight font-black text-slate-800 md:text-3xl"
+              title={card.front_content}
+            >
               {card.front_content}
             </h2>
           </div>
@@ -70,7 +74,11 @@ const Flashcard = ({ card, isFlipped, onFlip }) => {
                 />
               </div>
             )}
-            <p className="bg-linear-to-br from-white to-slate-400 bg-clip-text text-lg leading-relaxed font-medium wrap-break-word text-transparent md:text-xl">
+
+            <p 
+              className="line-clamp-8 break-all w-full bg-linear-to-br from-white to-slate-400 bg-clip-text text-lg leading-relaxed font-medium text-transparent md:text-xl"
+              title={card.back_content}
+            >
               {card.back_content}
             </p>
           </div>
