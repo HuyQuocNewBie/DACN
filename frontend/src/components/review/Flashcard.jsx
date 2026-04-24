@@ -1,4 +1,6 @@
 const Flashcard = ({ card, isFlipped, onFlip }) => {
+  if (!card) return null;
+  
   return (
     <div className="perspective-1000 group w-full max-w-2xl px-4">
       <div

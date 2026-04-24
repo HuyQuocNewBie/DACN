@@ -23,6 +23,7 @@ const ReviewPage = () => {
   const [loading, setLoading] = useState(true);
 
   const [isFinished, setIsFinished] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -46,10 +47,12 @@ const ReviewPage = () => {
 
   const handleReview = useCallback(
     async (quality) => {
-      if (isFinished) return;
+      if (isFinished || isSubmitting) return;
 
       const currentCard = cards[currentIndex];
       if (!currentCard) return;
+
+      setIsSubmitting(true);
 
       try {
         await reviewApi.updateCardProgress(currentCard.id, { quality });
@@ -59,8 +62,10 @@ const ReviewPage = () => {
         setTimeout(() => {
           if (currentIndex < cards.length - 1) {
             setCurrentIndex((prev) => prev + 1);
+            setIsSubmitting(false);
           } else {
             setIsFinished(true);
+            setIsSubmitting(false);
 
             toast.success('Tuyệt vời! Bạn đã hoàn thành mục tiêu hôm nay', {
               icon: '🎉',
@@ -73,9 +78,10 @@ const ReviewPage = () => {
         }, 250);
       } catch {
         toast.error('Lỗi khi lưu tiến trình học');
+        setIsSubmitting(false);
       }
     },
-    [cards, currentIndex, navigate, isFinished]
+    [cards, currentIndex, navigate, isFinished, isSubmitting]
   );
 
   useEffect(() => {
