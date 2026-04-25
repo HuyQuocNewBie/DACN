@@ -38,7 +38,7 @@ try {
               JOIN cards c ON c.deck_id = d.id
               WHERE c.next_review_date <= CURDATE()
               AND u.status = 'active'
-              AND u.role = 'user'
+              AND u.role != 'admin'
               GROUP BY u.id, u.email, u.username
               HAVING due_count > 0";
 
