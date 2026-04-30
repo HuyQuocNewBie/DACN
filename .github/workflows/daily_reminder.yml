@@ -12,23 +12,65 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Trigger daily reminder email
+      - name: Install MySQL client
+        run: sudo apt-get install -y mysql-client
+
+      - name: Send daily reminder emails
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_NAME: ${{ secrets.DB_NAME }}
         run: |
-          echo "Sending daily reminder at $(date)"
-          
-          RESPONSE=$(curl -s -w "\n%{http_code}" \
-            --max-time 300 \
-            "https://spaced-repetition-o6ch.onrender.com/api/cron/send_reminder_emails.php?secret=memorize_cron_2026")
-          
-          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-          BODY=$(echo "$RESPONSE" | head -n -1)
-          
-          echo "HTTP Status: $HTTP_CODE"
-          echo "Response: $BODY"
-          
-          if [ "$HTTP_CODE" -ne 200 ]; then
-            echo "❌ Reminder failed with status $HTTP_CODE"
-            exit 1
+          echo "Querying users with due cards..."
+
+          USERS=$(mysql \
+            -h "$DB_HOST" \
+            -P "$DB_PORT" \
+            -u "$DB_USER" \
+            -p"$DB_PASS" \
+            "$DB_NAME" \
+            --ssl-mode=REQUIRED \
+            --batch \
+            --skip-column-names \
+            -e "SELECT u.email, u.username, COUNT(c.id) as due_count, GROUP_CONCAT(DISTINCT d.title SEPARATOR ' | ') as decks FROM users u JOIN decks d ON d.user_id = u.id JOIN cards c ON c.deck_id = d.id WHERE c.next_review_date <= CURDATE() AND u.status = 'active' AND u.role != 'admin' GROUP BY u.id, u.email, u.username HAVING due_count > 0;" 2>/dev/null)
+
+          if [ -z "$USERS" ]; then
+            echo "No users with due cards today. No emails sent."
+            exit 0
           fi
-          
-          echo "✅ Reminder sent successfully!"
+
+          echo "Users to notify:"
+          echo "$USERS"
+
+          sent=0
+          failed=0
+
+          while IFS=$'\t' read -r email username due_count decks; do
+            [ -z "$email" ] && continue
+            echo "Sending to: $email ($due_count cards)"
+
+            username_esc=$(echo "$username" | sed 's/["\]/\\&/g')
+            decks_esc=$(echo "$decks" | sed 's/["\]/\\&/g')
+
+            HTTP_CODE=$(curl -s -o /tmp/resend_resp.json -w "%{http_code}" \
+              -X POST "https://api.resend.com/emails" \
+              -H "Authorization: Bearer $RESEND_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{\"from\":\"MemoSpace <onboarding@resend.dev>\",\"to\":[\"$email\"],\"subject\":\"Ban co $due_count the can on tap hom nay!\",\"html\":\"<div style='font-family:sans-serif;max-width:600px;margin:20px auto;padding:24px;border-radius:12px;border:1px solid #e5e7eb'><h2 style='color:#4f46e5'>Xin chao $username_esc!</h2><p>Ban co <strong style='color:#ef4444'>$due_count the</strong> can on tap hom nay!</p><p style='color:#6b7280'>Bo the: $decks_esc</p><a href='https://memorize-virid.vercel.app' style='display:inline-block;margin-top:16px;background:#4f46e5;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold'>On tap ngay</a><p style='color:#9ca3af;font-size:12px;margin-top:24px'>MemoSpace - He thong hoc tap thong minh</p></div>\"}")
+
+            if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ]; then
+              echo "  Sent OK"
+              sent=$((sent + 1))
+            else
+              echo "  Failed (HTTP $HTTP_CODE):"
+              cat /tmp/resend_resp.json
+              failed=$((failed + 1))
+            fi
+
+            sleep 1
+          done <<< "$USERS"
+
+          echo "Summary: Sent=$sent Failed=$failed"
