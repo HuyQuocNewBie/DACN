@@ -501,18 +501,13 @@ const LandingPage = () => {
                 <div className="flex-1 border-t border-slate-200 dark:border-slate-800"></div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex justify-center">
                 <button
                   onClick={() => googleLogin()}
-                  className="flex items-center justify-center gap-3 rounded-2xl border border-slate-200 py-4 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-800"
+                  className="hover:border-primary/30 flex w-full max-w-70 items-center justify-center gap-3 rounded-2xl border border-slate-200 px-8 py-4 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
-                  <FcGoogle className="text-xl" /> Google
-                </button>
-                <button className="flex items-center justify-center gap-3 rounded-2xl border border-slate-200 py-4 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-800">
-                  <div className="rounded-md bg-[#1877F2] p-1 text-[10px] text-white">
-                    <FaFacebookF />
-                  </div>{' '}
-                  Facebook
+                  <FcGoogle className="text-xl" />
+                  <span>Tài khoản Google</span>
                 </button>
               </div>
             </div>
