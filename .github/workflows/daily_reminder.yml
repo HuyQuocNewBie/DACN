@@ -1,0 +1,34 @@
+name: MemoSpace Daily Reminder
+
+on:
+  schedule:
+    # Chạy mỗi ngày lúc 0:00 UTC = 7:00 sáng giờ Việt Nam (ICT = UTC+7)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Cho phép chạy thủ công để test
+
+jobs:
+  send-reminder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Trigger daily reminder email
+        run: |
+          echo "Sending daily reminder at $(date)"
+          
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            --max-time 300 \
+            "https://spaced-repetition-o6ch.onrender.com/api/cron/send_reminder_emails.php?secret=memorize_cron_2026")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "❌ Reminder failed with status $HTTP_CODE"
+            exit 1
+          fi
+          
+          echo "✅ Reminder sent successfully!"
