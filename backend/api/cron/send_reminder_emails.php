@@ -17,6 +17,10 @@ if ($providedSecret !== $cronSecret) {
 }
 // ====================================
 
+// Cho phép script tiếp tục chạy dù cron-job.org ngắt kết nối sau 30s
+ignore_user_abort(true);
+set_time_limit(300); // Tối đa 5 phút
+
 include_once '../../config/database.php';
 include_once '../../config/email_config.php';
 
