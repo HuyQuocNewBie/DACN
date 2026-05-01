@@ -171,8 +171,6 @@ class SimpleSMTP
  */
 function sendEmail($toEmail, $toName, $subject, $body)
 {
-    $config = getEmailConfig();
-
     $htmlBody = '
     <!DOCTYPE html>
     <html lang="vi">
@@ -197,20 +195,18 @@ function sendEmail($toEmail, $toName, $subject, $body)
                 padding: 40px 10px; 
             }
             .main-content { 
-                max-width: 480px; /* Thu nhỏ khung email lại */
+                max-width: 480px; 
                 margin: 0 auto; 
                 background-color: #ffffff; 
                 border: 1px solid #e1e5e8;
-                border-radius: 16px; /* Bo góc tròn hơn chút cho mượt */
+                border-radius: 16px; 
                 overflow: hidden;
                 box-shadow: 0 8px 24px rgba(0,0,0,0.04); 
             }
             .header { 
-                padding: 30px 30px 10px 30px; /* Căn chỉnh lại khoảng cách */
+                padding: 30px 30px 10px 30px; 
                 text-align: center; 
             }
-            
-            /* Logo CSS không cần ảnh */
             .logo-badge {
                 display: inline-block;
                 background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
@@ -225,10 +221,9 @@ function sendEmail($toEmail, $toName, $subject, $body)
                 box-shadow: 0 4px 10px rgba(26, 115, 232, 0.25);
                 margin: 0;
             }
-
             .body-text { 
                 padding: 20px 30px 30px 30px; 
-                font-size: 15px; /* Giảm size chữ một chút cho hợp khung nhỏ */
+                font-size: 15px; 
                 line-height: 1.6; 
                 color: #4a4a4a; 
             }
@@ -270,11 +265,38 @@ function sendEmail($toEmail, $toName, $subject, $body)
     </body>
     </html>';
 
-    try {
-        $smtp = new SimpleSMTP($config);
-        return $smtp->send($toEmail, $toName, $subject, $htmlBody);
-    } catch (Exception $e) {
-        error_log("SMTP Error: " . $e->getMessage());
+    // Dùng Resend API qua HTTPS (cổng 443) thay vì SMTP (cổng 587) để không bao giờ bị Render chặn
+    $resendApiKey = getenv('RESEND_API_KEY'); 
+    
+    if (empty($resendApiKey)) {
+        error_log("Missing RESEND_API_KEY in environment variables");
+        return false;
+    }
+    
+    $data = [
+        'from' => 'MemoSpace <onboarding@resend.dev>', // Email mặc định của Resend
+        'to' => [$toEmail],
+        'subject' => $subject,
+        'html' => $htmlBody
+    ];
+
+    $ch = curl_init('https://api.resend.com/emails');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $resendApiKey,
+        'Content-Type: application/json'
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode == 200 || $httpCode == 201) {
+        return true;
+    } else {
+        error_log("Resend API Error: " . $response);
         return false;
     }
 }
