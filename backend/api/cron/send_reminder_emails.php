@@ -25,8 +25,12 @@ include_once '../../config/database.php';
 include_once '../../config/email_config.php';
 
 $db = (new Database())->getConnection();
+$config = getEmailConfig();
 
-// Lấy danh sách email cần ôn tập
+if (empty($config['username']) || empty($config['password'])) {
+    echo json_encode(["status" => "error", "message" => "Email configuration missing"]);
+    exit;
+}
 
 try {
     // Lấy tất cả user có thẻ cần ôn hôm nay
