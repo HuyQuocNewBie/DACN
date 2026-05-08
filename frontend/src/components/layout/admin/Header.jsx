@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../../../hooks/useAuth'; 
+import { useAuth } from '../../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 
 import { useTheme } from '../../../context/ThemeContext';
@@ -12,9 +12,9 @@ const Header = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const { isDarkMode, toggleTheme } = useTheme();
-  
+
   const [open, setOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -42,22 +42,23 @@ const Header = () => {
     <>
       <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-100 bg-white/80 px-8 backdrop-blur-xl transition-all duration-300 dark:border-slate-800 dark:bg-slate-900/80">
         <div>
-          <p className="mb-1 text-[10px] font-black leading-none tracking-widest text-primary uppercase">
+          <p className="text-primary mb-1 text-[10px] leading-none font-black tracking-widest uppercase">
             Hệ thống
           </p>
           <h2 className="text-xl font-black tracking-tight text-slate-900 capitalize md:text-2xl dark:text-white">
-            {location.pathname.split('/').pop() || 'Tổng quan'}
+            {location.pathname.split('/').pop() || 'Dashboard'}
           </h2>
         </div>
 
         <div className="flex items-center gap-6">
-          
           <button
             onClick={toggleTheme}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-slate-200 hover:text-slate-900 focus:outline-none active:scale-95 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-50"
-            title={isDarkMode ? "Bật chế độ sáng" : "Bật chế độ tối"}
+            title={isDarkMode ? 'Bật chế độ sáng' : 'Bật chế độ tối'}
           >
-            <span className={`material-symbols-outlined text-xl transition-transform duration-500 ${isDarkMode ? 'rotate-360' : 'rotate-0'}`}>
+            <span
+              className={`material-symbols-outlined text-xl transition-transform duration-500 ${isDarkMode ? 'rotate-360' : 'rotate-0'}`}
+            >
               {isDarkMode ? 'light_mode' : 'dark_mode'}
             </span>
           </button>
@@ -78,7 +79,7 @@ const Header = () => {
                   getDisplayName(user).charAt(0).toUpperCase()
                 )}
               </div>
-              
+
               <div className="hidden text-left md:block">
                 <p className="text-xs leading-none font-black text-slate-900 dark:text-slate-100">
                   {getDisplayName(user).split(' ').pop()}
@@ -103,7 +104,11 @@ const Header = () => {
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl bg-slate-50 text-lg dark:bg-slate-700">
                       {user?.avatar ? (
-                        <img src={user.avatar} className="h-full w-full object-cover" alt="" />
+                        <img
+                          src={user.avatar}
+                          className="h-full w-full object-cover"
+                          alt=""
+                        />
                       ) : (
                         '👤'
                       )}
@@ -125,7 +130,7 @@ const Header = () => {
                       navigate('/dashboard');
                       setOpen(false);
                     }}
-                    className="flex w-full items-center gap-4 rounded-[1.25rem] bg-primary/5 px-4 py-3 text-sm font-black text-primary transition-all hover:bg-primary/10 dark:text-primary dark:hover:bg-primary/20"
+                    className="bg-primary/5 text-primary hover:bg-primary/10 dark:text-primary dark:hover:bg-primary/20 flex w-full items-center gap-4 rounded-[1.25rem] px-4 py-3 text-sm font-black transition-all"
                   >
                     <span className="material-symbols-outlined text-xl">
                       rocket_launch
@@ -161,8 +166,8 @@ const Header = () => {
             onClick={() => setIsLogoutModalOpen(false)}
           />
           <div className="animate-in zoom-in-95 relative w-full max-w-sm overflow-hidden rounded-[3rem] border border-white bg-white shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] duration-300 dark:border-slate-700 dark:bg-slate-800">
-            <div className="h-3 w-full bg-red-500"></div> 
-            
+            <div className="h-3 w-full bg-red-500"></div>
+
             <div className="p-10 text-center">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-red-50 text-4xl shadow-inner shadow-red-100 dark:bg-red-500/10 dark:shadow-none">
                 👋
@@ -173,7 +178,7 @@ const Header = () => {
               <p className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                 Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị không?
               </p>
-              
+
               <div className="mt-8 flex gap-3">
                 <button
                   onClick={() => setIsLogoutModalOpen(false)}

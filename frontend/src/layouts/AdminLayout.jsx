@@ -10,7 +10,7 @@ const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const menuItems = [
-    { path: '/admin', label: 'Tổng quan', icon: 'grid_view' },
+    { path: '/admin', label: 'Dashboard', icon: 'grid_view' },
     { path: '/admin/users', label: 'Người dùng', icon: 'group' },
     { path: '/admin/decks', label: 'Bộ thẻ', icon: 'layers' },
   ];
