@@ -19,10 +19,17 @@ $user = new User($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-if (!empty($data->username) && !empty($data->email) && !empty($data->password)) {
-    $username = trim($data->username);
+if (!empty($data->email) && !empty($data->password)) {
     $email = $data->email;
     $password = $data->password;
+    $confirm_password = $data->confirm_password ?? $password; // Nếu có gửi confirm thì check, không thì thôi
+
+    if ($password !== $confirm_password) {
+        http_response_code(400); echo json_encode(["message" => "Mật khẩu nhập lại không khớp."]); exit();
+    }
+
+    // Tự động tạo username từ email (phần trước dấu @)
+    $username = explode('@', $email)[0];
 
     if (preg_match('/\s/', $email)) {
         http_response_code(400); echo json_encode(["message" => "Email không được chứa khoảng trắng."]); exit();
