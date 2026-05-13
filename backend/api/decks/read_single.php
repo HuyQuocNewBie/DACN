@@ -1,11 +1,12 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, OPTIONS"); 
+header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200); exit();
+    http_response_code(200);
+    exit();
 }
 
 include_once '../../config/database.php';
@@ -17,7 +18,8 @@ $jwt = str_replace('Bearer ', '', $authHeader);
 $user_data = JWT::validate($jwt);
 
 if (!$user_data) {
-    http_response_code(401); exit();
+    http_response_code(401);
+    exit();
 }
 
 $db = (new Database())->getConnection();
@@ -30,15 +32,28 @@ $num = $stmt->rowCount();
 
 if ($num > 0) {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if ($row['is_public'] == 1 || $row['user_id'] == $user_data->id || $user_data->role == 'admin') {
         $deck_arr = array(
-            "id" =>  $row['id'],
+            "id" => $row['id'],
             "title" => $row['title'],
             "description" => $row['description'],
-            "is_public" => (bool)$row['is_public'],
+            "is_public" => (bool) $row['is_public'],
             "cards_count" => $row['cards_count']
         );
+
+        $query_cards = "SELECT * FROM cards WHERE deck_id = :deck_id";
+        $stmt_cards = $db->prepare($query_cards);
+        $stmt_cards->bindParam(':deck_id', $deck->id);
+        $stmt_cards->execute();
+
+        $cards_arr = array();
+        while ($card_row = $stmt_cards->fetch(PDO::FETCH_ASSOC)) {
+            array_push($cards_arr, $card_row);
+        }
+
+        $deck_arr['cards'] = $cards_arr;
+
         http_response_code(200);
         echo json_encode($deck_arr);
     } else {
